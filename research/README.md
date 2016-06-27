@@ -5,6 +5,7 @@ This folder is a log of network research regarding network motif, network embedd
 1. __img__: Folder of screenshots and images related to MotifWalk research.
 2. __fig__: Folder of figures and illustrations.
 3. __src__: Folder storing source code and data related to MotifWalk research.
+4. __log__: Log experiment/playground output and results.
 
 Standard file format for this research log:
 
