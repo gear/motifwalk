@@ -111,5 +111,8 @@ def generate_batch(batch_size, num_skips, skip_window):
     data_index = (data_index + 1) % len(data)
   return batch, labels
 
+# For importing functions to test
+def main():
+  print('This is main!')
 if __name__ == "__main__":
   main()
