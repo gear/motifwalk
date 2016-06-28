@@ -3,6 +3,8 @@
 # Filename: word2vec_basic.py - Python 2.7
 # Author: Hoang NT
 # Created: 2016-06-27 v0.0
+# Description:
+## v0.0: Basic skip-gram model with Tensorflow
 
 from __future__ import division
 from __future__ import print_function
