@@ -14,3 +14,4 @@
   - Fraction of closed triangles: 0.2647
   - Diameter: 8
   - 90-percentile effective diameter: 4.7
+  - __NetworkX__ pickle file: nx\_facebook\_88234.pickle
