@@ -7,8 +7,6 @@
 # Description:
 ## v0.0: Basic skip-gram model with Tensorflow
 
-__author__ = "Hoang NT"
-
 from __future__ import division
 from __future__ import print_function
 
@@ -22,6 +20,8 @@ import zipfile
 import numpy as np
 from six.moves import urllib, xrange
 import tensorflow as tf
+
+__author__ = "Hoang NT"
 
 # Step 1: Download data and save to datapath folder
 url = 'http://mattmahoney.net/dc/'
@@ -146,14 +146,25 @@ def generate_batch(batch_size, num_skips, skip_window):
     Number of samples in the generated batch. Each sample
     is a pair of words that is close to each other.
 
-  num_skips: Number of skip in skipgram model
-    Number of word pairs generated for the same target word.
+  num_skips: Number of skips in skipgram model
+    Number of word pairs generated per target word.
 
-  skip_window: 
+  skip_window: Skipgram model window
+    This window defines the range (to the left and right) at
+    which words are selected randomly for the target word in
+    the center of the skip_window.
+
+  Example
+  -------
+
+  >>> generate_batch(20, 4, 5)
+  Return 2 arrays each has 20 elements of word index:
+    batch: 20 word indices of target words
+    labels: 20 word indices of context words
   """
   # global keyword gives this function access to global variable data_index
   global data_index
-  assert batch_size % num_skips == 0
+  assert batch_size % num_skips == 0 
   assert num_skips <= 2 * skip_window
   batch = np.ndarray(shape=(batch_size), dtype=np.int32)
   labels = np.ndarray(shape=(batch_size, 1), dtype=np.int32)
@@ -162,20 +173,128 @@ def generate_batch(batch_size, num_skips, skip_window):
   # maxlen - keeping a fixed sliding window  
   buffer = collections.deque(maxlen=span)
   for _ in range(span):
+    # Shift the skipgram window to the left by 1
     buffer.append(data[data_index])
+    # Increase data_index for next shift
     data_index = (data_index + 1) % len(data)
   for i in range(batch_size // num_skips):
-    target = skip_window # target label at the center of the buffer
+    # target label at the center of the buffer   
+    target = skip_window 
+    # avoid the target word and later selected words
     targets_to_avoid = [ skip_window ]
     for j in range(num_skips):
       while target in targets_to_avoid:
         target = random.randint(0, span - 1)
       targets_to_avoid.append(target)
+      # batch is the same word for current num_skip
       batch[i * num_skips + j] = buffer[skip_window]
       labels[i * num_skips + j, 0] = buffer[target]
     buffer.append(data[data_index])
     data_index = (data_index + 1) % len(data)
   return batch, labels
+
+# Create batch of 8 and print its data
+batch, labels = generate_batch(batch_size=8, num_skips=2, skip_window=1)
+for i in range(8):
+  print(batch[i], reverse_dictionary[batch[i]],
+      '->', labels[i,0], reverse_dictionary[labels[i,0]])
+
+# Step 4: Build and train a skip-gram model
+
+batch_size = 128
+embedding_size = 128
+skip_window = 1
+num_skips = 2
+
+valid_size = 16
+valid_window = 100
+valid_example = np.random.choice(valid_window, valid_size, replace=False)
+num_sampled = 64
+
+graph = tf.Graph()
+
+with graph.as_defaul():
+  train_inputs = tf.placeholder(tf.int32, shape=[batch_size])
+  train_labels = tf.placeholder(tf.int32, shape=[batch_size, 1])
+  valid_dataset = tf.constant(valid_examples, dtype=tf.int32)
+
+  with tf.device('/cpu:0'):
+    embeddings = tf.Variable(tf.random_uniform([vocabulary_size, embedding_size], -1.0, 1.0))
+    embeded = tf.nn.embedding_lookup(embeddings, train_inputs)
+    nce_weights = tf.Variable(tf.truncated_normal([vovabulary_size, embedding_size],
+                              stddev=1.0 / math.sqrt(embedding_size)))
+    nce_biases = tf.Variable(tf.zeros([vocabulary_size]))
+
+  loss = tf.reduce_mean(tf.nn.nce_loss(nce_weights, nce_biases, embed, train_labels,
+                                       num_sampled, vocabulary_size))
+
+  optimizer = tf.train.GradientDescentOptimizer(1.0).minimize(loss)
+
+  norm = tf.sqrt(tf.reduce_sum(tf.square(embeddings), 1, keep_dims=True))
+  normalized_embeddings = embeddings / norm
+  valid_embeddings =  tf.nn.embeddin_lookup(normalized_embeddings, valid_dataset)
+  similarity = tf.matmul(valid_embeddings, normalized_embeddings, transpose_b=True)
+
+  init = tf.initialize_all_variables()
+
+num_steps = 100001
+
+with tf.Session(graph=graph) as session:
+  init.run()
+  print("Initialized")
+  average_loss = 0
+  for step in xrange(num_steps):
+    batch_input, batch_labels = generate_batch(batch_size, num_skips, skip_window)
+    feed_dict = {train_input: batch_inputs, train_labels: batch_labels}
+
+    _, loss_val = session.run([optimizer, loss], feed_dict=feed_dict)
+    average_loss += loss_val
+
+    if step % 2000 == 0:
+      if step > 0:
+        average_loss /= 2000
+      print("Average loss at step ", step, ": ", average_loss)
+      average_loss = 0
+
+    if step % 10000 == 0:
+      sim = similarity.eval()
+      for i in xrange(valid_size):
+        valid_word = reverse_dictionary[valid_examples[i]]
+        top_k = 8
+        nearest = (-sim[i, :]).argsort()[1:top_k+1]
+        log_str = "Nearest to %s:" % valid_word
+        for k in xrange(top_k):
+          close_word = reverse_dictionary[nearest[k]]
+          log_str = "%s %s," % (log_str, close_word)
+        print(log_str)
+    final_embeddings = normalized_embeddings.eval()
+
+def plot_with_labels(dow_dim_embs, labels, filename='tsne.png'):
+  assert low_dim_embs.shape[0] >= len(labels), "More labels than embeddings"
+  plt.figure(figsize=(18,18))
+  for i, label in enumerate(labels):
+    x, y = low_dim_embs[i,:]
+    plt.scatter(x,y)
+    plt.annotate(label,
+                 xy=(x,y),
+                 xytest=(5,2),
+                 textcoords='offset points',
+                 ha='right'
+                 va='bottom')
+    plt.savefig(filename)
+
+try:
+  from sklearn.manifold import TSNE
+  import matplotlib.pyplot as plt
+
+  tsne = TSNE(perplexity=30, n_components=2, init='pca', n_iter=5000)
+  plot_only = 500
+  low_dim_embs = tnse.fit_transform(final_embeddings[:plot_only,:])
+  labels = [reverse_dictionary[i] for i in xrange(plot_only)]
+  plot_with_labels(low_dim_embs, labels)
+
+except ImportError:
+  print("Install sklearn and matplotlib.")
 
 # For importing functions to test
 def main():
