@@ -201,27 +201,35 @@ for i in range(8):
 
 # Step 4: Build and train a skip-gram model
 
+# Size of training dataset 
 batch_size = 128
 embedding_size = 128
 skip_window = 1
 num_skips = 2
 
+# Random validation size
 valid_size = 16
 valid_window = 100
-valid_example = np.random.choice(valid_window, valid_size, replace=False)
+# Choose valid_size elements from array arange(valid_window)
+valid_examples = np.random.choice(valid_window, valid_size, replace=False)
 num_sampled = 64
 
+# Create a tensorflow graph instance
 graph = tf.Graph()
 
-with graph.as_defaul():
+# Add nodes to the created graph
+with graph.as_default():
+  # Placeholder for inputs and labels
   train_inputs = tf.placeholder(tf.int32, shape=[batch_size])
   train_labels = tf.placeholder(tf.int32, shape=[batch_size, 1])
+  # Constant valid set
   valid_dataset = tf.constant(valid_examples, dtype=tf.int32)
-
   with tf.device('/cpu:0'):
+    # Input matrix init with uniform random vals minval = -1.0, maxval = 1.0
     embeddings = tf.Variable(tf.random_uniform([vocabulary_size, embedding_size], -1.0, 1.0))
-    embeded = tf.nn.embedding_lookup(embeddings, train_inputs)
-    nce_weights = tf.Variable(tf.truncated_normal([vovabulary_size, embedding_size],
+    
+    embed = tf.nn.embedding_lookup(embeddings, train_inputs)
+    nce_weights = tf.Variable(tf.truncated_normal([vocabulary_size, embedding_size],
                               stddev=1.0 / math.sqrt(embedding_size)))
     nce_biases = tf.Variable(tf.zeros([vocabulary_size]))
 
@@ -232,7 +240,7 @@ with graph.as_defaul():
 
   norm = tf.sqrt(tf.reduce_sum(tf.square(embeddings), 1, keep_dims=True))
   normalized_embeddings = embeddings / norm
-  valid_embeddings =  tf.nn.embeddin_lookup(normalized_embeddings, valid_dataset)
+  valid_embeddings =  tf.nn.embedding_lookup(normalized_embeddings, valid_dataset)
   similarity = tf.matmul(valid_embeddings, normalized_embeddings, transpose_b=True)
 
   init = tf.initialize_all_variables()
@@ -244,8 +252,8 @@ with tf.Session(graph=graph) as session:
   print("Initialized")
   average_loss = 0
   for step in xrange(num_steps):
-    batch_input, batch_labels = generate_batch(batch_size, num_skips, skip_window)
-    feed_dict = {train_input: batch_inputs, train_labels: batch_labels}
+    batch_inputs, batch_labels = generate_batch(batch_size, num_skips, skip_window)
+    feed_dict = {train_inputs: batch_inputs, train_labels: batch_labels}
 
     _, loss_val = session.run([optimizer, loss], feed_dict=feed_dict)
     average_loss += loss_val
@@ -269,17 +277,17 @@ with tf.Session(graph=graph) as session:
         print(log_str)
     final_embeddings = normalized_embeddings.eval()
 
-def plot_with_labels(dow_dim_embs, labels, filename='tsne.png'):
+def plot_with_labels(low_dim_embs, labels, filename='tsne.png'):
   assert low_dim_embs.shape[0] >= len(labels), "More labels than embeddings"
   plt.figure(figsize=(18,18))
   for i, label in enumerate(labels):
     x, y = low_dim_embs[i,:]
     plt.scatter(x,y)
-    plt.annotate(label,
+    plt.annotate(labels,
                  xy=(x,y),
-                 xytest=(5,2),
+                 xytext=(5,2),
                  textcoords='offset points',
-                 ha='right'
+                 ha='right',
                  va='bottom')
     plt.savefig(filename)
 
@@ -289,7 +297,7 @@ try:
 
   tsne = TSNE(perplexity=30, n_components=2, init='pca', n_iter=5000)
   plot_only = 500
-  low_dim_embs = tnse.fit_transform(final_embeddings[:plot_only,:])
+  low_dim_embs = tsne.fit_transform(final_embeddings[:plot_only,:])
   labels = [reverse_dictionary[i] for i in xrange(plot_only)]
   plot_with_labels(low_dim_embs, labels)
 
