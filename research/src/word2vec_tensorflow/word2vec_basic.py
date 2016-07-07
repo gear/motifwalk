@@ -6,6 +6,7 @@
 # Created: 2016-06-27 v0.0
 # Description:
 ## v0.0: Basic skip-gram model with Tensorflow
+## v0.1: Refactorize code 
 
 from __future__ import division
 from __future__ import print_function
@@ -228,20 +229,21 @@ with graph.as_default():
     # Input matrix init with uniform random vals minval = -1.0, maxval = 1.0
     embeddings = tf.Variable(tf.random_uniform([vocabulary_size, embedding_size], -1.0, 1.0))
     # Look up [train_inputs] in a list of [embeddings tensors].
+    # Return the tensor of embeddings of train_input.
     embed = tf.nn.embedding_lookup(embeddings, train_inputs)
-    # 
     nce_weights = tf.Variable(tf.truncated_normal([vocabulary_size, embedding_size],
                               stddev=1.0 / math.sqrt(embedding_size)))
     nce_biases = tf.Variable(tf.zeros([vocabulary_size]))
-
+  # Noise contrastive estimation loss function
   loss = tf.reduce_mean(tf.nn.nce_loss(nce_weights, nce_biases, embed, train_labels,
                                        num_sampled, vocabulary_size))
-
   optimizer = tf.train.GradientDescentOptimizer(1.0).minimize(loss)
-
+  # Normalize embeddings
   norm = tf.sqrt(tf.reduce_sum(tf.square(embeddings), 1, keep_dims=True))
   normalized_embeddings = embeddings / norm
+  # Compute valid set embeddings
   valid_embeddings =  tf.nn.embedding_lookup(normalized_embeddings, valid_dataset)
+  # Computer dot products for each word in valid set with the normalized embeddings
   similarity = tf.matmul(valid_embeddings, normalized_embeddings, transpose_b=True)
 
   init = tf.initialize_all_variables()
@@ -252,19 +254,20 @@ with tf.Session(graph=graph) as session:
   init.run()
   print("Initialized")
   average_loss = 0
+  # For each step, generate a training batch
   for step in xrange(num_steps):
     batch_inputs, batch_labels = generate_batch(batch_size, num_skips, skip_window)
     feed_dict = {train_inputs: batch_inputs, train_labels: batch_labels}
-
+    # Run optimizer and loss
     _, loss_val = session.run([optimizer, loss], feed_dict=feed_dict)
     average_loss += loss_val
-
+    # Computer average loss at every 2000 steps
     if step % 2000 == 0:
       if step > 0:
         average_loss /= 2000
       print("Average loss at step ", step, ": ", average_loss)
       average_loss = 0
-
+    # Print top similar words for each word in valid set 
     if step % 10000 == 0:
       sim = similarity.eval()
       for i in xrange(valid_size):
@@ -279,6 +282,21 @@ with tf.Session(graph=graph) as session:
     final_embeddings = normalized_embeddings.eval()
 
 def plot_with_labels(low_dim_embs, labels, filename='tsne.png'):
+  """
+  Plot in 2D.
+
+  Parameters
+  ----------
+  
+  low_dim_embs: Lower dimension embeddings (usually from t-SNE).
+    2D representation of word embeddings for plot. This data
+    usually optained from running t-SNE on the learned embeddings.
+
+  labels: label list for each embeddings.
+  
+  filename: Output filename to write to disk.
+  
+  """
   assert low_dim_embs.shape[0] >= len(labels), "More labels than embeddings"
   plt.figure(figsize=(18,18))
   for i, label in enumerate(labels):
@@ -297,6 +315,7 @@ try:
   import matplotlib.pyplot as plt
 
   tsne = TSNE(perplexity=30, n_components=2, init='pca', n_iter=5000)
+  # Only plot first 500
   plot_only = 500
   low_dim_embs = tsne.fit_transform(final_embeddings[:plot_only,:])
   labels = [reverse_dictionary[i] for i in xrange(plot_only)]
