@@ -179,12 +179,13 @@ class Word2Vec(object):
 
     Parameters
     ----------
-    examples: 
-    
-    labels:
+    examples: store target words
+    labels: store words act as class for target words
     
     Returns
     -------
+    true_logits: dot product list of true class
+    sampled_logits: dot product list of sampled class 
 
     """
     opts = self._options
@@ -211,21 +212,135 @@ class Word2Vec(object):
     self.global_step = tf.Variable(0, name="global_step")
     
     # Nodes to compute the nce loss with candidate sampling.
-    # Turn labels array into matrix
+    # Turn labels array into matrix of type int64
     labels_matrix = tf.reshape(
         tf.cast(labels,
                 dtype=tf.int64),
         [opts.batch_size, 1])
+    
+    # Negative sampling (simplified NCE)
+    sampled_ids, _, _ = (tf.nn.fixed_unigram_candidate_sampler(
+        true_classes = labels_matrix,
+        num_true = 1,
+        num_sampled = opts.num_samples
+        unique = True,
+        range_max = opts.vocab_size,
+        distortion = 0.75,
+        unigrams = opts.vocab_counts.tolist()))
 
+    # Embeddings for examples: [batch_size, emb_dim]
+    example_emb = tf.nn.embedding_lookup(emb, examples)
 
+    # Weights for labels: [batch_size, emb_dim]
+    true_w = tf.nn.embedding_lookup(sm_w_t, labels)
+    # Biases for labels: [batch_size, 1]
+    true_b = tf.nn.embedding_lookup(sm_b, labels)
 
+    # Weights for sampled ids: [num_sampled, emb_dim]
+    sampled_w = tf.nn.embedding_lookup(sm_w_t, sampled_ids)
+    # Biases for sampled ids: [num_sampled, 1]
+    sampled_b = tf.nn.embedding_lookup(sm_b, sampled_ids)
+    
+    # True logits: [batch_size, 1]
+    true_logits = tf.reduce_sum(tf.mul(example_emb, true_w), 1) + true_b
 
+    # Sampled logits: [batch_size, num_sampled]
+    # Replicate sampled noise labels for all examples in the batch
+    # using the matmul.
+    sampled_b_vec = tf.reshape(sampled_b, [opts.num_samples])
+    sampled_logits = tf.matmul(example_emb,
+                               sampled_w,
+                               transpose_b = True) + sampled_b_vec
+    return true_logits, sampled_logits
 
+    def nce_loss(self, true_logits, sampled_logits):
+      """Build the graph for NCE loss.
 
+      Parameters
+      ----------
+      true_logits: dot product list of true class
+      sampled_logits: dot product list of sampled class
+      
+      Returns
+      -------
+      nce_loss_tensor: reference to nce_loss tensor in graph
+      """
+      # cross-entropy for logits and labels
+      opts = self._options
+      true_xent = tf.nn.sigmoid_cross_entropy_with_logits(
+          true_logits, tf.ones_like(true_logits))
+      sampled_xent = tf.nn.sigmoid_cross_entropy_with_logits(
+          sampled_logits, tf.zeros_like(sampled_logits))
 
+      # NCE-loss is the sum of true and noise (sampled words)
+      # contributions, averaged over the batch.
+      nce_loss_tensor = (tf.reduce_sum(true_xent) + 
+                         tf.reduce_sum(sampled_xent)) / opts.batch_size
+      return nce_loss_tensor
 
+    def optimize(self, loss):
+      """Build the graph to optimize the loss function.
+      
+      Parameters
+      ----------
+      loss: reference to the loss tensor in the graph 
+      
+      Returns
+      -------
+      None
+      """
+      # Linear learning rate decay.
+      opts = self._options
+      words_to_train = float(opts.words_per_epoch * opts.epochs_to_train)
+      lr = opts.learning_rate * tf.maximum(
+          0.0001, 1.0 - tf.cast(self._words, tf.float32) / words_to_train)
+      self._lr = lr
+      optimizer = tf.train.GradientDescentOptimizer(lr)
+      train = optimizer.minimize(loss,
+                                 global_step = self.global_step,
+                                 gate_gradients = optimizer.GATE_NONE)
+      self._train = train
+      
+    def build_eval_graph(self):
+      """Build graph for analogy evaluation.
+        Each analogy task is to predict the 4th word (d) given 3
+        words: a, b, c. E.g., a = italy, b = rome, c = france, we
+        should predict d = paris.
+      
+      Returns
+      -------
+      
+      """
+      # Placeholder for input words
+      analogy_a = tf.placeholder(dtype=tf.int32)
+      analogy_b = tf.placeholder(dtype=tf.int32)
+      analogy_c = tf.placeholder(dtype=tf.int32)
+      
+      # Normalized word embeddings of shape [vocab_size, emb_dim]
+      nemb = tf.nn.l2_normalize(self._emb, 1)
+      
+      # Get the embeddings for each words
+      a_emb = tf.gather(nemb, analogy_a)
+      b_emb = tf.gather(nemb, analogy_b)
+      c_emb = tf.gather(nemb, analogy_c)
 
+      # d's embedding vectors on the unit hyper-sphere is
+      # near: c_emb + (b_emb - a_emb)
+      target = c_emb + (b_emb - a_emb)
 
+      # Compute cosine distance between each pair of target
+      # and vocab.
+      dist = tf.matmul(target, nemb, transpose_b = True) 
+
+      # For each question (row in dist), find the top 4 words.
+      _, pred_idx = tf.nn.top_k(dist, 4)
+
+      # Nodes for computing neighbors for a given word according
+      # to their cosine distance.
+      nearby_word = tf.placeholder(dtype=tf.int32)
+      nearby_emb = tf.gather(nemb, nearby_word)
+      nearby_dist = tf.matmul(nearby_emb, nemb, transpose_b = True)
+      nearby_val, nearby_idx = tf.nn.top_k(nearby_dist, min(1000, self._options.vocab_size))
 
 
 
