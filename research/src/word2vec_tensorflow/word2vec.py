@@ -145,9 +145,134 @@ class Word2Vec(object):
     self._read_analogies()
 
   def _read_analogies(self):
-    """Reads through the analogy question file.
+    """Reads through the analogy question file and
+    returns array of analogy questions.
 
     Returns
     -------
+    questions: The analogy question's word ids
+      Shape of this array is [n, 4]
+    
+    questions_skipped: Question skipped
+      Number of questions skipped due to unknown words
+    """
+    questions = []
+    questions_skipped = 0
+    with open(self._options.eval_data, "rb") as analogy_f:
+      for line in analogy_f:
+        if line.startwith(b":"): # Skip comments.
+          continue
+        # Remove trailing and leading white spaces in line and split
+        words = line.strip().lower().split(b" ")
+        ids = [self._word2id.get(w.strip()) for w in words]
+        if None in ids or len(ids) != 4:
+          questions_skipped += 1
+        else:
+          questions.append(np.array(ids))
+    print("Eval analogy file: ", self._options.eval_data)
+    print("Questions: ", len(questions))
+    print("Skipped: ", questions_skipped)
+    self._analogy_questions = np.array(questions, dtype=np.int32)
+
+  def forward(self, examples, labels):
+    """Build the graph for forward pass.
+
+    Parameters
+    ----------
+    examples: 
+    
+    labels:
+    
+    Returns
+    -------
+
+    """
+    opts = self._options
+    
+    # Embedding: [vocab_size, emb_dim]
+    # Initialize with uniformly random values
+    # max: init_width; min: -init_width
+    init_width = 0.5 / opts.emb_dim
+    emb = tf.Variable(
+        tf.random_uniform(
+            [opts.vocab_size, opts.emb_dim], -init_width, init_width),
+        name="emb")
+    self._emb = emb
+
+    # Softmax weight: [vocab_size, emb_dim]. Transposed.
+    sm_w_t = tf.Variable(
+        tf.zeros.([opts.vocab_size, opts.emb_dim]),
+        name="sm_w_t")
+
+    # Softmax bias: [emb_dim].
+    sm_b = tf.Variable(tf.zeros([opts.vocab_size]), name="sm_b")
+    
+    # Global step: scalar, i.e., shape [].
+    self.global_step = tf.Variable(0, name="global_step")
+    
+    # Nodes to compute the nce loss with candidate sampling.
+    # Turn labels array into matrix
+    labels_matrix = tf.reshape(
+        tf.cast(labels,
+                dtype=tf.int64),
+        [opts.batch_size, 1])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     
