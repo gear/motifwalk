@@ -202,7 +202,7 @@ class Word2Vec(object):
 
     # Softmax weight: [vocab_size, emb_dim]. Transposed.
     sm_w_t = tf.Variable(
-        tf.zeros.([opts.vocab_size, opts.emb_dim]),
+        tf.zeros([opts.vocab_size, opts.emb_dim]),
         name="sm_w_t")
 
     # Softmax bias: [emb_dim].
@@ -222,7 +222,7 @@ class Word2Vec(object):
     sampled_ids, _, _ = (tf.nn.fixed_unigram_candidate_sampler(
         true_classes = labels_matrix,
         num_true = 1,
-        num_sampled = opts.num_samples
+        num_sampled = opts.num_samples,
         unique = True,
         range_max = opts.vocab_size,
         distortion = 0.75,
@@ -423,8 +423,7 @@ class Word2Vec(object):
       (epoch, step, loss, words, lr) = self._session.run(
           [self._epoch, self.global_step, self._loss, self._words, self._lr])
       now = time.time()
-      last_words, last_time, rate = words, now, (words - last_words) / 
-                                                (now - last_time)
+      last_words, last_time, rate = words, now, (words - last_words) / (now - last_time)
       print("Epoch %4d Step %8d: lr = %5.3f loss = %6.2f words/sec = %8.0f\r" %
             (epoch, step, lr, loss, rate), end="")
       sys.stdout.flush()
@@ -507,23 +506,23 @@ class Word2Vec(object):
     user_ns.update(globals())
     IPython.start_ipython(argv=[], user_ns = user_ns)
 
-  def main(_):
-    """Train a word2vec model."""
-    if not FLAGS.train_data or not FLAGS.eval_data or not FLAGS.save_path:
-      print("--train_data --eval_data and --save_path must be specified.")
-      sys.exit(1)
-    opts = Options()
-    with tf.Graph().as_default(), tf.Session() as session:
-      with tf.device("/cpu:0"):
-        model = Word2Vec(opts, session)
-      for _ in xrange(opts.epochs_to_train):
-        model.train()
-        model.eval()
-      model.saver.save(session,
-                       os.path.join(opts.save_path, "model.ckpt"),
-                       global_step=model.global_step)
-      if FLAGS.interactive:
-        _start_shell(locals())
+def main(_):
+  """Train a word2vec model."""
+  if not FLAGS.train_data or not FLAGS.eval_data or not FLAGS.save_path:
+    print("--train_data --eval_data and --save_path must be specified.")
+    sys.exit(1)
+  opts = Options()
+  with tf.Graph().as_default(), tf.Session() as session:
+    with tf.device("/cpu:0"):
+      model = Word2Vec(opts, session)
+    for _ in xrange(opts.epochs_to_train):
+      model.train()
+      model.eval()
+    model.saver.save(session,
+                     os.path.join(opts.save_path, "model.ckpt"),
+                     global_step=model.global_step)
+    if FLAGS.interactive:
+      _start_shell(locals())
 
 if __name__ == "__main__":
   tf.app.run()
