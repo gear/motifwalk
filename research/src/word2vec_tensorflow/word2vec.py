@@ -39,7 +39,11 @@ flags.DEFINE_integer(
     "Number of epochs to train. Each epoch processes the training data once "
     "completely.")
 flags.DEFINE_float("learning_rate", 0.2, "Initial learning rate.")
-flags.DEFINE_
+flags.DEFINE_integer("num_neg_samples", 100, 
+                     "Negative samples per training examples processed per step "
+                      "(size of a minibatch).")
+flags.DEFINE_integer("concurrent_steps", 12,
+                     "The number of concurrent training steps.")
 flags.DEFINE_integer("batch_size", 16,
                      "Number of training examples processed per step "
                      "(size of a minibatch).")
@@ -63,6 +67,9 @@ flags.DEFINE_integer("statistics_interval", 5,
 flags.DEFINE_integer("summary_interval", 5,
                      "Save training summary to file every n seconds (rounded "
                      "up to statistics interval).")
+flags.DEFINE_integer("checkpoint_interval", 600,
+                     "Checkpoint the model (i.e. save the parameters) every n "
+                     "seconds (rounded up to statistics interval).")
 
 FLAGS = flags.FLAGS
 
@@ -77,9 +84,70 @@ class Option(object):
 
     # Training options
 
-    # Training text file.
+    # Training text file
     self.train_data = FLAGS.train_data
 
     # Number of negative samples per example
-    self.num_samples = FLAGS.num_neg
+    self.num_samples = FLAGS.num_neg_samples
 
+    # The inital learning rate
+    self.learning_rate = FLAGS.learning_rate
+
+    # Number of epochs to train. After these many epochs, the learning
+    # rate decays linearly to zero and the training stops.
+    self.epoch_to_train = FLAGS.epochs_to_train
+
+    # Concurrent training steps
+    self.concurrent_steps = FLAGS.concurrent_steps
+
+    # Number of examples for one training step.
+    self.batch_size = FLAGS.batch_size
+    
+    # The number of words to predict to the left and right of the target word
+    self.window_size = FLAGS.window_size
+
+    # The minimum number of word occurences for it to be included in the 
+    # vocabulary
+    self.min_count = FLAGS.min_count
+
+    # Subsampling threshold for word occurrence.
+    self.subsample = FLAGS.subsample
+
+    # How often to print statistics
+    self.statistics_interval = FLAGS.statistics_interval
+
+    # How often to write to the summary file (rounds up to the nearest
+    # statistics_interval)
+    self.summary_interval = FLAGS.summary_interval
+
+    # How often to write checkpoints
+    self.checkpoint_interval = FLAGS.checkpoint_interval
+
+    # Where to write out summaries
+    self.save_path = FLAGS.save_path
+
+    # Evaluate options
+
+    # The text file for evaluation
+    self.eval_data = FLAGS.eval_data
+
+class Word2Vec(object):
+  """Word2Vec model (Skipgram)."""
+  
+  def __init__(self, options, session):
+    self._options = options
+    self._session = session
+    self._word2id = {}
+    self._id2word = []
+    self.build_graph()
+    self.build_eval_graph()
+    self.save_vocab()
+    self._read_analogies()
+
+  def _read_analogies(self):
+    """Reads through the analogy question file.
+
+    Returns
+    -------
+
+    
