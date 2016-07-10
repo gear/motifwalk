@@ -73,7 +73,7 @@ flags.DEFINE_integer("checkpoint_interval", 600,
 
 FLAGS = flags.FLAGS
 
-class Option(object):
+class Options(object):
   """Options used by word2vec model. Defined by the flags."""
 
   def __init__(self):
