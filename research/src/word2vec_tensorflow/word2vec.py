@@ -95,7 +95,7 @@ class Options(object):
 
     # Number of epochs to train. After these many epochs, the learning
     # rate decays linearly to zero and the training stops.
-    self.epoch_to_train = FLAGS.epochs_to_train
+    self.epochs_to_train = FLAGS.epochs_to_train
 
     # Concurrent training steps
     self.concurrent_steps = FLAGS.concurrent_steps
@@ -160,7 +160,7 @@ class Word2Vec(object):
     questions_skipped = 0
     with open(self._options.eval_data, "rb") as analogy_f:
       for line in analogy_f:
-        if line.startwith(b":"): # Skip comments.
+        if line.startswith(b":"): # Skip comments.
           continue
         # Remove trailing and leading white spaces in line and split
         words = line.strip().lower().split(b" ")
@@ -253,104 +253,104 @@ class Word2Vec(object):
                                transpose_b = True) + sampled_b_vec
     return true_logits, sampled_logits
 
-    def nce_loss(self, true_logits, sampled_logits):
-      """Build the graph for NCE loss.
+  def nce_loss(self, true_logits, sampled_logits):
+    """Build the graph for NCE loss.
 
-      Parameters
-      ----------
-      true_logits: dot product list of true class
-      sampled_logits: dot product list of sampled class
-      
-      Returns
-      -------
-      nce_loss_tensor: reference to nce_loss tensor in graph
-      """
-      # cross-entropy for logits and labels
-      opts = self._options
-      true_xent = tf.nn.sigmoid_cross_entropy_with_logits(
-          true_logits, tf.ones_like(true_logits))
-      sampled_xent = tf.nn.sigmoid_cross_entropy_with_logits(
-          sampled_logits, tf.zeros_like(sampled_logits))
+    Parameters
+    ----------
+    true_logits: dot product list of true class
+    sampled_logits: dot product list of sampled class
+    
+    Returns
+    -------
+    nce_loss_tensor: reference to nce_loss tensor in graph
+    """
+    # cross-entropy for logits and labels
+    opts = self._options
+    true_xent = tf.nn.sigmoid_cross_entropy_with_logits(
+        true_logits, tf.ones_like(true_logits))
+    sampled_xent = tf.nn.sigmoid_cross_entropy_with_logits(
+        sampled_logits, tf.zeros_like(sampled_logits))
 
-      # NCE-loss is the sum of true and noise (sampled words)
-      # contributions, averaged over the batch.
-      nce_loss_tensor = (tf.reduce_sum(true_xent) + 
-                         tf.reduce_sum(sampled_xent)) / opts.batch_size
-      return nce_loss_tensor
+    # NCE-loss is the sum of true and noise (sampled words)
+    # contributions, averaged over the batch.
+    nce_loss_tensor = (tf.reduce_sum(true_xent) + 
+                       tf.reduce_sum(sampled_xent)) / opts.batch_size
+    return nce_loss_tensor
 
-    def optimize(self, loss):
-      """Build the graph to optimize the loss function.
-      
-      Parameters
-      ----------
-      loss: reference to the loss tensor in the graph 
-      
-      Returns
-      -------
-      None
-      """
-      # Linear learning rate decay.
-      opts = self._options
-      words_to_train = float(opts.words_per_epoch * opts.epochs_to_train)
-      lr = opts.learning_rate * tf.maximum(
-          0.0001, 1.0 - tf.cast(self._words, tf.float32) / words_to_train)
-      self._lr = lr
-      optimizer = tf.train.GradientDescentOptimizer(lr)
-      train = optimizer.minimize(loss,
-                                 global_step = self.global_step,
-                                 gate_gradients = optimizer.GATE_NONE)
-      self._train = train
-      
-    def build_eval_graph(self):
-      """Build graph for analogy evaluation.
-        Each analogy task is to predict the 4th word (d) given 3
-        words: a, b, c. E.g., a = italy, b = rome, c = france, we
-        should predict d = paris.
-      
-      Returns
-      -------
-      None 
-      """
-      # Placeholder for input words
-      analogy_a = tf.placeholder(dtype=tf.int32)
-      analogy_b = tf.placeholder(dtype=tf.int32)
-      analogy_c = tf.placeholder(dtype=tf.int32)
-      
-      # Normalized word embeddings of shape [vocab_size, emb_dim]
-      nemb = tf.nn.l2_normalize(self._emb, 1)
-      
-      # Get the embeddings for each words
-      a_emb = tf.gather(nemb, analogy_a)
-      b_emb = tf.gather(nemb, analogy_b)
-      c_emb = tf.gather(nemb, analogy_c)
+  def optimize(self, loss):
+    """Build the graph to optimize the loss function.
+    
+    Parameters
+    ----------
+    loss: reference to the loss tensor in the graph 
+    
+    Returns
+    -------
+    None
+    """
+    # Linear learning rate decay.
+    opts = self._options
+    words_to_train = float(opts.words_per_epoch * opts.epochs_to_train)
+    lr = opts.learning_rate * tf.maximum(
+        0.0001, 1.0 - tf.cast(self._words, tf.float32) / words_to_train)
+    self._lr = lr
+    optimizer = tf.train.GradientDescentOptimizer(lr)
+    train = optimizer.minimize(loss,
+                               global_step = self.global_step,
+                               gate_gradients = optimizer.GATE_NONE)
+    self._train = train
+    
+  def build_eval_graph(self):
+    """Build graph for analogy evaluation.
+      Each analogy task is to predict the 4th word (d) given 3
+      words: a, b, c. E.g., a = italy, b = rome, c = france, we
+      should predict d = paris.
+    
+    Returns
+    -------
+    None 
+    """
+    # Placeholder for input words
+    analogy_a = tf.placeholder(dtype=tf.int32)
+    analogy_b = tf.placeholder(dtype=tf.int32)
+    analogy_c = tf.placeholder(dtype=tf.int32)
+    
+    # Normalized word embeddings of shape [vocab_size, emb_dim]
+    nemb = tf.nn.l2_normalize(self._emb, 1)
+    
+    # Get the embeddings for each words
+    a_emb = tf.gather(nemb, analogy_a)
+    b_emb = tf.gather(nemb, analogy_b)
+    c_emb = tf.gather(nemb, analogy_c)
 
-      # d's embedding vectors on the unit hyper-sphere is
-      # near: c_emb + (b_emb - a_emb)
-      target = c_emb + (b_emb - a_emb)
+    # d's embedding vectors on the unit hyper-sphere is
+    # near: c_emb + (b_emb - a_emb)
+    target = c_emb + (b_emb - a_emb)
 
-      # Compute cosine distance between each pair of target
-      # and vocab.
-      dist = tf.matmul(target, nemb, transpose_b = True) 
+    # Compute cosine distance between each pair of target
+    # and vocab.
+    dist = tf.matmul(target, nemb, transpose_b = True) 
 
-      # For each question (row in dist), find the top 4 words.
-      _, pred_idx = tf.nn.top_k(dist, 4)
+    # For each question (row in dist), find the top 4 words.
+    _, pred_idx = tf.nn.top_k(dist, 4)
 
-      # Nodes for computing neighbors for a given word according
-      # to their cosine distance.
-      nearby_word = tf.placeholder(dtype=tf.int32)
-      nearby_emb = tf.gather(nemb, nearby_word)
-      nearby_dist = tf.matmul(nearby_emb, nemb, transpose_b = True)
-      nearby_val, nearby_idx = tf.nn.top_k(nearby_dist, min(1000, self._options.vocab_size))
+    # Nodes for computing neighbors for a given word according
+    # to their cosine distance.
+    nearby_word = tf.placeholder(dtype=tf.int32)
+    nearby_emb = tf.gather(nemb, nearby_word)
+    nearby_dist = tf.matmul(nearby_emb, nemb, transpose_b = True)
+    nearby_val, nearby_idx = tf.nn.top_k(nearby_dist, min(1000, self._options.vocab_size))
 
-      # Nodes in the construct graph which are used by training and
-      # evaluation to run/feed/fetch
-      self._analogy_a = analogy_a
-      self._analogy_b = analogy_b
-      self._analogy_c = analogy_c
-      self._analogy_pred_idx = pred_idx
-      self._nearby_word = nearby_word
-      self._nearby_val = nearby_val
-      self._nearby_idx = nearby_idx
+    # Nodes in the construct graph which are used by training and
+    # evaluation to run/feed/fetch
+    self._analogy_a = analogy_a
+    self._analogy_b = analogy_b
+    self._analogy_c = analogy_c
+    self._analogy_pred_idx = pred_idx
+    self._nearby_word = nearby_word
+    self._nearby_val = nearby_val
+    self._nearby_idx = nearby_idx
 
   def build_graph(self):
     """Build the full graph for word2vec model.
@@ -364,7 +364,7 @@ class Word2Vec(object):
                                  min_count=opts.min_count,
                                  subsample=opts.subsample)
     (opts.vocab_words, opts.vocab_counts,
-     opts.word_per_epoch) = self._session.run([words, counts, words_per_epoch])
+     opts.words_per_epoch) = self._session.run([words, counts, words_per_epoch])
     opts.vocab_size = len(opts.vocab_words)
     print("Data file: ", opts.train_data)
     print("Vocab size: ", opts.vocab_size - 1, " + UNK")
@@ -375,7 +375,7 @@ class Word2Vec(object):
      
     for i, w in enumerate(self._id2word):
       self._word2id[w] = i
-    true_logits, sampled_logits = self.forward(examples, lables)
+    true_logits, sampled_logits = self.forward(examples, labels)
     loss = self.nce_loss(true_logits, sampled_logits)
     tf.scalar_summary("NCE loss", loss)
     self._loss = loss
@@ -388,7 +388,7 @@ class Word2Vec(object):
 
   def save_vocab(self):
     """Save the vocabulary to a file so the model can be reloaded."""
-    opts = self.options
+    opts = self._options
     with open(os.path.join(opts.save_path, "vocab.txt"), "w") as f:
       for i in xrange(opts.vocab_size):
         f.write("%s %d\n" % (tf.compat.as_text(opts.vocab_words[i]),
@@ -412,7 +412,7 @@ class Word2Vec(object):
     summary_writer = tf.train.SummaryWriter(opts.save_path, self._session.graph)
     workers = []
     for _ in xrange(opts.concurrent_steps):
-      t = threading.Thread(target=self._train_thread_bogy)
+      t = threading.Thread(target=self._train_thread_body)
       t.start()
       workers.append(t) 
 
