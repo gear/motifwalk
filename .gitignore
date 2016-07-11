@@ -87,3 +87,6 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# Tensorflow saved model
+research/src/word2vec_tensorflow/saved_model/*
