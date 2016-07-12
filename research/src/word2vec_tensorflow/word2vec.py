@@ -15,6 +15,7 @@ import os
 import sys
 import threading
 import time
+import logging
 
 from six.moves import xrange # Faster range iteration
 
