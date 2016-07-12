@@ -72,6 +72,7 @@ flags.DEFINE_integer("summary_interval", 5,
 flags.DEFINE_integer("checkpoint_interval", 600,
                      "Checkpoint the model (i.e. save the parameters) every n "
                      "seconds (rounded up to statistics interval).")
+flags.DEFINE_string("log_file", None, "File to store logs.")
 
 FLAGS = flags.FLAGS
 
@@ -79,10 +80,15 @@ class Options(object):
   """Options used by word2vec model. Defined by the flags."""
 
   def __init__(self):
+    # Add logger
+    logging.basicConfig(filename=FLAGS.log_file, format='%(asctime)s %(message)s')
+    opt_log = logging.get
+  
     # Model options
     
     # Embedding dimension.
     self.emb_dim = FLAGS.embedding_size
+    
 
     # Training options
 
