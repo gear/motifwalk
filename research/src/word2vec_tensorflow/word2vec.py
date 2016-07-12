@@ -170,6 +170,7 @@ class Word2Vec(object):
     self.build_eval_graph()
     self.save_vocab()
     self._read_analogies()
+    self.logger = logging.getLogger('word2vec_log')
 
   def _read_analogies(self):
     """Reads through the analogy question file and
@@ -199,6 +200,9 @@ class Word2Vec(object):
     print("Eval analogy file: ", self._options.eval_data)
     print("Questions: ", len(questions))
     print("Skipped: ", questions_skipped)
+    self.logger.info("Eval analogy file: ", self._options.eval_data)
+    self.logger.info("Questions: ", len(questions))
+    self.logger.info("Skipped: ", questions_skipped)
     self._analogy_questions = np.array(questions, dtype=np.int32)
 
   def forward(self, examples, labels):
@@ -538,7 +542,7 @@ def main(_):
   if not FLAGS.train_data or not FLAGS.eval_data or not FLAGS.save_path:
     print("--train_data --eval_data and --save_path must be specified.")
     sys.exit(1)
-  opts = Options()
+  opts = Options() 
   with tf.Graph().as_default(), tf.Session() as session:
     with tf.device("/cpu:0"):
       model = Word2Vec(opts, session)
