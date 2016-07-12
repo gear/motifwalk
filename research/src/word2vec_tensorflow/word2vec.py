@@ -84,6 +84,8 @@ class Options(object):
     logging.basicConfig(filename=FLAGS.log_file, format='%(asctime)s %(message)s')
     opt_log = logging.getLogger("OPTION")
     opt_log.setLevel(logging.INFO)
+
+    opt_log.info('Log file: %s' % FLAGS.log_file)
   
     # Model options
     
@@ -95,56 +97,66 @@ class Options(object):
 
     # Training text file
     self.train_data = FLAGS.train_data
-    opt_log.info('Training options. Training data filename: %s' % FLAGS.train_data)
+    opt_log.info('Training. Training data filename: %s' % FLAGS.train_data)
 
     # Number of negative samples per example
     self.num_samples = FLAGS.num_neg_samples
-    opt_log.info('Training options. Training number of samples for negative sampling: %d' % FLAGS.num_neg_samples)
+    opt_log.info('Training. Training number of samples ' 
+                 'for negative sampling: %d' % FLAGS.num_neg_samples)
 
     # The inital learning rate
     self.learning_rate = FLAGS.learning_rate
-    opt_log.info('Training options. Initial learning rate: %f' % FLAGS.learning_rate)
+    opt_log.info('Training. Initial learning rate: %f' % FLAGS.learning_rate)
 
     # Number of epochs to train. After these many epochs, the learning
     # rate decays linearly to zero and the training stops.
     self.epochs_to_train = FLAGS.epochs_to_train
-    opt_log.info('Training options. Number of epochs: %d' % FLAGS.epochs_to_train)
+    opt_log.info('Training. Number of epochs: %d' % FLAGS.epochs_to_train)
 
     # Concurrent training steps
     self.concurrent_steps = FLAGS.concurrent_steps
-    opt_log.info('Training options. Number of concurrent process: %d' % FLAGS.concurrent_steps)
+    opt_log.info('Training. Number of concurrent process: %d' % FLAGS.concurrent_steps)
 
     # Number of examples for one training step.
     self.batch_size = FLAGS.batch_size
-    opt_log.info('Training options. Mini batch size: %d' % FLAGS.batch_size)
+    opt_log.info('Training. Mini batch size: %d' % FLAGS.batch_size)
     
     # The number of words to predict to the left and right of the target word
     self.window_size = FLAGS.window_size
+    opt_log.info('Skipgram. Window size: %d' % FLAGS.window_size)
 
     # The minimum number of word occurences for it to be included in the 
     # vocabulary
     self.min_count = FLAGS.min_count
+    opt_log.info('Skipgram. Number of occurence for word'
+                 ' to be in vocabulary: %d' % FLAGS.min_count)
 
     # Subsampling threshold for word occurrence.
     self.subsample = FLAGS.subsample
+    opt_log.info('Skipgram. Subsample for word occurrence: %f' % FLAGS.subsample)
 
     # How often to print statistics
     self.statistics_interval = FLAGS.statistics_interval
+    opt_log.info('Statistics Interval: %d' % FLAGS.statistics_interval)
 
     # How often to write to the summary file (rounds up to the nearest
     # statistics_interval)
     self.summary_interval = FLAGS.summary_interval
+    opt_log.info('Summary Interval: %d' %d FLAGS.summary_interval)
 
     # How often to write checkpoints
     self.checkpoint_interval = FLAGS.checkpoint_interval
+    opt_log.info('Checkpoint interval: %d' % FLAGS.checkpoint_interval)
 
     # Where to write out summaries
     self.save_path = FLAGS.save_path
+    opt_log.info('Save path for model: %s' % FLAGS.save_path)
 
     # Evaluate options
 
     # The text file for evaluation
     self.eval_data = FLAGS.eval_data
+    opt_log.info('Evaluation. Evaluation filename: %s' % FLAGS.eval_data)
 
 class Word2Vec(object):
   """Word2Vec model (Skipgram)."""
