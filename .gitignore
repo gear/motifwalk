@@ -90,3 +90,6 @@ ENV/
 
 # Tensorflow saved model
 research/src/word2vec_tensorflow/saved_model/*
+
+# vim temp file
+*.swp

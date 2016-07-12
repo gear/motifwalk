@@ -6,6 +6,7 @@
 # Created: 2016-07-07 v0.0
 # Description: This model is proposed in ICLR 2013. arvix:1301.3781
 ## v0.0: File copied from origin for learning purpose.
+## v0.1: Add logger.
 
 from __future__ import division
 from __future__ import print_function
