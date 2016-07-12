@@ -82,34 +82,41 @@ class Options(object):
   def __init__(self):
     # Add logger
     logging.basicConfig(filename=FLAGS.log_file, format='%(asctime)s %(message)s')
-    opt_log = logging.get
+    opt_log = logging.getLogger("OPTION")
+    opt_log.setLevel(logging.INFO)
   
     # Model options
     
     # Embedding dimension.
     self.emb_dim = FLAGS.embedding_size
-    
+    opt_log.info('Embedding size: %d' % FLAGS.embedding_size)
 
     # Training options
 
     # Training text file
     self.train_data = FLAGS.train_data
+    opt_log.info('Training options. Training data filename: %s' % FLAGS.train_data)
 
     # Number of negative samples per example
     self.num_samples = FLAGS.num_neg_samples
+    opt_log.info('Training options. Training number of samples for negative sampling: %d' % FLAGS.num_neg_samples)
 
     # The inital learning rate
     self.learning_rate = FLAGS.learning_rate
+    opt_log.info('Training options. Initial learning rate: %f' % FLAGS.learning_rate)
 
     # Number of epochs to train. After these many epochs, the learning
     # rate decays linearly to zero and the training stops.
     self.epochs_to_train = FLAGS.epochs_to_train
+    opt_log.info('Training options. Number of epochs: %d' % FLAGS.epochs_to_train)
 
     # Concurrent training steps
     self.concurrent_steps = FLAGS.concurrent_steps
+    opt_log.info('Training options. Number of concurrent process: %d' % FLAGS.concurrent_steps)
 
     # Number of examples for one training step.
     self.batch_size = FLAGS.batch_size
+    opt_log.info('Training options. Mini batch size: %d' % FLAGS.batch_size)
     
     # The number of words to predict to the left and right of the target word
     self.window_size = FLAGS.window_size
