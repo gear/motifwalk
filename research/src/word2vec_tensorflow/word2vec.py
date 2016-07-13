@@ -142,7 +142,7 @@ class Options(object):
     # How often to write to the summary file (rounds up to the nearest
     # statistics_interval)
     self.summary_interval = FLAGS.summary_interval
-    opt_log.info('Summary Interval: %d' %d FLAGS.summary_interval)
+    opt_log.info('Summary Interval: %d' % FLAGS.summary_interval)
 
     # How often to write checkpoints
     self.checkpoint_interval = FLAGS.checkpoint_interval
@@ -377,11 +377,16 @@ class Word2Vec(object):
     lr = opts.learning_rate * tf.maximum(
         0.0001, 1.0 - tf.cast(self._words, tf.float32) / words_to_train)
     self._lr = lr
+    self.logger.info('Add learning rate node.')
     optimizer = tf.train.GradientDescentOptimizer(lr)
+    # TODO: Set optimizer in config class
+    self.logger.info('Using Gradient Descent Optimizer.')
     train = optimizer.minimize(loss,
                                global_step = self.global_step,
                                gate_gradients = optimizer.GATE_NONE)
     self._train = train
+
+    self.logger.info('=== Finish adding optimizer to graph ===')
     
   def build_eval_graph(self):
     """Build graph for analogy evaluation.
@@ -393,6 +398,7 @@ class Word2Vec(object):
     -------
     None 
     """
+
     # Placeholder for input words
     analogy_a = tf.placeholder(dtype=tf.int32)
     analogy_b = tf.placeholder(dtype=tf.int32)
@@ -437,6 +443,9 @@ class Word2Vec(object):
   def build_graph(self):
     """Build the full graph for word2vec model.
     """
+
+    self.logger.info('=== Building tensorflow graph ===')
+
     opts = self._options
     # The training data. A text file.
     (words, counts, words_per_epoch, self._epoch, self._words, examples,
@@ -468,7 +477,7 @@ class Word2Vec(object):
       vocab_word: A `Tensor` of type `string`. A vector of words in the corpus.
       vocab_freq: A `Tensor` of type `int32`. Frequencies of words. Sorted in
                   non-ascending order.
-      words_per_epoch: A `Tensor` of type `int32`. The current epoch number.
+      words_per_epoch: A `Tensor` of type `int32`. Number of word per epoch. 
       current_epoch: A `Tensor` of type `int32`. The current epoch number.
       total_words_processed: A `Tensor` of type `int64`. The total number of
                              words processed so far.
@@ -481,6 +490,10 @@ class Word2Vec(object):
     print("Data file: ", opts.train_data)
     print("Vocab size: ", opts.vocab_size - 1, " + UNK")
     print("Words per epoch: ", opts.words_per_epoch)
+    self.logger.info('Data file: %s' % opts.train_data)
+    self.logger.info('Vocab size: %d + UNK' % opts.vocab_size - 1)
+    self.logger.info('Words per epoch: %d' % opts.words_per_epoch)
+
     self._examples = examples
     self._labels = labels
     self._id2word = opts.vocab_words
@@ -493,13 +506,18 @@ class Word2Vec(object):
     self._loss = loss
     self.optimize(loss)
 
+    self.logger.info('Initialize all variables.')
     tf.initialize_all_variables().run()
     
     # Use for saving and restoring variables
+    self.logger.info('Add tensorflow saver.')
     self.saver = tf.train.Saver() 
 
   def save_vocab(self):
     """Save the vocabulary to a file so the model can be reloaded."""
+    self.logger.info('Saving vocabulary to file.'
+                     '\nFile name: %s'
+                     '\nFile format: word-word_count.' % opts.save_path+'vocab.txt')
     opts = self._options
     with open(os.path.join(opts.save_path, "vocab.txt"), "w") as f:
       for i in xrange(opts.vocab_size):
@@ -507,14 +525,21 @@ class Word2Vec(object):
                              opts.vocab_counts[i]))
 
   def _train_thread_body(self):
+    # The comma make initial_epoch a tuple (initial_epoch,)
     initial_epoch, = self._session.run([self._epoch])
+    self.logger.info('Getting first epoch number.')
     while True:
       _, epoch = self._session.run([self._train, self._epoch])
       if epoch != initial_epoch:
+        self.logger.info('Continue to train next epoch.')
         break
+      self.logger.info('Returned to first epoch. End training.')
 
   def train(self):
     """Train step for the model."""
+    
+    self.logger.info('Start training step.')
+    
     opts = self._options
     
     initial_epoch, initial_words = self._session.run([self._epoch, self._words])
@@ -523,6 +548,8 @@ class Word2Vec(object):
     
     summary_writer = tf.train.SummaryWriter(opts.save_path, self._session.graph)
     workers = []
+
+    # Revoke real training with assignments to multiple threads
     for _ in xrange(opts.concurrent_steps):
       t = threading.Thread(target=self._train_thread_body)
       t.start()
@@ -538,6 +565,8 @@ class Word2Vec(object):
       last_words, last_time, rate = words, now, (words - last_words) / (now - last_time)
       print("Epoch %4d Step %8d: lr = %5.3f loss = %6.2f words/sec = %8.0f\r" %
             (epoch, step, lr, loss, rate), end="")
+      self.logger.info('Epoch %4d Step %8d: lr = %5.3f loss = %6.2f words/sec = %8.0f\r' %
+            (epoch, step, lr, loss, rate))
       sys.stdout.flush()
       if now - last_summary_time > opts.summary_interval:
         summary_str = self._session.run(summary_op)
@@ -588,6 +617,8 @@ class Word2Vec(object):
             break
     print()
     print("Eval %4d/%d accuracy = %4.1f%%" % (correct, total,
+                                              correct * 100.0 / total))
+    self.logger.info('Eval %4d/%d accuracy = %4.1f%%' % (correct, total,
                                               correct * 100.0 / total))
   
   def analogy(self, w0, w1, w2):

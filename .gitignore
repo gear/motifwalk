@@ -93,3 +93,6 @@ research/src/word2vec_tensorflow/saved_model/*
 
 # vim temp file
 *.swp
+
+# Big data file
+text8
