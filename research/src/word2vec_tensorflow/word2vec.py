@@ -220,27 +220,46 @@ class Word2Vec(object):
 
     """
     opts = self._options
+
+    self.logger.info("=== Building forward graph ===")
     
     # Embedding: [vocab_size, emb_dim]
     # Initialize with uniformly random values
     # max: init_width; min: -init_width
     init_width = 0.5 / opts.emb_dim
+    self.logger.info('Random value range: [%.3f;%.3f]' % (-init_width, init_width))
     emb = tf.Variable(
         tf.random_uniform(
             [opts.vocab_size, opts.emb_dim], -init_width, init_width),
         name="emb")
     self._emb = emb
+    # TODO: Change to use a config class to decide graph elements.
+    self.logger.info('Add embedding matrix to the graph.'
+                     '\nType: tf.Variable.'
+                     '\nInit using: tf.random_uniform' 
+                     '\nDimension: [%d;%d]' % (opts.vocab_size, opts.emb_dim))
 
     # Softmax weight: [vocab_size, emb_dim]. Transposed.
     sm_w_t = tf.Variable(
         tf.zeros([opts.vocab_size, opts.emb_dim]),
         name="sm_w_t")
+    self.logger.info('Add softmax weight matrix (transposed) to the graph.'
+                     '\nType: tf.Variable.'
+                     '\nInit using: tf.zeros.'
+                     '\nDimension: [%d;%d]' % (opts.vocab_size, opts.emb_dim))
 
     # Softmax bias: [emb_dim].
     sm_b = tf.Variable(tf.zeros([opts.vocab_size]), name="sm_b")
+    self.logger.info('Add softmax bias to the graph.'
+                     '\nType: tf.Variable.'
+                     '\nInit using: tf.zeros.'
+                     '\nShape: [%d;%d]' % (opts.vocab_size))
     
     # Global step: scalar, i.e., shape [].
     self.global_step = tf.Variable(0, name="global_step")
+    self.logger.info('Add global step to the graph.'
+                     '\nType: tf.Variable.'
+                     '\nInit using: 0.') 
     
     # Nodes to compute the nce loss with candidate sampling.
     # Turn labels array into matrix of type int64
@@ -248,6 +267,9 @@ class Word2Vec(object):
         tf.cast(labels,
                 dtype=tf.int64),
         [opts.batch_size, 1])
+    self.logger.info('Reshape labels array into matrix.'
+                     '\nChange to type: tf.int64.'  
+                     '\nShape: [%d;1]' % (opts.batch_size))
     
     # Negative sampling (simplified NCE)
     sampled_ids, _, _ = (tf.nn.fixed_unigram_candidate_sampler(
@@ -258,9 +280,18 @@ class Word2Vec(object):
         range_max = opts.vocab_size,
         distortion = 0.75,
         unigrams = opts.vocab_counts.tolist()))
+    self.logger.info('Negative sampling generation.'
+                     '\nTrue sample: %d.'
+                     '\nNumber of sampled: %d.'
+                     '\nUnique sample: True.'
+                     '\nMaximum range: %d.'
+                     '\nSampling distribution distortion: %d.'
+                     '\nUnigrams: list of vocab_counts' 
+                     % (1, opts_num_samples, opts.vocab_size, 0.75))
 
     # Embeddings for examples: [batch_size, emb_dim]
     example_emb = tf.nn.embedding_lookup(emb, examples)
+    self.logger.info('Extract embedding for examples.')
 
     # Weights for labels: [batch_size, emb_dim]
     true_w = tf.nn.embedding_lookup(sm_w_t, labels)
@@ -282,6 +313,7 @@ class Word2Vec(object):
     sampled_logits = tf.matmul(example_emb,
                                sampled_w,
                                transpose_b = True) + sampled_b_vec
+    self.logger.info("=== Finish building forward graph ===")
     return true_logits, sampled_logits
 
   def nce_loss(self, true_logits, sampled_logits):
@@ -553,6 +585,8 @@ def main(_):
                      os.path.join(opts.save_path, "model.ckpt"),
                      global_step=model.global_step)
     if FLAGS.interactive:
+      log = logging.getLogger("OPTION")
+      log.INFO('Enter interactive shell.')
       _start_shell(locals())
 
 if __name__ == "__main__":
