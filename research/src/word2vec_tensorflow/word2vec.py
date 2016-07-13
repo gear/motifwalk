@@ -169,7 +169,7 @@ class Word2Vec(object):
     self.build_eval_graph()
     self.save_vocab()
     self._read_analogies()
-    self._logger = logging.getLogger('WORD2VEC')
+    self._logger = logging.getLogger("WORD2VEC")
 
   def _read_analogies(self):
     """Reads through the analogy question file and
@@ -525,7 +525,6 @@ class Word2Vec(object):
 
   def _train_thread_body(self):
     # Logging 
-    logging.basicConfig(filename=FLAGS.log_file, format='%(asctime)s %(message)s')
     # The comma make initial_epoch a tuple (initial_epoch,)
     initial_epoch, = self._session.run([self._epoch])
     self._logger.info('Getting first epoch number.')
@@ -651,6 +650,7 @@ class Word2Vec(object):
     IPython.start_ipython(argv=[], user_ns = user_ns)
 
 def main(_):
+  logging.basicConfig(filename=FLAGS.log_file, format='%(asctime)s %(message)s')
   """Train a word2vec model."""
   if not FLAGS.train_data or not FLAGS.eval_data or not FLAGS.save_path:
     print("--train_data --eval_data and --save_path must be specified.")
