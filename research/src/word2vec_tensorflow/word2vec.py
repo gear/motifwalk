@@ -81,7 +81,6 @@ class Options(object):
 
   def __init__(self):
     # Add logger
-    logging.basicConfig(filename=FLAGS.log_file, format='%(asctime)s %(message)s')
     opt_log = logging.getLogger("OPTION")
     opt_log.setLevel(logging.INFO)
 
@@ -170,7 +169,7 @@ class Word2Vec(object):
     self.build_eval_graph()
     self.save_vocab()
     self._read_analogies()
-    self.logger = logging.getLogger('word2vec_log')
+    self._logger = logging.getLogger('WORD2VEC')
 
   def _read_analogies(self):
     """Reads through the analogy question file and
@@ -200,9 +199,9 @@ class Word2Vec(object):
     print("Eval analogy file: ", self._options.eval_data)
     print("Questions: ", len(questions))
     print("Skipped: ", questions_skipped)
-    self.logger.info("Eval analogy file: ", self._options.eval_data)
-    self.logger.info("Questions: ", len(questions))
-    self.logger.info("Skipped: ", questions_skipped)
+    self._logger.info("Eval analogy file: ", self._options.eval_data)
+    self._logger.info("Questions: ", len(questions))
+    self._logger.info("Skipped: ", questions_skipped)
     self._analogy_questions = np.array(questions, dtype=np.int32)
 
   def forward(self, examples, labels):
@@ -221,20 +220,20 @@ class Word2Vec(object):
     """
     opts = self._options
 
-    self.logger.info("=== Building forward graph ===")
+    self._logger.info("=== Building forward graph ===")
     
     # Embedding: [vocab_size, emb_dim]
     # Initialize with uniformly random values
     # max: init_width; min: -init_width
     init_width = 0.5 / opts.emb_dim
-    self.logger.info('Random value range: [%.3f;%.3f]' % (-init_width, init_width))
+    self._logger.info('Random value range: [%.3f;%.3f]' % (-init_width, init_width))
     emb = tf.Variable(
         tf.random_uniform(
             [opts.vocab_size, opts.emb_dim], -init_width, init_width),
         name="emb")
     self._emb = emb
     # TODO: Change to use a config class to decide graph elements.
-    self.logger.info('Add embedding matrix to the graph.'
+    self._logger.info('Add embedding matrix to the graph.'
                      '\nType: tf.Variable.'
                      '\nInit using: tf.random_uniform' 
                      '\nDimension: [%d;%d]' % (opts.vocab_size, opts.emb_dim))
@@ -243,21 +242,21 @@ class Word2Vec(object):
     sm_w_t = tf.Variable(
         tf.zeros([opts.vocab_size, opts.emb_dim]),
         name="sm_w_t")
-    self.logger.info('Add softmax weight matrix (transposed) to the graph.'
+    self._logger.info('Add softmax weight matrix (transposed) to the graph.'
                      '\nType: tf.Variable.'
                      '\nInit using: tf.zeros.'
                      '\nDimension: [%d;%d]' % (opts.vocab_size, opts.emb_dim))
 
     # Softmax bias: [emb_dim].
     sm_b = tf.Variable(tf.zeros([opts.vocab_size]), name="sm_b")
-    self.logger.info('Add softmax bias to the graph.'
+    self._logger.info('Add softmax bias to the graph.'
                      '\nType: tf.Variable.'
                      '\nInit using: tf.zeros.'
                      '\nShape: [%d;%d]' % (opts.vocab_size))
     
     # Global step: scalar, i.e., shape [].
     self.global_step = tf.Variable(0, name="global_step")
-    self.logger.info('Add global step to the graph.'
+    self._logger.info('Add global step to the graph.'
                      '\nType: tf.Variable.'
                      '\nInit using: 0.') 
     
@@ -267,7 +266,7 @@ class Word2Vec(object):
         tf.cast(labels,
                 dtype=tf.int64),
         [opts.batch_size, 1])
-    self.logger.info('Reshape labels array into matrix.'
+    self._logger.info('Reshape labels array into matrix.'
                      '\nChange to type: tf.int64.'  
                      '\nShape: [%d;1]' % (opts.batch_size))
     
@@ -280,7 +279,7 @@ class Word2Vec(object):
         range_max = opts.vocab_size,
         distortion = 0.75,
         unigrams = opts.vocab_counts.tolist()))
-    self.logger.info('Negative sampling generation. Only care about sampled_ids.'
+    self._logger.info('Negative sampling generation. Only care about sampled_ids.'
                      '\nType: tf.nn.fixed_unigram_candidate_sampler'
                      '\nTrue sample: %d.'
                      '\nNumber of sampled: %d.'
@@ -292,7 +291,7 @@ class Word2Vec(object):
 
     # Embeddings for examples: [batch_size, emb_dim]
     example_emb = tf.nn.embedding_lookup(emb, examples)
-    self.logger.info('Extract embeddings for examples.')
+    self._logger.info('Extract embeddings for examples.')
 
     # Weights for labels: [batch_size, emb_dim]
     true_w = tf.nn.embedding_lookup(sm_w_t, labels)
@@ -303,12 +302,12 @@ class Word2Vec(object):
     sampled_w = tf.nn.embedding_lookup(sm_w_t, sampled_ids)
     # Biases for sampled ids: [num_sampled, 1]
     sampled_b = tf.nn.embedding_lookup(sm_b, sampled_ids)
-    self.logger.info('Extract softmax weights'
+    self._logger.info('Extract softmax weights'
                      ' and biases for sampled instances.')
     
     # True logits: [batch_size, 1]
     true_logits = tf.reduce_sum(tf.mul(example_emb, true_w), 1) + true_b
-    self.logger.info('Multiply example embeddings with '
+    self._logger.info('Multiply example embeddings with '
                      'labels softmax weights to get logits.')
 
     # Sampled logits: [batch_size, num_sampled]
@@ -318,8 +317,8 @@ class Word2Vec(object):
     sampled_logits = tf.matmul(example_emb,
                                sampled_w,
                                transpose_b = True) + sampled_b_vec
-    self.logger.info('Get embeddings and logits for sampled samples.')
-    self.logger.info("=== Finish building forward graph ===")
+    self._logger.info('Get embeddings and logits for sampled samples.')
+    self._logger.info("=== Finish building forward graph ===")
     return true_logits, sampled_logits
 
   def nce_loss(self, true_logits, sampled_logits):
@@ -335,18 +334,18 @@ class Word2Vec(object):
     nce_loss_tensor: reference to nce_loss tensor in graph
     """
 
-    self.logger.info('=== Adding NCE loss to graph ===')
-    self.logger.info('NCE loss is to discriminate between true data '
+    self._logger.info('=== Adding NCE loss to graph ===')
+    self._logger.info('NCE loss is to discriminate between true data '
                      'and random sample.')
 
     # cross-entropy for logits and labels
     opts = self._options
     true_xent = tf.nn.sigmoid_cross_entropy_with_logits(
         true_logits, tf.ones_like(true_logits))
-    self.logger.info('Cross entropy for true logits with 1.')
+    self._logger.info('Cross entropy for true logits with 1.')
     sampled_xent = tf.nn.sigmoid_cross_entropy_with_logits(
         sampled_logits, tf.zeros_like(sampled_logits))
-    self.logger.info('Cross entropy for sampled logits with 0.')
+    self._logger.info('Cross entropy for sampled logits with 0.')
 
     # NCE-loss is the sum of true and noise (sampled words)
     # Note that the true data is crossed with 1's and 
@@ -354,7 +353,7 @@ class Word2Vec(object):
     # contributions, averaged over the batch.
     nce_loss_tensor = (tf.reduce_sum(true_xent) + 
                        tf.reduce_sum(sampled_xent)) / opts.batch_size
-    self.logger.info('=== Finish adding NCE loss to graph ===')
+    self._logger.info('=== Finish adding NCE loss to graph ===')
     return nce_loss_tensor
 
   def optimize(self, loss):
@@ -369,7 +368,7 @@ class Word2Vec(object):
     None
     """
 
-    self.logger.info('=== Adding optimizer to graph ===')
+    self._logger.info('=== Adding optimizer to graph ===')
 
     # Linear learning rate decay.
     opts = self._options
@@ -377,16 +376,16 @@ class Word2Vec(object):
     lr = opts.learning_rate * tf.maximum(
         0.0001, 1.0 - tf.cast(self._words, tf.float32) / words_to_train)
     self._lr = lr
-    self.logger.info('Add learning rate node.')
+    self._logger.info('Add learning rate node.')
     optimizer = tf.train.GradientDescentOptimizer(lr)
     # TODO: Set optimizer in config class
-    self.logger.info('Using Gradient Descent Optimizer.')
+    self._logger.info('Using Gradient Descent Optimizer.')
     train = optimizer.minimize(loss,
                                global_step = self.global_step,
                                gate_gradients = optimizer.GATE_NONE)
     self._train = train
 
-    self.logger.info('=== Finish adding optimizer to graph ===')
+    self._logger.info('=== Finish adding optimizer to graph ===')
     
   def build_eval_graph(self):
     """Build graph for analogy evaluation.
@@ -444,7 +443,7 @@ class Word2Vec(object):
     """Build the full graph for word2vec model.
     """
 
-    self.logger.info('=== Building tensorflow graph ===')
+    self._logger.info('=== Building tensorflow graph ===')
 
     opts = self._options
     # The training data. A text file.
@@ -490,9 +489,9 @@ class Word2Vec(object):
     print("Data file: ", opts.train_data)
     print("Vocab size: ", opts.vocab_size - 1, " + UNK")
     print("Words per epoch: ", opts.words_per_epoch)
-    self.logger.info('Data file: %s' % opts.train_data)
-    self.logger.info('Vocab size: %d + UNK' % opts.vocab_size - 1)
-    self.logger.info('Words per epoch: %d' % opts.words_per_epoch)
+    self._logger.info('Data file: %s' % opts.train_data)
+    self._logger.info('Vocab size: %d + UNK' % opts.vocab_size - 1)
+    self._logger.info('Words per epoch: %d' % opts.words_per_epoch)
 
     self._examples = examples
     self._labels = labels
@@ -506,16 +505,16 @@ class Word2Vec(object):
     self._loss = loss
     self.optimize(loss)
 
-    self.logger.info('Initialize all variables.')
+    self._logger.info('Initialize all variables.')
     tf.initialize_all_variables().run()
     
     # Use for saving and restoring variables
-    self.logger.info('Add tensorflow saver.')
+    self._logger.info('Add tensorflow saver.')
     self.saver = tf.train.Saver() 
 
   def save_vocab(self):
     """Save the vocabulary to a file so the model can be reloaded."""
-    self.logger.info('Saving vocabulary to file.'
+    self._logger.info('Saving vocabulary to file.'
                      '\nFile name: %s'
                      '\nFile format: word-word_count.' % opts.save_path+'vocab.txt')
     opts = self._options
@@ -525,20 +524,22 @@ class Word2Vec(object):
                              opts.vocab_counts[i]))
 
   def _train_thread_body(self):
+    # Logging 
+    logging.basicConfig(filename=FLAGS.log_file, format='%(asctime)s %(message)s')
     # The comma make initial_epoch a tuple (initial_epoch,)
     initial_epoch, = self._session.run([self._epoch])
-    self.logger.info('Getting first epoch number.')
+    self._logger.info('Getting first epoch number.')
     while True:
       _, epoch = self._session.run([self._train, self._epoch])
       if epoch != initial_epoch:
-        self.logger.info('Continue to train next epoch.')
+        self._logger.info('Continue to train next epoch.')
         break
-      self.logger.info('Returned to first epoch. End training.')
+      self._logger.info('Returned to first epoch. End training.')
 
   def train(self):
     """Train step for the model."""
     
-    self.logger.info('Start training step.')
+    self._logger.info('Start training step.')
     
     opts = self._options
     
@@ -565,7 +566,7 @@ class Word2Vec(object):
       last_words, last_time, rate = words, now, (words - last_words) / (now - last_time)
       print("Epoch %4d Step %8d: lr = %5.3f loss = %6.2f words/sec = %8.0f\r" %
             (epoch, step, lr, loss, rate), end="")
-      self.logger.info('Epoch %4d Step %8d: lr = %5.3f loss = %6.2f words/sec = %8.0f\r' %
+      self._logger.info('Epoch %4d Step %8d: lr = %5.3f loss = %6.2f words/sec = %8.0f\r' %
             (epoch, step, lr, loss, rate))
       sys.stdout.flush()
       if now - last_summary_time > opts.summary_interval:
@@ -618,7 +619,7 @@ class Word2Vec(object):
     print()
     print("Eval %4d/%d accuracy = %4.1f%%" % (correct, total,
                                               correct * 100.0 / total))
-    self.logger.info('Eval %4d/%d accuracy = %4.1f%%' % (correct, total,
+    self._logger.info('Eval %4d/%d accuracy = %4.1f%%' % (correct, total,
                                               correct * 100.0 / total))
   
   def analogy(self, w0, w1, w2):
