@@ -426,6 +426,36 @@ class Word2Vec(object):
                                  window_size=opts.window_size,
                                  min_count=opts.min_count,
                                  subsample=opts.subsample)
+    """ NOTE: gen_word2vec is a wrapper around C++ operations.
+    skipgram(filename, batch_size, window_size, 
+             min_count=None, subsample=None, name=None)
+    Args:
+      filename: A `string`. The corpus's text file name.
+      batch_size: An `int`. The size of produced batch.
+      window_size: An optional `int`. The number of words
+                   to predict to the left and right of the target.
+      min_count: An optional `int`. The minimum number of 
+                 word occurrences for it to be included in
+                 the vocabulary.
+      subsample: An optional `float`. Threshold for word
+                 occurence. Words that appear with higher
+                 frequency will be randomly down-sampled.
+      name: An optional name for the operation.
+
+    Returns:
+      A tuple of `Tensor` objects:
+        (vocab_word, vocab_freq, words_per_epoch, 
+         current_epoch, total_words_processed, examples, labels)
+      vocab_word: A `Tensor` of type `string`. A vector of words in the corpus.
+      vocab_freq: A `Tensor` of type `int32`. Frequencies of words. Sorted in
+                  non-ascending order.
+      words_per_epoch: A `Tensor` of type `int32`. The current epoch number.
+      current_epoch: A `Tensor` of type `int32`. The current epoch number.
+      total_words_processed: A `Tensor` of type `int64`. The total number of
+                             words processed so far.
+      examples: A `Tensor` of type `int32`. A vector of word ids.
+      labels: A `Tensor` of type `int32`. A vector of word ids.
+    """
     (opts.vocab_words, opts.vocab_counts,
      opts.words_per_epoch) = self._session.run([words, counts, words_per_epoch])
     opts.vocab_size = len(opts.vocab_words)
