@@ -280,18 +280,19 @@ class Word2Vec(object):
         range_max = opts.vocab_size,
         distortion = 0.75,
         unigrams = opts.vocab_counts.tolist()))
-    self.logger.info('Negative sampling generation.'
+    self.logger.info('Negative sampling generation. Only care about sampled_ids.'
+                     '\nType: tf.nn.fixed_unigram_candidate_sampler'
                      '\nTrue sample: %d.'
                      '\nNumber of sampled: %d.'
                      '\nUnique sample: True.'
                      '\nMaximum range: %d.'
                      '\nSampling distribution distortion: %d.'
-                     '\nUnigrams: list of vocab_counts' 
+                     '\nUnigrams dist.: list of vocab_counts' 
                      % (1, opts_num_samples, opts.vocab_size, 0.75))
 
     # Embeddings for examples: [batch_size, emb_dim]
     example_emb = tf.nn.embedding_lookup(emb, examples)
-    self.logger.info('Extract embedding for examples.')
+    self.logger.info('Extract embeddings for examples.')
 
     # Weights for labels: [batch_size, emb_dim]
     true_w = tf.nn.embedding_lookup(sm_w_t, labels)
@@ -302,9 +303,13 @@ class Word2Vec(object):
     sampled_w = tf.nn.embedding_lookup(sm_w_t, sampled_ids)
     # Biases for sampled ids: [num_sampled, 1]
     sampled_b = tf.nn.embedding_lookup(sm_b, sampled_ids)
+    self.logger.info('Extract softmax weights'
+                     ' and biases for sampled instances.')
     
     # True logits: [batch_size, 1]
     true_logits = tf.reduce_sum(tf.mul(example_emb, true_w), 1) + true_b
+    self.logger.info('Multiply example embeddings with '
+                     'labels softmax weights to get logits.')
 
     # Sampled logits: [batch_size, num_sampled]
     # Replicate sampled noise labels for all examples in the batch
@@ -313,6 +318,7 @@ class Word2Vec(object):
     sampled_logits = tf.matmul(example_emb,
                                sampled_w,
                                transpose_b = True) + sampled_b_vec
+    self.logger.info('Get embeddings and logits for sampled samples.')
     self.logger.info("=== Finish building forward graph ===")
     return true_logits, sampled_logits
 
@@ -328,17 +334,27 @@ class Word2Vec(object):
     -------
     nce_loss_tensor: reference to nce_loss tensor in graph
     """
+
+    self.logger.info('=== Adding NCE loss to graph ===')
+    self.logger.info('NCE loss is to discriminate between true data '
+                     'and random sample.')
+
     # cross-entropy for logits and labels
     opts = self._options
     true_xent = tf.nn.sigmoid_cross_entropy_with_logits(
         true_logits, tf.ones_like(true_logits))
+    self.logger.info('Cross entropy for true logits with 1.')
     sampled_xent = tf.nn.sigmoid_cross_entropy_with_logits(
         sampled_logits, tf.zeros_like(sampled_logits))
+    self.logger.info('Cross entropy for sampled logits with 0.')
 
     # NCE-loss is the sum of true and noise (sampled words)
+    # Note that the true data is crossed with 1's and 
+    # sampled data is crossed with 0's.
     # contributions, averaged over the batch.
     nce_loss_tensor = (tf.reduce_sum(true_xent) + 
                        tf.reduce_sum(sampled_xent)) / opts.batch_size
+    self.logger.info('=== Finish adding NCE loss to graph ===')
     return nce_loss_tensor
 
   def optimize(self, loss):
@@ -352,6 +368,9 @@ class Word2Vec(object):
     -------
     None
     """
+
+    self.logger.info('=== Adding optimizer to graph ===')
+
     # Linear learning rate decay.
     opts = self._options
     words_to_train = float(opts.words_per_epoch * opts.epochs_to_train)
