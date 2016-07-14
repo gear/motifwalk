@@ -650,7 +650,7 @@ class Word2Vec(object):
     IPython.start_ipython(argv=[], user_ns = user_ns)
 
 def main(_):
-  logging.basicConfig(filename=FLAGS.log_file, format='%(asctime)s %(message)s')
+  logging.basicConfig(filename=FLAGS.log_file)
   """Train a word2vec model."""
   if not FLAGS.train_data or not FLAGS.eval_data or not FLAGS.save_path:
     print("--train_data --eval_data and --save_path must be specified.")
