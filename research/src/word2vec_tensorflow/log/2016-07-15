@@ -190,3 +190,67 @@
 2016-07-15 21:13:42,638 Checkpoint interval: 600
 2016-07-15 21:13:42,638 Save path for model: ./saved_model
 2016-07-15 21:13:42,638 Evaluation. Evaluation filename: ./data/w2v_valid_country_capital.txt
+2016-07-15 21:16:48,497 Log file: ./log/2016-07-15
+2016-07-15 21:16:48,497 Embedding size: 200
+2016-07-15 21:16:48,497 Training. Training data filename: ./data/text8.zip
+2016-07-15 21:16:48,497 Training. Training number of samples for negative sampling: 100
+2016-07-15 21:16:48,497 Training. Initial learning rate: 0.200000
+2016-07-15 21:16:48,497 Training. Number of epochs: 5
+2016-07-15 21:16:48,497 Training. Number of concurrent process: 12
+2016-07-15 21:16:48,497 Training. Mini batch size: 16
+2016-07-15 21:16:48,497 Skipgram. Window size: 5
+2016-07-15 21:16:48,497 Skipgram. Number of occurence for word to be in vocabulary: 5
+2016-07-15 21:16:48,497 Skipgram. Subsample for word occurrence: 0.001000
+2016-07-15 21:16:48,497 Statistics Interval: 5
+2016-07-15 21:16:48,498 Summary Interval: 5
+2016-07-15 21:16:48,498 Checkpoint interval: 600
+2016-07-15 21:16:48,498 Save path for model: ./saved_model
+2016-07-15 21:16:48,498 Evaluation. Evaluation filename: ./data/w2v_valid_country_capital.txt
+2016-07-15 21:17:57,525 Log file: ./log/2016-07-15
+2016-07-15 21:17:57,525 Embedding size: 200
+2016-07-15 21:17:57,525 Training. Training data filename: ./data/text8.zip
+2016-07-15 21:17:57,525 Training. Training number of samples for negative sampling: 100
+2016-07-15 21:17:57,525 Training. Initial learning rate: 0.200000
+2016-07-15 21:17:57,526 Training. Number of epochs: 5
+2016-07-15 21:17:57,526 Training. Number of concurrent process: 12
+2016-07-15 21:17:57,526 Training. Mini batch size: 16
+2016-07-15 21:17:57,526 Skipgram. Window size: 5
+2016-07-15 21:17:57,526 Skipgram. Number of occurence for word to be in vocabulary: 5
+2016-07-15 21:17:57,526 Skipgram. Subsample for word occurrence: 0.001000
+2016-07-15 21:17:57,526 Statistics Interval: 5
+2016-07-15 21:17:57,526 Summary Interval: 5
+2016-07-15 21:17:57,526 Checkpoint interval: 600
+2016-07-15 21:17:57,526 Save path for model: ./saved_model
+2016-07-15 21:17:57,526 Evaluation. Evaluation filename: ./data/w2v_valid_country_capital.txt
+2016-07-15 21:18:58,374 Log file: ./log/2016-07-15
+2016-07-15 21:18:58,374 Embedding size: 200
+2016-07-15 21:18:58,374 Training. Training data filename: ./data/text8.zip
+2016-07-15 21:18:58,374 Training. Training number of samples for negative sampling: 100
+2016-07-15 21:18:58,374 Training. Initial learning rate: 0.200000
+2016-07-15 21:18:58,374 Training. Number of epochs: 5
+2016-07-15 21:18:58,374 Training. Number of concurrent process: 12
+2016-07-15 21:18:58,374 Training. Mini batch size: 16
+2016-07-15 21:18:58,374 Skipgram. Window size: 5
+2016-07-15 21:18:58,374 Skipgram. Number of occurence for word to be in vocabulary: 5
+2016-07-15 21:18:58,374 Skipgram. Subsample for word occurrence: 0.001000
+2016-07-15 21:18:58,374 Statistics Interval: 5
+2016-07-15 21:18:58,374 Summary Interval: 5
+2016-07-15 21:18:58,374 Checkpoint interval: 600
+2016-07-15 21:18:58,374 Save path for model: ./saved_model
+2016-07-15 21:18:58,374 Evaluation. Evaluation filename: ./data/w2v_valid_country_capital.txt
+2016-07-15 21:19:15,252 Log file: ./log/2016-07-15
+2016-07-15 21:19:15,252 Embedding size: 200
+2016-07-15 21:19:15,252 Training. Training data filename: ./data/text8
+2016-07-15 21:19:15,252 Training. Training number of samples for negative sampling: 100
+2016-07-15 21:19:15,252 Training. Initial learning rate: 0.200000
+2016-07-15 21:19:15,252 Training. Number of epochs: 5
+2016-07-15 21:19:15,252 Training. Number of concurrent process: 12
+2016-07-15 21:19:15,252 Training. Mini batch size: 16
+2016-07-15 21:19:15,252 Skipgram. Window size: 5
+2016-07-15 21:19:15,252 Skipgram. Number of occurence for word to be in vocabulary: 5
+2016-07-15 21:19:15,252 Skipgram. Subsample for word occurrence: 0.001000
+2016-07-15 21:19:15,252 Statistics Interval: 5
+2016-07-15 21:19:15,252 Summary Interval: 5
+2016-07-15 21:19:15,252 Checkpoint interval: 600
+2016-07-15 21:19:15,252 Save path for model: ./saved_model
+2016-07-15 21:19:15,252 Evaluation. Evaluation filename: ./data/w2v_valid_country_capital.txt
