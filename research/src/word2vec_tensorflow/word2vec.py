@@ -162,6 +162,7 @@ class Word2Vec(object):
   
   def __init__(self, options, session):
     self._options = options
+    self._logger = logging.getLogger("WORD2VEC")
     self._session = session
     self._word2id = {}
     self._id2word = []
@@ -169,7 +170,8 @@ class Word2Vec(object):
     self.build_eval_graph()
     self.save_vocab()
     self._read_analogies()
-    self._logger = logging.getLogger("WORD2VEC")
+    print("creating logger")
+    print(self._logger)
 
   def _read_analogies(self):
     """Reads through the analogy question file and
@@ -252,7 +254,7 @@ class Word2Vec(object):
     self._logger.info('Add softmax bias to the graph.'
                      '\nType: tf.Variable.'
                      '\nInit using: tf.zeros.'
-                     '\nShape: [%d;%d]' % (opts.vocab_size))
+                     '\nShape: [%d]' % (opts.vocab_size))
     
     # Global step: scalar, i.e., shape [].
     self.global_step = tf.Variable(0, name="global_step")
@@ -287,7 +289,7 @@ class Word2Vec(object):
                      '\nMaximum range: %d.'
                      '\nSampling distribution distortion: %d.'
                      '\nUnigrams dist.: list of vocab_counts' 
-                     % (1, opts_num_samples, opts.vocab_size, 0.75))
+                     % (1, opts.num_samples, opts.vocab_size, 0.75))
 
     # Embeddings for examples: [batch_size, emb_dim]
     example_emb = tf.nn.embedding_lookup(emb, examples)
@@ -490,7 +492,7 @@ class Word2Vec(object):
     print("Vocab size: ", opts.vocab_size - 1, " + UNK")
     print("Words per epoch: ", opts.words_per_epoch)
     self._logger.info('Data file: %s' % opts.train_data)
-    self._logger.info('Vocab size: %d + UNK' % opts.vocab_size - 1)
+    self._logger.info('Vocab size: %d + UNK' % (opts.vocab_size - 1))
     self._logger.info('Words per epoch: %d' % opts.words_per_epoch)
 
     self._examples = examples
@@ -514,10 +516,10 @@ class Word2Vec(object):
 
   def save_vocab(self):
     """Save the vocabulary to a file so the model can be reloaded."""
+    opts = self._options
     self._logger.info('Saving vocabulary to file.'
                      '\nFile name: %s'
                      '\nFile format: word-word_count.' % opts.save_path+'vocab.txt')
-    opts = self._options
     with open(os.path.join(opts.save_path, "vocab.txt"), "w") as f:
       for i in xrange(opts.vocab_size):
         f.write("%s %d\n" % (tf.compat.as_text(opts.vocab_words[i]),
