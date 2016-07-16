@@ -42,7 +42,6 @@ class Graph(_dict):
     
     Parameters
     ----------
-      self: The object itself.
       name: Name string of the graph. (optional)
       directed: Directed or undirected. (optional)
 
@@ -76,21 +75,27 @@ class Graph(_dict):
     
     Parameters
     ----------
-      node_ids: list of nodes ids in the subgraph
+      node_list: list of nodes ids in the subgraph
 
     Returns
     -------
       subgraph: A copy of Graph contains only nodes
                 in node_ids list.
     """
-    subgraph = Graph()
+    subgraph = Graph(directed=self._directed)
     for node_id in node_list:
       if node_id in self:
         subgraph[node_id] = [n for n in self[node_id] if n in node_list]
     return subgraph
   
-  def volume(self):
-    
+  def volume(self, node_list = None):
+    """
+    Return volume (inner edges count) of the subgraph
+    created by node_list.
+
+    Parameters
+    ----------
+      node_list 
 
   
 
