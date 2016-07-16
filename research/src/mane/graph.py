@@ -27,15 +27,15 @@ __author__ = "Hoang Nguyen"
 __email__ = "hoangnt@ai.cs.titech.ac.jp"
 
 # >>> BEGIN CLASS 'node' <<<
-class node(default_dict):
+class node(dict):
 
 # === END CLASS 'node' ===
 
 # >>> BEGIN CLASS 'graph' <<<
-class Graph(default_dict):
-  """Graph contains nodes stored as hash map
+class Graph(_dict):
+  """Graph is a dictionary contains nodes
   """
-  def __init__(self):
+  def __init__(self, directed=False, name='graph'):
     """
     Create a graph as default_dict with default
     mapping to an empty list.
@@ -43,6 +43,8 @@ class Graph(default_dict):
     Parameters
     ----------
       self: The object itself.
+      name: Name string of the graph. (optional)
+      directed: Directed or undirected. (optional)
 
     Returns
     -------
@@ -53,16 +55,21 @@ class Graph(default_dict):
       Create a Graph object which is a default
       dictionary with default factor generate
       a dictionary mapping ids to node instances
+
+    Examples
+    --------
+      citeseer = Graph()
+      citeseer[20] = [1,3,4]
     """
-    super(Graph, self).__init__(dict)
+    super(Graph, self).__init__()
+    self._name = name
+    self._logger = logging.getLogger(name)
+    self._directed = directed
 
   def nodes(self):
     return self.keys() 
 
-  def iterator_nodes(self):
-    return self.iteritems()
-
-  def subgraph(self, node_ids = []):
+  def subgraph(self, node_list = []):
     """
     Create and return a Graph instance as a subgraph
     of this Graph object.
@@ -77,13 +84,14 @@ class Graph(default_dict):
                 in node_ids list.
     """
     subgraph = Graph()
-    for n in node_ids:
-      if n in self:
-        subgraph[n] = self.getnode(x)
+    for node_id in node_list:
+      if node_id in self:
+        subgraph[node_id] = [n for n in self[node_id] if n in node_list]
+    return subgraph
+  
+  def volume(self):
+    
 
   
 
 # === END CLASS 'graph' ===
-
-
-
