@@ -64,9 +64,20 @@ class Graph(_dict):
     self._name = name
     self._logger = logging.getLogger(name)
     self._directed = directed
+    self._edges = None
 
   def nodes(self):
-    return self.keys() 
+    """Return list of nodes in graph
+    """
+    return self.keys()
+      
+
+  # TODO: Implement edges
+  def edges(self):
+    """Return sets of edges tuples in graph
+    """
+    return None
+    
 
   def subgraph(self, node_list = []):
     """
@@ -95,8 +106,19 @@ class Graph(_dict):
 
     Parameters
     ----------
-      node_list 
-
+      node_list: list of nodes ids in the subgraph
   
+    Returns
+    -------
+      volume: inner edges count of the subgraph
+    """
+    subgraph = self.subgraph(node_list)
+    count = 0
+    for node in subgraph:
+      count += len(subgraph[node])
+    if self.directed:
+      return count // 2
+    else:
+      return count
 
 # === END CLASS 'graph' ===
