@@ -1,0 +1,256 @@
+2016-07-15 20:56:51,346 Log file: ./log/2016-07-15
+2016-07-15 20:56:51,346 Embedding size: 200
+2016-07-15 20:56:51,346 Training. Training data filename: ./data/text8.zip
+2016-07-15 20:56:51,346 Training. Training number of samples for negative sampling: 100
+2016-07-15 20:56:51,346 Training. Initial learning rate: 0.200000
+2016-07-15 20:56:51,346 Training. Number of epochs: 15
+2016-07-15 20:56:51,346 Training. Number of concurrent process: 12
+2016-07-15 20:56:51,346 Training. Mini batch size: 16
+2016-07-15 20:56:51,346 Skipgram. Window size: 5
+2016-07-15 20:56:51,346 Skipgram. Number of occurence for word to be in vocabulary: 5
+2016-07-15 20:56:51,346 Skipgram. Subsample for word occurrence: 0.001000
+2016-07-15 20:56:51,346 Statistics Interval: 5
+2016-07-15 20:56:51,346 Summary Interval: 5
+2016-07-15 20:56:51,346 Checkpoint interval: 600
+2016-07-15 20:56:51,346 Save path for model: ./saved_model
+2016-07-15 20:56:51,346 Evaluation. Evaluation filename: ./data/w2v_valid_country_capital.txt
+2016-07-15 20:59:01,014 Log file: ./log/2016-07-15
+2016-07-15 20:59:01,014 Embedding size: 200
+2016-07-15 20:59:01,014 Training. Training data filename: ./data/text8.zip
+2016-07-15 20:59:01,014 Training. Training number of samples for negative sampling: 100
+2016-07-15 20:59:01,014 Training. Initial learning rate: 0.200000
+2016-07-15 20:59:01,014 Training. Number of epochs: 15
+2016-07-15 20:59:01,014 Training. Number of concurrent process: 12
+2016-07-15 20:59:01,015 Training. Mini batch size: 16
+2016-07-15 20:59:01,015 Skipgram. Window size: 5
+2016-07-15 20:59:01,015 Skipgram. Number of occurence for word to be in vocabulary: 5
+2016-07-15 20:59:01,015 Skipgram. Subsample for word occurrence: 0.001000
+2016-07-15 20:59:01,015 Statistics Interval: 5
+2016-07-15 20:59:01,015 Summary Interval: 5
+2016-07-15 20:59:01,015 Checkpoint interval: 600
+2016-07-15 20:59:01,015 Save path for model: ./saved_model
+2016-07-15 20:59:01,015 Evaluation. Evaluation filename: ./data/w2v_valid_country_capital.txt
+2016-07-15 20:59:46,941 Log file: ./log/2016-07-15
+2016-07-15 20:59:46,941 Embedding size: 200
+2016-07-15 20:59:46,941 Training. Training data filename: ./data/text8.zip
+2016-07-15 20:59:46,942 Training. Training number of samples for negative sampling: 100
+2016-07-15 20:59:46,942 Training. Initial learning rate: 0.200000
+2016-07-15 20:59:46,942 Training. Number of epochs: 15
+2016-07-15 20:59:46,942 Training. Number of concurrent process: 12
+2016-07-15 20:59:46,942 Training. Mini batch size: 16
+2016-07-15 20:59:46,942 Skipgram. Window size: 5
+2016-07-15 20:59:46,942 Skipgram. Number of occurence for word to be in vocabulary: 5
+2016-07-15 20:59:46,942 Skipgram. Subsample for word occurrence: 0.001000
+2016-07-15 20:59:46,942 Statistics Interval: 5
+2016-07-15 20:59:46,942 Summary Interval: 5
+2016-07-15 20:59:46,942 Checkpoint interval: 600
+2016-07-15 20:59:46,942 Save path for model: ./saved_model
+2016-07-15 20:59:46,942 Evaluation. Evaluation filename: ./data/w2v_valid_country_capital.txt
+2016-07-15 21:00:28,456 Log file: ./log/2016-07-15
+2016-07-15 21:00:28,456 Embedding size: 200
+2016-07-15 21:00:28,456 Training. Training data filename: ./data/text8.zip
+2016-07-15 21:00:28,456 Training. Training number of samples for negative sampling: 100
+2016-07-15 21:00:28,456 Training. Initial learning rate: 0.200000
+2016-07-15 21:00:28,456 Training. Number of epochs: 15
+2016-07-15 21:00:28,456 Training. Number of concurrent process: 12
+2016-07-15 21:00:28,456 Training. Mini batch size: 16
+2016-07-15 21:00:28,456 Skipgram. Window size: 5
+2016-07-15 21:00:28,456 Skipgram. Number of occurence for word to be in vocabulary: 5
+2016-07-15 21:00:28,456 Skipgram. Subsample for word occurrence: 0.001000
+2016-07-15 21:00:28,456 Statistics Interval: 5
+2016-07-15 21:00:28,456 Summary Interval: 5
+2016-07-15 21:00:28,456 Checkpoint interval: 600
+2016-07-15 21:00:28,456 Save path for model: ./saved_model
+2016-07-15 21:00:28,456 Evaluation. Evaluation filename: ./data/w2v_valid_country_capital.txt
+2016-07-15 21:01:25,611 Log file: ./log/2016-07-15
+2016-07-15 21:01:25,611 Embedding size: 200
+2016-07-15 21:01:25,611 Training. Training data filename: ./data/text8.zip
+2016-07-15 21:01:25,611 Training. Training number of samples for negative sampling: 100
+2016-07-15 21:01:25,611 Training. Initial learning rate: 0.200000
+2016-07-15 21:01:25,612 Training. Number of epochs: 15
+2016-07-15 21:01:25,612 Training. Number of concurrent process: 12
+2016-07-15 21:01:25,612 Training. Mini batch size: 16
+2016-07-15 21:01:25,612 Skipgram. Window size: 5
+2016-07-15 21:01:25,612 Skipgram. Number of occurence for word to be in vocabulary: 5
+2016-07-15 21:01:25,612 Skipgram. Subsample for word occurrence: 0.001000
+2016-07-15 21:01:25,612 Statistics Interval: 5
+2016-07-15 21:01:25,612 Summary Interval: 5
+2016-07-15 21:01:25,612 Checkpoint interval: 600
+2016-07-15 21:01:25,612 Save path for model: ./saved_model
+2016-07-15 21:01:25,612 Evaluation. Evaluation filename: ./data/w2v_valid_country_capital.txt
+2016-07-15 21:04:37,866 Log file: ./log/2016-07-15
+2016-07-15 21:04:37,866 Embedding size: 200
+2016-07-15 21:04:37,866 Training. Training data filename: ./data/text8.zip
+2016-07-15 21:04:37,866 Training. Training number of samples for negative sampling: 100
+2016-07-15 21:04:37,866 Training. Initial learning rate: 0.200000
+2016-07-15 21:04:37,866 Training. Number of epochs: 15
+2016-07-15 21:04:37,867 Training. Number of concurrent process: 12
+2016-07-15 21:04:37,867 Training. Mini batch size: 16
+2016-07-15 21:04:37,867 Skipgram. Window size: 5
+2016-07-15 21:04:37,867 Skipgram. Number of occurence for word to be in vocabulary: 5
+2016-07-15 21:04:37,867 Skipgram. Subsample for word occurrence: 0.001000
+2016-07-15 21:04:37,867 Statistics Interval: 5
+2016-07-15 21:04:37,867 Summary Interval: 5
+2016-07-15 21:04:37,867 Checkpoint interval: 600
+2016-07-15 21:04:37,867 Save path for model: ./saved_model
+2016-07-15 21:04:37,867 Evaluation. Evaluation filename: ./data/w2v_valid_country_capital.txt
+2016-07-15 21:05:18,363 Log file: ./log/2016-07-15
+2016-07-15 21:05:18,363 Embedding size: 200
+2016-07-15 21:05:18,363 Training. Training data filename: ./data/text8.zip
+2016-07-15 21:05:18,363 Training. Training number of samples for negative sampling: 100
+2016-07-15 21:05:18,363 Training. Initial learning rate: 0.200000
+2016-07-15 21:05:18,363 Training. Number of epochs: 15
+2016-07-15 21:05:18,363 Training. Number of concurrent process: 12
+2016-07-15 21:05:18,363 Training. Mini batch size: 16
+2016-07-15 21:05:18,363 Skipgram. Window size: 5
+2016-07-15 21:05:18,363 Skipgram. Number of occurence for word to be in vocabulary: 5
+2016-07-15 21:05:18,364 Skipgram. Subsample for word occurrence: 0.001000
+2016-07-15 21:05:18,364 Statistics Interval: 5
+2016-07-15 21:05:18,364 Summary Interval: 5
+2016-07-15 21:05:18,364 Checkpoint interval: 600
+2016-07-15 21:05:18,364 Save path for model: ./saved_model
+2016-07-15 21:05:18,364 Evaluation. Evaluation filename: ./data/w2v_valid_country_capital.txt
+2016-07-15 21:05:47,716 Log file: ./log/2016-07-15
+2016-07-15 21:05:47,716 Embedding size: 200
+2016-07-15 21:05:47,716 Training. Training data filename: ./data/text8.zip
+2016-07-15 21:05:47,716 Training. Training number of samples for negative sampling: 100
+2016-07-15 21:05:47,716 Training. Initial learning rate: 0.200000
+2016-07-15 21:05:47,716 Training. Number of epochs: 15
+2016-07-15 21:05:47,716 Training. Number of concurrent process: 12
+2016-07-15 21:05:47,716 Training. Mini batch size: 16
+2016-07-15 21:05:47,716 Skipgram. Window size: 5
+2016-07-15 21:05:47,716 Skipgram. Number of occurence for word to be in vocabulary: 5
+2016-07-15 21:05:47,716 Skipgram. Subsample for word occurrence: 0.001000
+2016-07-15 21:05:47,717 Statistics Interval: 5
+2016-07-15 21:05:47,717 Summary Interval: 5
+2016-07-15 21:05:47,717 Checkpoint interval: 600
+2016-07-15 21:05:47,717 Save path for model: ./saved_model
+2016-07-15 21:05:47,717 Evaluation. Evaluation filename: ./data/w2v_valid_country_capital.txt
+2016-07-15 21:06:05,704 Log file: ./log/2016-07-15
+2016-07-15 21:06:05,704 Embedding size: 200
+2016-07-15 21:06:05,704 Training. Training data filename: ./data/text8.zip
+2016-07-15 21:06:05,705 Training. Training number of samples for negative sampling: 100
+2016-07-15 21:06:05,705 Training. Initial learning rate: 0.200000
+2016-07-15 21:06:05,705 Training. Number of epochs: 15
+2016-07-15 21:06:05,705 Training. Number of concurrent process: 12
+2016-07-15 21:06:05,705 Training. Mini batch size: 16
+2016-07-15 21:06:05,705 Skipgram. Window size: 5
+2016-07-15 21:06:05,705 Skipgram. Number of occurence for word to be in vocabulary: 5
+2016-07-15 21:06:05,705 Skipgram. Subsample for word occurrence: 0.001000
+2016-07-15 21:06:05,705 Statistics Interval: 5
+2016-07-15 21:06:05,705 Summary Interval: 5
+2016-07-15 21:06:05,705 Checkpoint interval: 600
+2016-07-15 21:06:05,705 Save path for model: ./saved_model
+2016-07-15 21:06:05,705 Evaluation. Evaluation filename: ./data/w2v_valid_country_capital.txt
+2016-07-15 21:07:06,995 Log file: ./log/2016-07-15
+2016-07-15 21:07:06,995 Embedding size: 200
+2016-07-15 21:07:06,995 Training. Training data filename: ./data/text8.zip
+2016-07-15 21:07:06,995 Training. Training number of samples for negative sampling: 100
+2016-07-15 21:07:06,995 Training. Initial learning rate: 0.200000
+2016-07-15 21:07:06,995 Training. Number of epochs: 1
+2016-07-15 21:07:06,995 Training. Number of concurrent process: 12
+2016-07-15 21:07:06,995 Training. Mini batch size: 16
+2016-07-15 21:07:06,995 Skipgram. Window size: 5
+2016-07-15 21:07:06,995 Skipgram. Number of occurence for word to be in vocabulary: 5
+2016-07-15 21:07:06,995 Skipgram. Subsample for word occurrence: 0.001000
+2016-07-15 21:07:06,995 Statistics Interval: 5
+2016-07-15 21:07:06,995 Summary Interval: 5
+2016-07-15 21:07:06,995 Checkpoint interval: 600
+2016-07-15 21:07:06,995 Save path for model: ./saved_model
+2016-07-15 21:07:06,995 Evaluation. Evaluation filename: ./data/w2v_valid_country_capital.txt
+2016-07-15 21:07:26,432 Log file: ./log/2016-07-15
+2016-07-15 21:07:26,432 Embedding size: 200
+2016-07-15 21:07:26,432 Training. Training data filename: ./data/text8.zip
+2016-07-15 21:07:26,432 Training. Training number of samples for negative sampling: 100
+2016-07-15 21:07:26,432 Training. Initial learning rate: 0.200000
+2016-07-15 21:07:26,432 Training. Number of epochs: 1
+2016-07-15 21:07:26,432 Training. Number of concurrent process: 12
+2016-07-15 21:07:26,432 Training. Mini batch size: 16
+2016-07-15 21:07:26,432 Skipgram. Window size: 5
+2016-07-15 21:07:26,432 Skipgram. Number of occurence for word to be in vocabulary: 5
+2016-07-15 21:07:26,432 Skipgram. Subsample for word occurrence: 0.001000
+2016-07-15 21:07:26,432 Statistics Interval: 5
+2016-07-15 21:07:26,432 Summary Interval: 5
+2016-07-15 21:07:26,432 Checkpoint interval: 600
+2016-07-15 21:07:26,432 Save path for model: ./saved_model
+2016-07-15 21:07:26,432 Evaluation. Evaluation filename: ./data/w2v_valid_country_capital.txt
+2016-07-15 21:13:42,638 Log file: ./log/2016-07-15
+2016-07-15 21:13:42,638 Embedding size: 200
+2016-07-15 21:13:42,638 Training. Training data filename: ./data/text8.zip
+2016-07-15 21:13:42,638 Training. Training number of samples for negative sampling: 100
+2016-07-15 21:13:42,638 Training. Initial learning rate: 0.200000
+2016-07-15 21:13:42,638 Training. Number of epochs: 5
+2016-07-15 21:13:42,638 Training. Number of concurrent process: 12
+2016-07-15 21:13:42,638 Training. Mini batch size: 16
+2016-07-15 21:13:42,638 Skipgram. Window size: 5
+2016-07-15 21:13:42,638 Skipgram. Number of occurence for word to be in vocabulary: 5
+2016-07-15 21:13:42,638 Skipgram. Subsample for word occurrence: 0.001000
+2016-07-15 21:13:42,638 Statistics Interval: 5
+2016-07-15 21:13:42,638 Summary Interval: 5
+2016-07-15 21:13:42,638 Checkpoint interval: 600
+2016-07-15 21:13:42,638 Save path for model: ./saved_model
+2016-07-15 21:13:42,638 Evaluation. Evaluation filename: ./data/w2v_valid_country_capital.txt
+2016-07-15 21:16:48,497 Log file: ./log/2016-07-15
+2016-07-15 21:16:48,497 Embedding size: 200
+2016-07-15 21:16:48,497 Training. Training data filename: ./data/text8.zip
+2016-07-15 21:16:48,497 Training. Training number of samples for negative sampling: 100
+2016-07-15 21:16:48,497 Training. Initial learning rate: 0.200000
+2016-07-15 21:16:48,497 Training. Number of epochs: 5
+2016-07-15 21:16:48,497 Training. Number of concurrent process: 12
+2016-07-15 21:16:48,497 Training. Mini batch size: 16
+2016-07-15 21:16:48,497 Skipgram. Window size: 5
+2016-07-15 21:16:48,497 Skipgram. Number of occurence for word to be in vocabulary: 5
+2016-07-15 21:16:48,497 Skipgram. Subsample for word occurrence: 0.001000
+2016-07-15 21:16:48,497 Statistics Interval: 5
+2016-07-15 21:16:48,498 Summary Interval: 5
+2016-07-15 21:16:48,498 Checkpoint interval: 600
+2016-07-15 21:16:48,498 Save path for model: ./saved_model
+2016-07-15 21:16:48,498 Evaluation. Evaluation filename: ./data/w2v_valid_country_capital.txt
+2016-07-15 21:17:57,525 Log file: ./log/2016-07-15
+2016-07-15 21:17:57,525 Embedding size: 200
+2016-07-15 21:17:57,525 Training. Training data filename: ./data/text8.zip
+2016-07-15 21:17:57,525 Training. Training number of samples for negative sampling: 100
+2016-07-15 21:17:57,525 Training. Initial learning rate: 0.200000
+2016-07-15 21:17:57,526 Training. Number of epochs: 5
+2016-07-15 21:17:57,526 Training. Number of concurrent process: 12
+2016-07-15 21:17:57,526 Training. Mini batch size: 16
+2016-07-15 21:17:57,526 Skipgram. Window size: 5
+2016-07-15 21:17:57,526 Skipgram. Number of occurence for word to be in vocabulary: 5
+2016-07-15 21:17:57,526 Skipgram. Subsample for word occurrence: 0.001000
+2016-07-15 21:17:57,526 Statistics Interval: 5
+2016-07-15 21:17:57,526 Summary Interval: 5
+2016-07-15 21:17:57,526 Checkpoint interval: 600
+2016-07-15 21:17:57,526 Save path for model: ./saved_model
+2016-07-15 21:17:57,526 Evaluation. Evaluation filename: ./data/w2v_valid_country_capital.txt
+2016-07-15 21:18:58,374 Log file: ./log/2016-07-15
+2016-07-15 21:18:58,374 Embedding size: 200
+2016-07-15 21:18:58,374 Training. Training data filename: ./data/text8.zip
+2016-07-15 21:18:58,374 Training. Training number of samples for negative sampling: 100
+2016-07-15 21:18:58,374 Training. Initial learning rate: 0.200000
+2016-07-15 21:18:58,374 Training. Number of epochs: 5
+2016-07-15 21:18:58,374 Training. Number of concurrent process: 12
+2016-07-15 21:18:58,374 Training. Mini batch size: 16
+2016-07-15 21:18:58,374 Skipgram. Window size: 5
+2016-07-15 21:18:58,374 Skipgram. Number of occurence for word to be in vocabulary: 5
+2016-07-15 21:18:58,374 Skipgram. Subsample for word occurrence: 0.001000
+2016-07-15 21:18:58,374 Statistics Interval: 5
+2016-07-15 21:18:58,374 Summary Interval: 5
+2016-07-15 21:18:58,374 Checkpoint interval: 600
+2016-07-15 21:18:58,374 Save path for model: ./saved_model
+2016-07-15 21:18:58,374 Evaluation. Evaluation filename: ./data/w2v_valid_country_capital.txt
+2016-07-15 21:19:15,252 Log file: ./log/2016-07-15
+2016-07-15 21:19:15,252 Embedding size: 200
+2016-07-15 21:19:15,252 Training. Training data filename: ./data/text8
+2016-07-15 21:19:15,252 Training. Training number of samples for negative sampling: 100
+2016-07-15 21:19:15,252 Training. Initial learning rate: 0.200000
+2016-07-15 21:19:15,252 Training. Number of epochs: 5
+2016-07-15 21:19:15,252 Training. Number of concurrent process: 12
+2016-07-15 21:19:15,252 Training. Mini batch size: 16
+2016-07-15 21:19:15,252 Skipgram. Window size: 5
+2016-07-15 21:19:15,252 Skipgram. Number of occurence for word to be in vocabulary: 5
+2016-07-15 21:19:15,252 Skipgram. Subsample for word occurrence: 0.001000
+2016-07-15 21:19:15,252 Statistics Interval: 5
+2016-07-15 21:19:15,252 Summary Interval: 5
+2016-07-15 21:19:15,252 Checkpoint interval: 600
+2016-07-15 21:19:15,252 Save path for model: ./saved_model
+2016-07-15 21:19:15,252 Evaluation. Evaluation filename: ./data/w2v_valid_country_capital.txt
