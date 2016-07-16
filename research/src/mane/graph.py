@@ -20,8 +20,7 @@ import Motif
 
 from time import time
 
-LOGFORMAT = "%(asctime)s %(levelname)s "
-            "%(filename)s: %(lineno)s %(message)s"
+LOGFORMAT = "%(asctime)s %(levelname)s %(filename)s: %(lineno)s %(message)s"
 
 __author__ = "Hoang Nguyen"
 __email__ = "hoangnt@ai.cs.titech.ac.jp"
@@ -70,7 +69,6 @@ class Graph(_dict):
     """Return list of nodes in graph
     """
     return self.keys()
-      
 
   # TODO: Implement edges
   def edges(self):
