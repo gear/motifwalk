@@ -22,44 +22,61 @@ class ind_model(base_model):
         Let n be the number of training (both labeled and unlabeled) training instances.
         These n instances should be indexed from 1 to n - 1 in the graph with the same order in allx.
         """
+        # Pass the graph to model here
+        # This model use csr - Compressed sparse row configuration.
         self.x, self.y, self.allx, self.graph = x, y, allx, graph
+        # num_ver is the total number of verticies - this is a bad name
         self.num_ver = self.allx.shape[0]
 
     def build(self):
         """build the model. This method should be called after self.add_data.
         """
+        # Create a matrix for feature vectors of labeled training data.
         x_sym = sparse.csr_matrix('x', dtype = 'float32')
+        # Store this labeled training vector to the model
         self.x_sym = x_sym
+        # Use theano.tensor to create 2-D integer matrix for one-hot encoding for training data y
         y_sym = T.imatrix('y')
+        # TODO: Not sure the functionality of there 3 variables. g may stand for 'graph'
         gx_sym = sparse.csr_matrix('gx', dtype = 'float32')
-        gy_sym = T.ivector('gy')
-        gz_sym = T.vector('gz')
+        gy_sym = T.ivector('gy') # Integer vector
+        gz_sym = T.vector('gz') # Float vector?
 
+        # The input layer fits each input data sample 
         l_x_in = lasagne.layers.InputLayer(shape = (None, self.x.shape[1]), input_var = x_sym)
+        # TODO: Not sure the functionality of these label too. g may stand for 'graph'
         l_gx_in = lasagne.layers.InputLayer(shape = (None, self.x.shape[1]), input_var = gx_sym)
         l_gy_in = lasagne.layers.InputLayer(shape = (None, ), input_var = gy_sym)
-
+        # Create SparseLayer is the model defined in this project. TODO: Check layers.py
         l_x_1 = layers.SparseLayer(l_x_in, self.y.shape[1], nonlinearity = lasagne.nonlinearities.softmax)
         l_x_2 = layers.SparseLayer(l_x_in, self.embedding_size)
+        # Save a weight variable W for the l_x_in layer
         W = l_x_2.W
+        # Overwrite l_x_2 with a DenseLayer (a fully connected layer) 
+        # TODO: Not sure functionality of this blog.
         l_x_2 = layers.DenseLayer(l_x_2, self.y.shape[1], nonlinearity = lasagne.nonlinearities.softmax)
+        # TODO: What is use_feature - Is this in the algorithm?
         if self.use_feature:
             l_x = lasagne.layers.ConcatLayer([l_x_1, l_x_2], axis = 1)
             l_x = layers.DenseLayer(l_x, self.y.shape[1], nonlinearity = lasagne.nonlinearities.softmax)
         else:
             l_x = l_x_2
-
+        # Add layer for embedding 
         l_gx = layers.SparseLayer(l_gx_in, self.embedding_size, W = W)
+        # If using negative sampling. Defines the noise contrastive estimation loss
         if self.neg_samp > 0:
-            l_gy = lasagne.layers.EmbeddingLayer(l_gy_in, input_size = self.num_ver, output_size = self.embedding_size)
+            # TODO: Why add embedding layer here? What is embedding layer in lasagne?
+            l_gy = lasagne.layers.EmbeddingLayer(l_gy_in, input_size = self.num_ver, 
+                                                 output_size = self.embedding_size)
             l_gx = lasagne.layers.ElemwiseMergeLayer([l_gx, l_gy], T.mul)
             pgy_sym = lasagne.layers.get_output(l_gx)
             g_loss = - T.log(T.nnet.sigmoid(T.sum(pgy_sym, axis = 1) * gz_sym)).sum()
+        # Not using negative sampling. Use the crossentropy loss
         else:
             l_gx = lasagne.layers.DenseLayer(l_gx, self.num_ver, nonlinearity = lasagne.nonlinearities.softmax)
             pgy_sym = lasagne.layers.get_output(l_gx)
             g_loss = lasagne.objectives.categorical_crossentropy(pgy_sym, gy_sym).sum()
-        
+        # Save embedding and merge element layers to the model 
         self.l = [l_x, l_gx]
 
         py_sym = lasagne.layers.get_output(l_x)
@@ -191,4 +208,3 @@ class ind_model(base_model):
         returns (numpy.ndarray, #instacnes * #classes): classification probabilities for dev instances.
         """
         return self.test_fn(tx)
-
