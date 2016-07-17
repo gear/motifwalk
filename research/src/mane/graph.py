@@ -123,9 +123,9 @@ class Graph(dict):
     else:
       return count // 2
 
-  def random_walk(self, length, start_node=None, rand_seed=None, reset = 0):
+  def random_walk(self, length, start_node=None, rand_seed=None, reset = 0.0):
     """
-    Return a set of nodes in a truncated random walk.
+    Return a list of nodes in a truncated random walk.
     This function serves a comparision with our motif walk.
     Implementation similar to random walk of deepwalk model.
 
@@ -169,6 +169,29 @@ class Graph(dict):
       else:
         break
     return walk_path
+
+  def motif_walk(self, length, motif=None, start_node=None,
+                 rand_seed=None, reset = 0.0, walk_bias = 1.0):
+    """
+    Walk follow the motif pattern. 
+    
+    Parameters
+    ----------
+      length: Length of the walk generated.
+      motif: Motif object defines the walk pattern. None means
+             the walk will be in undirected triangle pattern for
+             undirected graph and bipartite pattern for directed
+             graph. (Optional)
+      start_node: Node to start the random walk. None means a random
+                  node will be generated for starting the walk. (Optional)
+      rand_seed: Random seed for random module. None means random
+                 will use system time. (Optional)
+      reset: Walk reset back to start node probability. 
+      walk_bias: How strickly the walk will follow motif pattern.
+                 Default value is 1.0 means the walk will always follow
+                 the motif. This value 
+    """
+
 # === END CLASS 'graph' ===
 
 def graph_from_pickle(pickle_filename, **graph_config):
@@ -205,7 +228,6 @@ def graph_from_pickle(pickle_filename, **graph_config):
   return graph
      
     
-
 
 
 
