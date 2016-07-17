@@ -15,6 +15,7 @@ import random
 import os
 import itertools
 import multiprocessing
+import cPickle as pickle
 
 #import Motif
 
@@ -56,9 +57,16 @@ class Graph(dict):
     """
     super(Graph, self).__init__()
     self._name = name
-    self._logger = logging.getLogger(name)
     self._directed = directed
     self._edges = None
+    self._logger = None
+
+  def getLogger(self):
+    """ Create logger for the graph on demand
+    """
+    if not self._logger:
+      self._logger = logging.getLogger(self._name)
+    return self._logger
 
   def nodes(self):
     """Return list of nodes in graph
@@ -86,7 +94,8 @@ class Graph(dict):
       subgraph: A copy of Graph contains only nodes
                 in node_ids list.
     """
-    subgraph = Graph(directed=self._directed)
+    subgraph_name = self._name + '_sub_' + str(len(node_list))
+    subgraph = Graph(directed=self._directed, name=subgraph_name)
     for node_id in node_list:
       if node_id in self:
         subgraph[node_id] = [n for n in self[node_id] if n in node_list]
@@ -114,6 +123,140 @@ class Graph(dict):
     else:
       return count // 2
 
-  def random_walk(self, node_count
+  def random_walk(self, length, start_node=None, rand_seed=None, reset = 0):
+    """
+    Return a set of nodes in a truncated random walk.
+    This function serves a comparision with our motif walk.
+    Implementation similar to random walk of deepwalk model.
 
+    Parameters
+    ----------
+      length: Walk length is the number of random iteration
+              generated for each walk. The result doesn't
+              necessarily have all unique nodes.
+      start_node: Node to start the random walk. Default is
+                  none, in this case, the algorithm will select
+                  a random node to be a start node. (Optional)
+      rand_seed: An integer as random seed. If none, it will
+                 use system time as seed. (Optional)
+      reset: A float in [0.0,1.0] as reset to start node 
+             probability.
+
+    Returns
+    -------
+      walk_path: A list contains node ids of the walk.
+    """
+    # TODO: Use log and exit instead of assert
+    assert 0 <= reset <= 1, 'Restart probability should be in [0.0,1.0].'
+    rand = random.Random(rand_seed)
+    # Give warning if graph is directed. TODO: Detail warning.
+    # TODO: Add walk info.
+    if self._directed:
+      self.getLogger().warn('Performing random walk on directed graph.')
+    # Select starting node
+    if start_node:
+      walk_path = [start_node]
+    else:
+      walk_path = [rand.choice(self.keys())]
+    # Start random walk by appending nodes to walk_path
+    while len(walk_path) < length:
+      cur = walk_path[-1]
+      if len(self[cur]) > 0:
+        if rand.random() >= reset:
+          walk_path.append(rand.choice(self[cur]))
+        else:
+          walk_path.append(walk_path[0])
+      else:
+        break
+    return walk_path
 # === END CLASS 'graph' ===
+
+def graph_from_pickle(pickle_filename, **graph_config):
+  """
+  Load pickle file (stored as a dict or defaultdict) and
+  return the graph as the graph object.
+  
+  Parameters
+  ----------
+    pickle_filename: File name in string of the desired picle file.
+    graph_config: (keyword argument) This kwarg store configuration
+                  for the newly created Graph object. Empty list implies
+                  default Graph.
+    
+  Returns
+  -------
+    graph: Graph object with data from pickle file.
+  """
+  # Check if file exists. TODO: Use log and exit instead of assert.
+  assert os.path.exists(pickle_filename), 'Pickle file not found. Please check.'
+  with open(pickle_filename, 'rb') as pfile:
+    data = pickle.load(pfile)
+    # Make sure the data is in dictionary structure
+    assert isinstance(data, dict), 'Graph data is not a dictionary. Please check.'
+  # Create graph with configuration
+  graph = Graph()
+  if len(graph_config): 
+    for key, val in graph_config.iteritems():
+      setattr(graph,key,val)
+  # Load data to the graph
+  for key, val in data.iteritems():
+    graph[key] = val
+  # TODO: Log result of graph creation
+  return graph
+     
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -97,6 +97,7 @@ class ind_model(base_model):
         g_updates = lasagne.updates.sgd(g_loss, g_params, learning_rate = self.g_learning_rate)
         self.g_fn = theano.function([gx_sym, gy_sym, gz_sym], g_loss, updates = g_updates, on_unused_input = 'ignore')
 
+        # Test function for label prediction
         self.test_fn = theano.function([x_sym], py_sym)
 
     def gen_train_inst(self):
