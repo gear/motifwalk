@@ -16,7 +16,7 @@ import os
 import itertools
 import multiprocessing
 
-import Motif
+#import Motif
 
 from time import time
 
@@ -25,13 +25,8 @@ LOGFORMAT = "%(asctime)s %(levelname)s %(filename)s: %(lineno)s %(message)s"
 __author__ = "Hoang Nguyen"
 __email__ = "hoangnt@ai.cs.titech.ac.jp"
 
-# >>> BEGIN CLASS 'node' <<<
-class node(dict):
-
-# === END CLASS 'node' ===
-
 # >>> BEGIN CLASS 'graph' <<<
-class Graph(_dict):
+class Graph(dict):
   """Graph is a dictionary contains nodes
   """
   def __init__(self, directed=False, name='graph'):
@@ -114,9 +109,11 @@ class Graph(_dict):
     count = 0
     for node in subgraph:
       count += len(subgraph[node])
-    if self.directed:
-      return count // 2
+    if self._directed:
+      return count 
     else:
-      return count
+      return count // 2
+
+  def random_walk(self, node_count
 
 # === END CLASS 'graph' ===
