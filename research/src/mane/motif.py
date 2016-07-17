@@ -17,3 +17,9 @@ class Motif(object):
     
 # === END CLASS 'Motif'
 
+# >>> BEGIN DEFAULT MOTIF(s) <<<
+default_directed = Motif(directed=True)
+# TODO: Implement walk engine here
+default_undirected = Motif(directed=False)
+# TODO: Implement walk engine here
+# >>> END DEFAULT MOTIF(s) <<<

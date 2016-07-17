@@ -17,7 +17,7 @@ import itertools
 import multiprocessing
 import cPickle as pickle
 
-#import Motif
+import motif
 
 from time import time
 
@@ -189,8 +189,24 @@ class Graph(dict):
       reset: Walk reset back to start node probability. 
       walk_bias: How strickly the walk will follow motif pattern.
                  Default value is 1.0 means the walk will always follow
-                 the motif. This value 
+                 the motif. This is value is how likely the walk is biased
+                 toward the motif pattern.
+
+    Returns
+    -------
+      walk_path: A list contains node ids of thw walk.
     """
+    # Check if default motif is used
+    motif_engine = None
+    if not motif:
+      if self._directed:
+        motif_engine = Motif.default_directed
+      else:
+        motif_engine = Motif.default_undirected
+    else:
+      assert motif._directed == self._directed, 
+             'Motif and Graph graph model must match.'     
+      motif_engine = motif.walker()
 
 # === END CLASS 'graph' ===
 
