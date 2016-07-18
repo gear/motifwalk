@@ -176,7 +176,7 @@ class Graph(dict):
 
   ### GRAPH - MOTIF_WALK ###
   def motif_walk(self, length, motif=None, start_node=None,
-                 rand_seed=None, reset = 0.0, walk_bias = 1.0):
+                 rand_seed=None, reset = 0.0, walk_bias = 0.9):
     """
     Walk follow the motif pattern. 
     
@@ -211,16 +211,35 @@ class Graph(dict):
     if self._directed:
       self.getLogger().warn('Performing motif walk on directed graph.')
     # Select starting node
-    walk_path = set()
+    walk_path = [] 
     if not start_node:
       start_node = rand.choice(self.keys())
-    walk_path.add(start_node)
+    walk_path.append(start_node)
     cur = start_node
     prev = None
-    node_count = 0
-    while node_count < length:
-      candidate = rand.choice(self[cur])
-      
+    # Start random walk
+    while len(walk_path) < length:
+      # Uniformly choose adj candidate node at random
+      cand = rand.choice(self[cur])
+      # If candidate is in previous adj node, select with prob=walk_bias
+      if prev:
+        while True:
+          prob = rand.random()
+          if cand in self[prev]:
+            if prob < walk_bias:
+              walk_path.append(cand)
+              break
+          else:
+            if prob > walk_bias:
+              walk_path.append(cand)
+              break
+          cand = rand.choice(self[cur])
+      else:
+        walk_path.append(cand)
+      prev = cur
+      cur = cand
+    return walk_path
+    
 # === END CLASS 'graph' ===
 
 def graph_from_pickle(pickle_filename, **graph_config):
