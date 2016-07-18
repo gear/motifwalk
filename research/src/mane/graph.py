@@ -5,6 +5,8 @@
 # Created: 2016-07-16
 # Description:
 ## v0.0: File created
+## v0.1: Random walk
+## v0.2: Add default motif walk (undirected triangle)
 
 from __future__ import print_function
 from __future__ import division
@@ -101,6 +103,7 @@ class Graph(dict):
         subgraph[node_id] = [n for n in self[node_id] if n in node_list]
     return subgraph
   
+  ### GRAPH - VOLUME ###
   def volume(self, node_list = None):
     """
     Return volume (inner edges count) of the subgraph
@@ -123,6 +126,7 @@ class Graph(dict):
     else:
       return count // 2
 
+  ### GRAPH - RANDOM_WALK ###
   def random_walk(self, length, start_node=None, rand_seed=None, reset = 0.0):
     """
     Return a list of nodes in a truncated random walk.
@@ -154,10 +158,9 @@ class Graph(dict):
     if self._directed:
       self.getLogger().warn('Performing random walk on directed graph.')
     # Select starting node
-    if start_node:
-      walk_path = [start_node]
-    else:
-      walk_path = [rand.choice(self.keys())]
+    if not start_node:
+      start_node = rand.choice(self.keys())
+    walk_path = [start_node]
     # Start random walk by appending nodes to walk_path
     while len(walk_path) < length:
       cur = walk_path[-1]
@@ -170,6 +173,7 @@ class Graph(dict):
         break
     return walk_path
 
+  ### GRAPH - MOTIF_WALK ###
   def motif_walk(self, length, motif=None, start_node=None,
                  rand_seed=None, reset = 0.0, walk_bias = 1.0):
     """
@@ -190,23 +194,33 @@ class Graph(dict):
       walk_bias: How strickly the walk will follow motif pattern.
                  Default value is 1.0 means the walk will always follow
                  the motif. This is value is how likely the walk is biased
-                 toward the motif pattern.
+                 toward the motif pattern. This parameter is implemented 
+                 here as the rejection probability.
 
     Returns
     -------
-      walk_path: A list contains node ids of thw walk.
+      walk_path: A set contains node ids of motif walk. Set data structure
+                 is selected as it is useful to check membership in motif
+                 walk. Also, the order of the walk is not every important
+                 as later, subgraph is generated from the node collection
+                 and samples will be picked from there. Negative will be
+                 picked from substracting motif walk and random walk.
     """
-    # Check if default motif is used
-    motif_engine = None
-    if not motif:
-      if self._directed:
-        motif_engine = Motif.default_directed
-      else:
-        motif_engine = Motif.default_undirected
-    else:
-      assert motif._directed == self._directed, 
-             'Motif and Graph graph model must match.'     
-      motif_engine = motif.walker()
+    # TODO: Implement Motif class and delegate the walk to Motif
+    # Now - Default as triangle motif (undirected)
+    assert 0 <= reset <= 1, 'Restart probability should be in [0.0, 1.0].'
+    rand = random.Random(rand_seed)
+    if self._directed:
+      self.getLogger().warn('Performing motif walk on directed graph.')
+    # Select starting node
+    walk_path = set()
+    if not start_node:
+      start_node = rand.choice(self.keys())
+    walk_path.add(start_node)
+    cur = start_node
+    while _ in xrange(length):
+      
+      
 
 # === END CLASS 'graph' ===
 
