@@ -5,8 +5,9 @@
 # Created: 2016-07-16
 # Description:
 ## v0.0: File created
-## v0.1: Random walk
+## v0.1: Random walk with node oriented
 ## v0.2: Add default motif walk (undirected triangle)
+##       motif walk has simple strategy of storing the prev node.
 
 from __future__ import print_function
 from __future__ import division
@@ -199,15 +200,12 @@ class Graph(dict):
 
     Returns
     -------
-      walk_path: A set contains node ids of motif walk. Set data structure
-                 is selected as it is useful to check membership in motif
-                 walk. Also, the order of the walk is not every important
-                 as later, subgraph is generated from the node collection
-                 and samples will be picked from there. Negative will be
-                 picked from substracting motif walk and random walk.
+      walk_path: A list contains node ids of motif walk. This version of
+                 simple motif walk uses list. The future version will use
+                 set as data structure for the walk. 
     """
     # TODO: Implement Motif class and delegate the walk to Motif
-    # Now - Default as triangle motif (undirected)
+    # Now - Default as triangle motif (undirected).
     assert 0 <= reset <= 1, 'Restart probability should be in [0.0, 1.0].'
     rand = random.Random(rand_seed)
     if self._directed:
@@ -218,10 +216,11 @@ class Graph(dict):
       start_node = rand.choice(self.keys())
     walk_path.add(start_node)
     cur = start_node
-    while _ in xrange(length):
+    prev = None
+    node_count = 0
+    while node_count < length:
+      candidate = rand.choice(self[cur])
       
-      
-
 # === END CLASS 'graph' ===
 
 def graph_from_pickle(pickle_filename, **graph_config):
@@ -256,8 +255,6 @@ def graph_from_pickle(pickle_filename, **graph_config):
     graph[key] = val
   # TODO: Log result of graph creation
   return graph
-     
-    
 
 
 
