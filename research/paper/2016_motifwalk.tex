@@ -204,6 +204,63 @@ specifically available for denoting the structure of a
 proceedings paper, rather than with giving rigorous descriptions
 or explanations of such commands.
 
+\section{Related work}
+Our research relates mainly to the field of complex
+network analysis and representation learning. 
+
+\subsection{Graph embedding}
+The literature of graph embedding start with
+matrix decomposition techniques \cite{la}. Super
+professor et. al. perform amazing works
+and achieved many success. Traditionally, graph
+clustering procedure where similarity between
+nodes or edges is defined and group together
+by some similarity metric. This leads to the
+notation of closeness and hence community.
+However, one limitation of these classical 
+graph embedding technique is that it depends 
+on matrix decompositon which is very computational 
+expensive.
+
+Recently, with the emerging of deep neural network
+models such as autoencoder \cite{la}, restricted 
+Bolzman machine \cite{la}, and some other that I will
+fill here later. Inspired by these advancement of
+natural language processing neural network models,
+Peperozi et. al. \cite{deepwalk} proposed a graph
+embedding framework named DeepWalk. By taking advantage
+of the network structure and create an artificial
+``node corpus'' by performing random walk, DeepWalk
+has achieved good performance and inspired any
+following researches. Since 2014, many graph embedding
+model based on random walk has been proposed such as
+LINE, GraRep, etc. These embedding algorithm proved
+its efficiency and usefullness in various graph
+mining tasks and classification problem in large graph.
+
+Out of the aforementioned embedding algorithms,
+LINE has taken our notice. LINE model improved
+DeepWalk by incooporating the notation of second
+order proximity to the learning task. This leads
+to its outstanding performance without other auxilariy
+information. There are some research that has 
+good result in embedding too, but out of all research
+that only use graph structure, LINE is the best.
+We think that the key to LINE's success was
+the second order proximity added to the original
+embedding scheme. However, LINE perform extremely well
+in network with citation-like structure. In other word,
+LINE is very good for network with wedge motif.
+From this observation, we think that if we can 
+incooporate the most popular substructure of the
+graph to the embedding scheme, we can learn better
+vector representation.
+
+\subsection{Motif in Graph}
+Motif is defined as a small subgraph that has
+some funny characteristic \cite{la}, maybe cite some
+of Jure's work here.
+
 \section{The {\secit Body} of The Paper}
 Typically, the body of a paper is organized
 into a hierarchical structure, with numbered or unnumbered
