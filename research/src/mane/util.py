@@ -10,10 +10,12 @@
 import cPickle as pickle
 import os
 
-def txt_edgelist_to_pickle(filename):
+def txt_edgelist_to_pickle(filename, pickle_name='default.graph'):
   """ 
   Sparse text file for edgelist and store 
-  them as dictionary pickle file.
+  them as dictionary pickle file. 
+  For undirected edge list file with non 
+  repeating edges.
   
   Parameters
   ----------
@@ -38,7 +40,12 @@ def txt_edgelist_to_pickle(filename):
       graph[t_edge[0]].append(t_edge[1])
     else:
       graph[t_edge[0]] = [t_edge[1]]
+    if graph.has_key(t_edge[1]):
+      graph[t_edge[1]].append(t_edge[0])
+    else:
+      graph[t_edge[1]] = [t_edge[0]] 
   print('Created graph with %d nodes' % len(graph))
+  print('Pickling to file: %s' % pickle_name)
+  pfile = open(pickle_name, 'wb')
+  pickle.dump(graph, pfile, pickle.HIGHEST_PROTOCOL)
   return graph
-    
-  
