@@ -8,6 +8,8 @@
 ## v0.1: Random walk with node oriented
 ## v0.2: Add default motif walk (undirected triangle)
 ##       motif walk has simple strategy of storing the prev node.
+## v0.3: Generate set of nodes result from random and 
+##       motif walk. Frequency of node is ignored.
 
 from __future__ import print_function
 from __future__ import division
@@ -242,6 +244,48 @@ class Graph(dict):
       prev = cur
       cur = cand
     return walk_path
+
+  def rw_set(num_walk = 20, length=128, start_node=None, 
+             rand_seed=None, reset=0.0):
+    """
+    Perform random walk num_walk time to create a set of random walk nodes.
+    This method is usually used with fixed start node.
+
+    Parameters
+    ----------
+      num_walk: Number of random walk. Default to be 20. (Optional)
+      length: Length of each random walk. Default to be 128. (Optional)
+      start_node: Start location for the random walk. None means a random
+                  node will be selected. (Optional)
+      rand_seed: Seed for random module. None means system time is used. (Optional)
+      reset: Reset back to the start node probability for each random walk. 
+             Default 0.0. (Optional)
+    """
+    if not start_node:
+      self.getLogger().warn('Creating random walk set with random start node.')
+    node_set = set()
+    for _ in xrange(num_walk):
+      rwp = self.random_walk(length=length, start_node=start_node, 
+                             rand_seed=rand_seed, reset=reset)
+      for node in rwp:
+        node_set.add(node)
+    # TODO: Change to log
+    print('Created random walk set from %d random walks, each has '
+          'length %d. Start from %d.' % (num_walk, length, start_node))
+    return node_set
+
+  def mw_set(num_walk = 20, length=128, start_node=None, 
+             rand_seed=None, reset=0.0, walk_bias=0.9):
+    """
+    Perform motif walk num_walk time to create a set of motif walk nodes.
+    This method is usually used fixed start node.
+
+    Parameters
+    ----------
+      num_walk: Number of motif walk. Default to be 20. (Optional)
+      length: Length of each motif 
+    """
+    
     
 # === END CLASS 'graph' ===
 
