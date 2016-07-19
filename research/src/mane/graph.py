@@ -13,16 +13,19 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+# External modules
 import logging
 import random
 import os
 import itertools
 import multiprocessing
 import cPickle as pickle
-
-import motif
-
 from time import time
+
+# My modules
+import motif
+import util
+
 
 LOGFORMAT = "%(asctime)s %(levelname)s %(filename)s: %(lineno)s %(message)s"
 
@@ -274,40 +277,6 @@ def graph_from_pickle(pickle_filename, **graph_config):
     graph[key] = val
   # TODO: Log result of graph creation
   return graph
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
