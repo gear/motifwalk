@@ -9,8 +9,31 @@ EXP_SOFTMAX = True
 
 class DenseLayer(lasagne.layers.Layer):
     def __init__(self, incoming, num_units, W = lasagne.init.GlorotUniform(),
-                 b = lasagne.init.Constant(0.), nonlinearity = lasagne.nonlinearities.rectify,
+                 b = lasagne.init.Constant(0.), 
+                 nonlinearity = lasagne.nonlinearities.rectify,
                  **kwargs):
+        """
+        Initialize a custom DenseLayer inherited from Layer.
+
+        Parameters
+        ----------
+          incoming: a Layer instance or a tuple of input layer
+                    or expected input shape.
+          num_units: The number of units in this layer.
+          W: Theano shared variable, expression, numpy array
+             or callable. This can be initial value, expression
+             or initializer for the the weight.
+          b: Theano shared variable, expression, numpy array,
+             callable or None. Initial value, expression or 
+             initializer for bias.
+          nonlinearity: Callable or None. The nonlinearity will
+                        be applied to the layer activations. If
+                        None is provided, the layer will be linear.
+
+        Returns
+        -------
+          None. Object is created.
+        """
         super(DenseLayer, self).__init__(incoming, **kwargs)
         self.nonlinearity = (nonlinearities.identity if nonlinearity is None
                              else nonlinearity)

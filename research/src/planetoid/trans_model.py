@@ -23,7 +23,8 @@ class trans_model(base_model):
         graph (dict): the format is {index: list_of_neighbor_index}. Only supports binary graph.
         Let L and U be the number of training and dev instances.
         The training instances must be indexed from 0 to L - 1 with the same order in x and y.
-        By default, our implementation assumes that the dev instances are indexed from L to L + U - 1, unless otherwise
+        By default, our implementation assumes that the dev instances are 
+        indexed from L to L + U - 1, unless otherwise
         specified in self.predict.
         """
         self.x, self.y, self.graph = x, y, graph
@@ -44,20 +45,27 @@ class trans_model(base_model):
 
         num_ver = max(self.graph.keys()) + 1
         l_emb_in = lasagne.layers.SliceLayer(l_g_in, indices = 0, axis = 1)
-        l_emb_in = lasagne.layers.EmbeddingLayer(l_emb_in, input_size = num_ver, output_size = self.embedding_size)
+        l_emb_in = lasagne.layers.EmbeddingLayer(l_emb_in, input_size = num_ver, 
+                                                 output_size = self.embedding_size)
         l_emb_out = lasagne.layers.SliceLayer(l_g_in, indices = 1, axis = 1)
         if self.neg_samp > 0:
-            l_emb_out = lasagne.layers.EmbeddingLayer(l_emb_out, input_size = num_ver, output_size = self.embedding_size)
+            l_emb_out = lasagne.layers.EmbeddingLayer(l_emb_out, input_size = num_ver, 
+                                                      output_size = self.embedding_size)
 
-        l_emd_f = lasagne.layers.EmbeddingLayer(l_ind_in, input_size = num_ver, output_size = self.embedding_size, W = l_emb_in.W)
-        l_x_hid = layers.SparseLayer(l_x_in, self.y.shape[1], nonlinearity = lasagne.nonlinearities.softmax)
+        l_emd_f = lasagne.layers.EmbeddingLayer(l_ind_in, input_size = num_ver, 
+                                                output_size = self.embedding_size, W = l_emb_in.W)
+        l_x_hid = layers.SparseLayer(l_x_in, self.y.shape[1], 
+                                     nonlinearity = lasagne.nonlinearities.softmax)
         
         if self.use_feature:
-            l_emd_f = layers.DenseLayer(l_emd_f, self.y.shape[1], nonlinearity = lasagne.nonlinearities.softmax)
+            l_emd_f = layers.DenseLayer(l_emd_f, self.y.shape[1], 
+                                        nonlinearity = lasagne.nonlinearities.softmax)
             l_y = lasagne.layers.ConcatLayer([l_x_hid, l_emd_f], axis = 1)
-            l_y = layers.DenseLayer(l_y, self.y.shape[1], nonlinearity = lasagne.nonlinearities.softmax)
+            l_y = layers.DenseLayer(l_y, self.y.shape[1], 
+                                    nonlinearity = lasagne.nonlinearities.softmax)
         else:
-            l_y = layers.DenseLayer(l_emd_f, self.y.shape[1], nonlinearity = lasagne.nonlinearities.softmax)
+            l_y = layers.DenseLayer(l_emd_f, self.y.shape[1], 
+                                    nonlinearity = lasagne.nonlinearities.softmax)
 
         py_sym = lasagne.layers.get_output(l_y)
         loss = lasagne.objectives.categorical_crossentropy(py_sym, y_sym).mean()
@@ -68,26 +76,32 @@ class trans_model(base_model):
             loss += lasagne.objectives.categorical_crossentropy(emd_sym, y_sym).mean()
 
         if self.neg_samp == 0:
-            l_gy = layers.DenseLayer(l_emb_in, num_ver, nonlinearity = lasagne.nonlinearities.softmax)
+            l_gy = layers.DenseLayer(l_emb_in, num_ver,
+                                     nonlinearity = lasagne.nonlinearities.softmax)
             pgy_sym = lasagne.layers.get_output(l_gy)
-            g_loss = lasagne.objectives.categorical_crossentropy(pgy_sym, lasagne.layers.get_output(l_emb_out)).sum()
+            g_loss = lasagne.objectives.categorical_crossentropy(pgy_sym, 
+                                                                 lasagne.layers.get_output(l_emb_out)).sum()
         else:
             l_gy = lasagne.layers.ElemwiseMergeLayer([l_emb_in, l_emb_out], T.mul)
             pgy_sym = lasagne.layers.get_output(l_gy)
             g_loss = - T.log(T.nnet.sigmoid(T.sum(pgy_sym, axis = 1) * gy_sym)).sum()
 
-        params = [l_emd_f.W, l_emd_f.b, l_x_hid.W, l_x_hid.b, l_y.W, l_y.b] if self.use_feature else [l_y.W, l_y.b]
+        params = [l_emd_f.W, l_emd_f.b, l_x_hid.W, l_x_hid.b, l_y.W, l_y.b] 
+                 if self.use_feature else [l_y.W, l_y.b]
         if self.update_emb:
             params = lasagne.layers.get_all_params(l_y)
         updates = lasagne.updates.sgd(loss, params, learning_rate = self.learning_rate)
 
-        self.train_fn = theano.function([x_sym, y_sym, ind_sym], loss, updates = updates, on_unused_input = 'ignore')
+        self.train_fn = theano.function([x_sym, y_sym, ind_sym], loss, 
+                                        updates = updates, on_unused_input = 'ignore')
         self.test_fn = theano.function([x_sym, ind_sym], py_sym, on_unused_input = 'ignore')
         self.l = [l_gy, l_y]
 
         g_params = lasagne.layers.get_all_params(l_gy, trainable = True)
-        g_updates = lasagne.updates.sgd(g_loss, g_params, learning_rate = self.g_learning_rate)
-        self.g_fn = theano.function([g_sym, gy_sym], g_loss, updates = g_updates, on_unused_input = 'ignore')
+        g_updates = lasagne.updates.sgd(g_loss, g_params, 
+                                        learning_rate = self.g_learning_rate)
+        self.g_fn = theano.function([g_sym, gy_sym], g_loss,  
+                                    updates = g_updates, on_unused_input = 'ignore')
 
     def gen_train_inst(self):
         """generator for batches for classification loss.
