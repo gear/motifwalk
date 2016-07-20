@@ -185,7 +185,7 @@ class Graph(dict):
                  rand_seed=None, reset = 0.0, walk_bias = 0.9):
     """
     Walk follow the motif pattern. 
-    
+     
     Parameters
     ----------
       length: Length of the walk generated.
@@ -274,8 +274,7 @@ class Graph(dict):
       rwp = self.random_walk(length=length, start_node=start_node, 
                              rand_seed=rand_seed, reset=reset)
       walk_path.extend(rwp)
-    # TODO: Change to log
-    print('Created random walk set and list from %d random walks, each has length %d. Start from %s.' % (num_walk, length, str(start_node)))
+    # TODO: Log the walk
     return walk_path, set(walk_path)
 
   def build_motif_walk(self, num_walk = 20, length=128, start_node=None, 
@@ -301,8 +300,7 @@ class Graph(dict):
       mwp = self.motif_walk(length=length, start_node=start_node,
                             rand_seed=rand_seed, reset=reset)
       walk_path.extend(mwp)
-    # TODO: Change to log
-    print('Created motif walk set and list from %d motif walks, each has length %d. Start from %s.' %(num_walk, length, str(start_node)))
+    # TODO: Log the walk
     return walk_path, set(walk_path)
     
 # === END CLASS 'graph' ===
