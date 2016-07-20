@@ -11,6 +11,7 @@
 from __future__ import division
 
 import cPickle as pickle
+import math
 import os
 
 def txt_edgelist_to_pickle(filename, pickle_name='default.graph'):
