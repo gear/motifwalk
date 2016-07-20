@@ -235,6 +235,9 @@ with graph.as_default():
                               stddev=1.0 / math.sqrt(embedding_size)))
     nce_biases = tf.Variable(tf.zeros([vocabulary_size]))
   # Noise contrastive estimation loss function
+  # tf.nn.nce_loss takes nce_weights multiply with embed then pluses nce_biases
+  # then cross sigmoid entropy with train_labels. It also generates negative
+  # samples using vocabulary_size for each train_labels.
   loss = tf.reduce_mean(tf.nn.nce_loss(nce_weights, nce_biases, embed, train_labels,
                                        num_sampled, vocabulary_size))
   optimizer = tf.train.GradientDescentOptimizer(1.0).minimize(loss)

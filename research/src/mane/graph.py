@@ -70,20 +70,23 @@ class Graph(dict):
     self._logger = None
 
   def getLogger(self):
-    """ Create logger for the graph on demand
+    """ 
+    Create logger for the graph on demand.
     """
     if not self._logger:
       self._logger = logging.getLogger(self._name)
     return self._logger
 
   def nodes(self):
-    """Return list of nodes in graph
+    """
+    Return list of nodes in graph.
     """
     return self.keys()
 
   # TODO: Implement edges
   def edges(self):
-    """Return sets of edges tuples in graph
+    """
+    Return sets of edges tuples in graph.
     """
     return None
     
@@ -132,7 +135,6 @@ class Graph(dict):
     else:
       return count // 2
 
-  ### GRAPH - RANDOM_WALK ###
   def random_walk(self, length, start_node=None, rand_seed=None, reset = 0.0):
     """
     Return a list of nodes in a truncated random walk.
@@ -179,7 +181,6 @@ class Graph(dict):
         break
     return walk_path
 
-  ### GRAPH - MOTIF_WALK ###
   def motif_walk(self, length, motif=None, start_node=None,
                  rand_seed=None, reset = 0.0, walk_bias = 0.9):
     """
@@ -248,7 +249,7 @@ class Graph(dict):
   def rw_set(num_walk = 20, length=128, start_node=None, 
              rand_seed=None, reset=0.0):
     """
-    Perform random walk num_walk time to create a set of random walk nodes.
+    Perform random walk num_walk time to create a list of random walk nodes.
     This method is usually used with fixed start node.
 
     Parameters
@@ -260,19 +261,24 @@ class Graph(dict):
       rand_seed: Seed for random module. None means system time is used. (Optional)
       reset: Reset back to the start node probability for each random walk. 
              Default 0.0. (Optional)
+    
+    Returns
+    -------
+      walk_path: List of visited nodes.
+      set(walk_path): Set of unique nodes in the path.
     """
     if not start_node:
       self.getLogger().warn('Creating random walk set with random start node.')
     node_set = set()
+    walk_path = []
     for _ in xrange(num_walk):
       rwp = self.random_walk(length=length, start_node=start_node, 
                              rand_seed=rand_seed, reset=reset)
-      for node in rwp:
-        node_set.add(node)
+      walk_path.append(rwp)
     # TODO: Change to log
-    print('Created random walk set from %d random walks, each has '
+    print('Created random walk set and list from %d random walks, each has '
           'length %d. Start from %d.' % (num_walk, length, start_node))
-    return node_set
+    return walk_path, set(walk_path)
 
   def mw_set(num_walk = 20, length=128, start_node=None, 
              rand_seed=None, reset=0.0, walk_bias=0.9):
@@ -283,12 +289,30 @@ class Graph(dict):
     Parameters
     ----------
       num_walk: Number of motif walk. Default to be 20. (Optional)
-      length: Length of each motif 
+      length: Length of each motif wal. Default to be 128. (Optional)
+      start_node: Start location for the random walk. None means a random
+                  node will be selected. (Optional)
+      rand_seed: Seed for random module. None means system time is used. (Optional)
+      reset: Reset back to the start node probability for each motif walk.
+             Default 0.0. (Optional)
     """
-    
+    if not start_node:
+      self.getLogger().warn('Creating random walk set with random start node.')
+    node_set = set()
+    for _ in xrange(num_walk):
+      mwp = self.motif_walk(length=length, start_node=start_node,
+                            rand_seed=rand_seed, reset=reset)
+      for node in mwp:
+        node_set.add(node)
+      walk_path.append(mwp)
+    # TODO: Change to log
+    print('Created motif walk set and list from %d motif walks, each has '
+          'length %d. Start from %d.' %(num_walk, length, start_node))
+    return walk_path, set(walk_path)
     
 # === END CLASS 'graph' ===
 
+# >>> HELPER FUNCTIONS <<<
 def graph_from_pickle(pickle_filename, **graph_config):
   """
   Load pickle file (stored as a dict or defaultdict) and
@@ -323,7 +347,7 @@ def graph_from_pickle(pickle_filename, **graph_config):
   return graph
 
 
-
+# === END HELPER FUNCTIONS ===
 
 
 

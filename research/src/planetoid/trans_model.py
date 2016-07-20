@@ -37,6 +37,7 @@ class trans_model(base_model):
         g_sym = T.imatrix('g')
         gy_sym = T.vector('gy')
         ind_sym = T.ivector('ind')
+        # dd is defaultdict
 
         l_x_in = lasagne.layers.InputLayer(shape = (None, self.x.shape[1]), input_var = x_sym)
         l_g_in = lasagne.layers.InputLayer(shape = (None, 2), input_var = g_sym)
@@ -117,6 +118,7 @@ class trans_model(base_model):
     def gen_label_graph(self):
         """generator for batches for label context loss.
         """
+        # dd is defaultdict
         labels, label2inst, not_label = [], dd(list), dd(list)
         for i in range(self.x.shape[0]):
             flag = False
