@@ -246,11 +246,11 @@ class Graph(dict):
       cur = cand
     return walk_path
 
-  def rw_set(num_walk = 20, length=128, start_node=None, 
+  def build_random_walk(self, num_walk = 20, length=128, start_node=None, 
              rand_seed=None, reset=0.0):
     """
-    Perform random walk num_walk time to create a list of random walk nodes.
-    This method is usually used with fixed start node.
+    Perform random walk num_walk times to create a list and set of 
+    random walk nodes. This method is usually used with fixed start node.
 
     Parameters
     ----------
@@ -269,22 +269,20 @@ class Graph(dict):
     """
     if not start_node:
       self.getLogger().warn('Creating random walk set with random start node.')
-    node_set = set()
     walk_path = []
     for _ in xrange(num_walk):
       rwp = self.random_walk(length=length, start_node=start_node, 
                              rand_seed=rand_seed, reset=reset)
-      walk_path.append(rwp)
+      walk_path.extend(rwp)
     # TODO: Change to log
-    print('Created random walk set and list from %d random walks, each has '
-          'length %d. Start from %d.' % (num_walk, length, start_node))
+    print('Created random walk set and list from %d random walks, each has length %d. Start from %s.' % (num_walk, length, str(start_node)))
     return walk_path, set(walk_path)
 
-  def mw_set(num_walk = 20, length=128, start_node=None, 
+  def build_motif_walk(self, num_walk = 20, length=128, start_node=None, 
              rand_seed=None, reset=0.0, walk_bias=0.9):
     """
-    Perform motif walk num_walk time to create a set of motif walk nodes.
-    This method is usually used fixed start node.
+    Perform motif walk num_walk times to create a list and set of 
+    motif walk nodes. This method is usually used fixed start node.
 
     Parameters
     ----------
@@ -298,16 +296,13 @@ class Graph(dict):
     """
     if not start_node:
       self.getLogger().warn('Creating random walk set with random start node.')
-    node_set = set()
+    walk_path = []
     for _ in xrange(num_walk):
       mwp = self.motif_walk(length=length, start_node=start_node,
                             rand_seed=rand_seed, reset=reset)
-      for node in mwp:
-        node_set.add(node)
-      walk_path.append(mwp)
+      walk_path.extend(mwp)
     # TODO: Change to log
-    print('Created motif walk set and list from %d motif walks, each has '
-          'length %d. Start from %d.' %(num_walk, length, start_node))
+    print('Created motif walk set and list from %d motif walks, each has length %d. Start from %s.' %(num_walk, length, str(start_node)))
     return walk_path, set(walk_path)
     
 # === END CLASS 'graph' ===
@@ -348,7 +343,6 @@ def graph_from_pickle(pickle_filename, **graph_config):
 
 
 # === END HELPER FUNCTIONS ===
-
 
 
 
