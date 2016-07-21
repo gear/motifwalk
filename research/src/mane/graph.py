@@ -181,19 +181,15 @@ class Graph(dict):
         break
     return walk_path
 
-  def motif_walk(self, length, motif=None, start_node=None,
-                 rand_seed=None, reset = 0.0, walk_bias = 0.9):
+  def motif_walk(self, length, start_node=None, rand_seed=None, 
+                 reset = 0.0, walk_bias = 0.9, motif=None):
     """
     Walk follow the motif pattern. 
      
     Parameters
     ----------
       length: Length of the walk generated.
-      motif: Motif object defines the walk pattern. None means
-             the walk will be in undirected triangle pattern for
-             undirected graph and bipartite pattern for directed
-             graph. (Optional)
-      start_node: Node to start the random walk. None means a random
+            start_node: Node to start the random walk. None means a random
                   node will be generated for starting the walk. (Optional)
       rand_seed: Random seed for random module. None means random
                  will use system time. (Optional)
@@ -203,6 +199,10 @@ class Graph(dict):
                  the motif. This is value is how likely the walk is biased
                  toward the motif pattern. This parameter is implemented 
                  here as the rejection probability.
+      motif: Motif object defines the walk pattern. None means
+             the walk will be in undirected triangle pattern for
+             undirected graph and bipartite pattern for directed
+             graph. (Optional)
 
     Returns
     -------
@@ -303,15 +303,17 @@ class Graph(dict):
     # TODO: Log the walk
     return walk_path, set(walk_path)
 
-  def sample_walk_with_negative(walk_path, num_true=1, neg_samp=5, num_skip=5, shuffle=True,
-                                window_size=5, batch_size=128, neg_samp_distort=0.75):
+  def sample_walk_with_negative(walk_func_name, walk_length, num_walk=10,
+                                num_true=1, neg_samp=5, num_skip=5, 
+                                shuffle=True, window_size=5, batch_size=128, 
+                                neg_samp_distort=0.75):
     """
-    Create training dataset from a walk_path list with negative
+    Create training dataset using walk function list with negative
     sampling and negative distribution distorted.
     
     Parameters
     ----------
-      walk_path: List of nodes represent random walks concatinated together.
+      walk_func_name: Walk function name (e.g. 'random_walk')
       graph_size: Total number of nodes in graph.
       num_true: Number of true class for each sample.
       num_skip: Number of samples generated for each target.
@@ -328,23 +330,31 @@ class Graph(dict):
   
     Example
     -------
-      >>> walk_path = mygraph.build_random_walk(...)
-      >>> batch_tuples, batch_labels = sample_walk_with_negative(walk_path, ...)
+      >>> walk_func = 'random_walk'
+      >>> batch_tuples, batch_labels = sample_walk_with_negative(walk_func, ...)
       >>> batch_tuples
-      ... [(0,1), (0,2), (0,9), ...] # List of node pairs
+      ... [(0,1), (0,2), (0,9), ...] 
+          # List of node pairs
       >>> labels
-      ... [1, -1, 1, 1, -1, -1 ...] # 1 is true sample and -1 is negative (fake)
+      ... [1, -1, 1, 1, -1, -1 ...]
+          # 1 is true sample and -1 is negative (fake)
     """
-    if not walk_path or len(walk_path) == 0:
-      return []
+    assert window_size >= 2*num_skip, 'Window size is too small.'
+
+    log = self.getLogger()
+    wfunc = getattr(self, walk_func_name)
     # Shuffle the node ids list for better SGD performance [DeepWalk]
     if shuffle:
-      node_list = random.Random().choice(self.keys())
-    else
-      node_list = self.keys()
-    for target_node in walk_path:
-  
-    
+      id_list = random.Random().choice(self.keys())
+    else:
+      id_list = self.keys()
+    # TODO: Use kwargs to pass all arguments to walk funciton
+    for node in node_list:
+      walk = wfunc(length=walk_length, start_node=target_node)
+      for target in walk:
+        
+      
+      
 # === END CLASS 'graph' ===
 
 # >>> HELPER FUNCTIONS <<<
@@ -385,6 +395,7 @@ def graph_from_pickle(pickle_filename, **graph_config):
 # === END HELPER FUNCTIONS ===
 
     
+
 
 
 
