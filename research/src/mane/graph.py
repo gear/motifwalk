@@ -24,6 +24,7 @@ import multiprocessing
 import cPickle as pickle
 import numpy as np
 from time import time
+from collection import defaultdict
 
 # My modules
 import motif
@@ -304,9 +305,9 @@ class Graph(dict):
     # TODO: Log the walk
     return walk_path, set(walk_path)
 
-  def sample_walk_with_negative(walk_func_name, walk_length, num_walk=10,
+  def sample_walk_with_negative(self, walk_func_name, walk_length, num_walk=10,
                                 num_true=1, neg_samp=5, num_skip=5, 
-                                shuffle=True, window_size=5, batch_size=128, 
+                                shuffle=True, window_size=5, batch_size=20, 
                                 neg_samp_distort=0.75):
     """
     Create training dataset using walk function list with negative
@@ -342,7 +343,7 @@ class Graph(dict):
           # 1 is true sample and -1 is negative (fake)
     """
     # Make sure generated dataset has correct count.
-    assert window_size >= 2*num_skip, 'Window size is too small.'
+    assert window_size >= num_skip, 'Window size is too small.'
     assert batch_size % (num_skip + neg_samp) == 0, 'Batch size must match.'
     # Number of random walk for each batch
     nodes_in_batch = batch_size // (num_skip + neg_samp)
@@ -364,19 +365,19 @@ class Graph(dict):
         labels = []
         node_tuples = []
       else:
-        if len(self[i]) > 0
+        if len(self[i]) > 0:
           count_nodes -= 1
         else:
           continue
       walk = wfunc(length=walk_length, start_node=i)
-      for j, target in enumerate(walk_length):
+      for j, target in enumerate(walk):
         lower = max(0, j - window_size)
         upper = min(walk_length, j + window_size+1)
         for _ in xrange(num_skip):
           # TODO: Check situation where rand_node == target
           rand_node = random.Random().choice(walk[lower:upper])
-          sample.append([target, rand_node])
-        node_tuples.extend(sample)
+          node_tuples.append([target, rand_node])
+          labels.append(1.0) # Possitive sample
       
 # === END CLASS 'graph' ===
 
