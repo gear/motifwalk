@@ -302,6 +302,48 @@ class Graph(dict):
       walk_path.extend(mwp)
     # TODO: Log the walk
     return walk_path, set(walk_path)
+
+  def sample_walk_with_negative(walk_path, num_true=1, neg_samp=5, num_skip=5, shuffle=True,
+                                window_size=5, batch_size=128, neg_samp_distort=0.75):
+    """
+    Create training dataset from a walk_path list with negative
+    sampling and negative distribution distorted.
+    
+    Parameters
+    ----------
+      walk_path: List of nodes represent random walks concatinated together.
+      graph_size: Total number of nodes in graph.
+      num_true: Number of true class for each sample.
+      num_skip: Number of samples generated for each target.
+      shuffle: If node list is shuffled before generating random walk.
+      neg_samp: Number of negative sampling for each target.
+      window_size: Window for getting sample from the random walk list.
+      batch_size: Number of samples generated.
+      neg_samp_distort: Distort the uniform distribution for negative sampling.
+  
+    Returns
+    -------
+      batch_tuples: List of tuples in the format: (target, class)
+      labels: List of corresponding labels for each sample in bath.
+  
+    Example
+    -------
+      >>> walk_path = mygraph.build_random_walk(...)
+      >>> batch_tuples, batch_labels = sample_walk_with_negative(walk_path, ...)
+      >>> batch_tuples
+      ... [(0,1), (0,2), (0,9), ...] # List of node pairs
+      >>> labels
+      ... [1, -1, 1, 1, -1, -1 ...] # 1 is true sample and -1 is negative (fake)
+    """
+    if not walk_path or len(walk_path) == 0:
+      return []
+    # Shuffle the node ids list for better SGD performance [DeepWalk]
+    if shuffle:
+      node_list = random.Random().choice(self.keys())
+    else
+      node_list = self.keys()
+    for target_node in walk_path:
+  
     
 # === END CLASS 'graph' ===
 
@@ -342,11 +384,7 @@ def graph_from_pickle(pickle_filename, **graph_config):
 
 # === END HELPER FUNCTIONS ===
 
-
-
-
-
-
+    
 
 
 
