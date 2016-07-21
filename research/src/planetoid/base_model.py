@@ -16,10 +16,10 @@ class base_model(object):
         self.batch_size = args.batch_size
         self.neg_samp = args.neg_samp
         self.model_file = args.model_file
-        
+          
         self.window_size = args.window_size
         self.path_size = args.path_size
-        
+          
         self.g_batch_size = args.g_batch_size
         self.g_learning_rate = args.g_learning_rate
         self.g_sample_size = args.g_sample_size

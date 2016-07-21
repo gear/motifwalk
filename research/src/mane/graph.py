@@ -339,8 +339,11 @@ class Graph(dict):
       ... [1, -1, 1, 1, -1, -1 ...]
           # 1 is true sample and -1 is negative (fake)
     """
+    # Make sure generated dataset has correct count.
     assert window_size >= 2*num_skip, 'Window size is too small.'
-
+    assert batch_size % (num_skip + neg_samp) == 0, 'Batch size must match.'
+    batch_tuples = []
+    labels = []
     log = self.getLogger()
     wfunc = getattr(self, walk_func_name)
     # Shuffle the node ids list for better SGD performance [DeepWalk]
@@ -349,11 +352,15 @@ class Graph(dict):
     else:
       id_list = self.keys()
     # TODO: Use kwargs to pass all arguments to walk funciton
-    for node in node_list:
-      walk = wfunc(length=walk_length, start_node=target_node)
-      for target in walk:
-        
-      
+    for i in id_list:
+      walk = wfunc(length=walk_length, start_node=i)
+      for j, target in enumerate(walk_length):
+        lower = max(0, j - window_size)
+        upper = min(walk_length-1, j + window_size)
+        while len(sample) < num_skip:
+          rand_node = random.Random().choice(walk[lower:upper+1])
+          if rand_node == target:
+            continue
       
 # === END CLASS 'graph' ===
 

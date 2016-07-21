@@ -87,8 +87,7 @@ class trans_model(base_model):
             pgy_sym = lasagne.layers.get_output(l_gy)
             g_loss = - T.log(T.nnet.sigmoid(T.sum(pgy_sym, axis = 1) * gy_sym)).sum()
 
-        params = [l_emd_f.W, l_emd_f.b, l_x_hid.W, l_x_hid.b, l_y.W, l_y.b] 
-                 if self.use_feature else [l_y.W, l_y.b]
+        params = [l_emd_f.W, l_emd_f.b, l_x_hid.W, l_x_hid.b, l_y.W, l_y.b] if self.use_feature else [l_y.W, l_y.b]
         if self.update_emb:
             params = lasagne.layers.get_all_params(l_y)
         updates = lasagne.updates.sgd(loss, params, learning_rate = self.learning_rate)
