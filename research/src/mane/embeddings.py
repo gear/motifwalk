@@ -19,15 +19,28 @@ class embeddings_net():
   The basic default model is similar to deepwalk with negative
   node sampling.
   """
+
   def __init__(self, **kwargs):
+    """
+    Initialize a basic embedding neural network model with
+    settings in kwargs.
+
+    Parameters
+    ----------
+      kwargs: Dictionary like arguments. Use for convenient.
+      
+    Behaviros
+    ---------
+      Create basic object to store neural network parameters.
+
+    """
+
+    # General hyperparameters for embeddings
     self._emb_dim = getattr(kwargs, 'emb_dim')
     self._learning_rate = getattr(kwargs, 'learning_rate')
-
-
-    # Extra setting
-    for key, val in kwargs.iteritems():
-      setattr(self, key, val)
-
+    self._batch_size = getattr(kwargs, 'batch_size')
+    self._neg_samp = getattr(kwargs, 'neg_samp')
+    
   def forward(self, **kwargs):
     """
     Build forward pass
