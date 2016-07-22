@@ -23,37 +23,72 @@ class EmbeddingNet(Sequential):
   on graph structure (explain the 'Net' name).
   """
 
-  def __init__(self, name='EmbeddingNet', layers=[], **kwargs):
+  def __init__(self, graph=None,
+               name='EmbeddingNet', layers=[],
+               emb_dim=200, learning_rate=0.01,
+               batch_size=100, neg_samp=5, 
+               save_file='EmbeddingNet.keras'):
     """
     Initialize a basic embedding neural network model with
     settings in kwargs.
 
     Parameters
     ----------
-      kwargs: Dictionary like arguments. Use for convenient.
+      graph: Graph instance contains graph adj list.
+      name: Name of the model.
+      layers: List of layer instances for model initialization.
+      emb_dim: Embedding size.
+      learning_rate: Learning rate (lr).
+      batch_size: Size of each training batch.
+      neg_samp: Number of negative samples for each target.
+      save_file: File location to save the model.
       
-    Behaviros
-    ---------
+    Behavior
+    --------
       Create basic object to store neural network parameters.
 
     """
     # Initialize with super proxy
-    super(EmbeddingNet, self).__init__(layers=layers, name=name)
+    super(self).__init__(layers=layers, name=name)
 
     # General hyperparameters for embeddings
-    self._emb_dim = getattr(kwargs, 'emb_dim')
-    self._learning_rate = getattr(kwargs, 'learning_rate')
-    self._batch_size = getattr(kwargs, 'batch_size')
-    self._neg_samp = getattr(kwargs, 'neg_samp')
+    self._emb_dim = emb_dim
+    self._learning_rate = learning_rate
+    self._batch_size = batch_size
+    self._neg_samp = neg_samp
+    self._save_file = save_file
+
+    # Status flags
+    self._built = False
+    self._compiled = False
 
     # Data 
-    self._graph = getattr(kwargs, 'graph')
+    self._graph = graph
     
-  def forward(self):
+  def build(self, config=None):
     """
-    Build the neural network for the forward pass.
+    Build the neural network.
+    
+    Parameters
+    ----------
+      config: List of Keras layers to build. If None, a
+              default embedding model is loaded.
+
+    Returns
+    -------
+      None.
+
+    Behavior
+    --------
+      Add 
     """
-    self.add(Dense(32, input_dim=784))
-    self.add(Activation('relu'))
+    
+    if not config:
+      self.add(Dense(32, input_dim=784))
+      self.add(Activation('relu'))
+
+  def compile(self):
+    """
+    Compile the graph builded
     
 
