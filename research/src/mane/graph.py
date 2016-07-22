@@ -10,6 +10,7 @@
 ##       motif walk has simple strategy of storing the prev node.
 ## v0.3: Generate set of nodes result from random and 
 ##       motif walk. Frequency of node is ignored.
+## v0.4: Create a batch generator.
 
 from __future__ import print_function
 from __future__ import division
@@ -361,7 +362,6 @@ class Graph(dict):
     assert batch_size % (walk_length*(num_skip + neg_samp)) == 0, 'Batch size must match.'
     # Number of random walk for each batch
     nodes_in_batch = batch_size // (walk_length*(num_skip + neg_samp))
-    print('Node in each batch: %d' % nodes_in_batch)
     # TODO: Add logger for this process. log = self.getLogger()
     wfunc = getattr(self, walk_func_name)
     # Shuffle the node ids list for better SGD performance [DeepWalk]
@@ -383,7 +383,6 @@ class Graph(dict):
         count_nodes -= 1
       else:
         continue
-      print('Node used for walk: %d' % idz)
       walk = wfunc(length=walk_length, start_node=i)
       for j, target in enumerate(walk):
         lower = max(0, j - window_size)
@@ -398,12 +397,12 @@ class Graph(dict):
           node_tuples.append([target, rand_node])
           labels.append(-1.0) # Negative sample
       if count_nodes <= 0:
-        print('yield')
         yield node_tuples, labels
         count_nodes = nodes_in_batch
         labels = []
         node_tuples = []
 
+# TODO:  
 # === END CLASS 'graph' ===
 
 # >>> HELPER FUNCTIONS <<<
