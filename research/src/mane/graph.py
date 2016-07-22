@@ -17,14 +17,12 @@ from __future__ import absolute_import
 
 # External modules
 import logging
-import random
 import os
 import itertools
 import multiprocessing
 import cPickle as pickle
 import numpy as np
 from time import time
-from collection import defaultdict
 
 # My modules
 import motif
@@ -70,6 +68,8 @@ class Graph(dict):
     self._directed = directed
     self._edges = None
     self._logger = None
+    self._volume = None
+    self._freq = dict()
 
   def getLogger(self):
     """ 
@@ -128,14 +128,22 @@ class Graph(dict):
     -------
       volume: inner edges count of the subgraph
     """
-    subgraph = self.subgraph(node_list)
     count = 0
-    for node in subgraph:
-      count += len(subgraph[node])
-    if self._directed:
-      return count 
+    if node_list:
+      subgraph = self.subgraph(node_list)
     else:
-      return count // 2
+      subgraph = self
+    if not subgraph._volume:
+      for node in subgraph:
+        count += len(subgraph[node])
+      if subgraph._directed:
+        subgraph._volume = count
+        return count 
+      else:
+        subgraph._volume = count // 2
+        return count // 2
+    else:
+      return subgraph._volume
 
   def random_walk(self, length, start_node=None, rand_seed=None, reset = 0.0):
     """
@@ -162,7 +170,8 @@ class Graph(dict):
     """
     # TODO: Use log and exit instead of assert
     assert 0 <= reset <= 1, 'Restart probability should be in [0.0,1.0].'
-    rand = random.Random(rand_seed)
+    rand = np.random
+    rand.seed(rand_seed)
     # Give warning if graph is directed. TODO: Detail warning.
     # TODO: Add walk info.
     if self._directed:
@@ -215,7 +224,8 @@ class Graph(dict):
     # TODO: Implement Motif class and delegate the walk to Motif
     # Now - Default as triangle motif (undirected).
     assert 0 <= reset <= 1, 'Restart probability should be in [0.0, 1.0].'
-    rand = random.Random(rand_seed)
+    rand = np.random
+    rand.seed(rand_seed)
     if self._directed:
       self.getLogger().warn('Performing motif walk on directed graph.')
     # Select starting node
@@ -305,9 +315,10 @@ class Graph(dict):
     # TODO: Log the walk
     return walk_path, set(walk_path)
 
-  def sample_walk_with_negative(self, walk_func_name, walk_length, num_walk=10,
+  # TODO: fix bug when passing with key word walk_length=...
+  def sample_walk_with_negative(self, walk_func_name, walk_length=5, num_walk=10,
                                 num_true=1, neg_samp=5, num_skip=5, 
-                                shuffle=True, window_size=5, batch_size=20, 
+                                shuffle=True, window_size=5, batch_size=100, 
                                 neg_samp_distort=0.75):
     """
     Create training dataset using walk function list with negative
@@ -325,6 +336,9 @@ class Graph(dict):
       window_size: Window for getting sample from the random walk list.
       batch_size: Number of samples generated.
       neg_samp_distort: Distort the uniform distribution for negative sampling.
+                        Float value of 0.0 means uniform sampling and value
+                        of 1.0 means normal unigram sampling. This scheme
+                        is the same as in word2vec model implementation.
   
     Yields
     ------
@@ -344,9 +358,10 @@ class Graph(dict):
     """
     # Make sure generated dataset has correct count.
     assert window_size >= num_skip, 'Window size is too small.'
-    assert batch_size % (num_skip + neg_samp) == 0, 'Batch size must match.'
+    assert batch_size % (walk_length*(num_skip + neg_samp)) == 0, 'Batch size must match.'
     # Number of random walk for each batch
-    nodes_in_batch = batch_size // (num_skip + neg_samp)
+    nodes_in_batch = batch_size // (walk_length*(num_skip + neg_samp))
+    print('Node in each batch: %d' % nodes_in_batch)
     # TODO: Add logger for this process. log = self.getLogger()
     wfunc = getattr(self, walk_func_name)
     # Shuffle the node ids list for better SGD performance [DeepWalk]
@@ -358,27 +373,37 @@ class Graph(dict):
     count_nodes = nodes_in_batch
     node_tuples = []
     labels = []
-    for i in id_list:
-      if count_nodes <= 0:
-        yield node_tuples, labels
-        count_nodes = nodes_in_batch
-        labels = []
-        node_tuples = []
+    # Node degree distribution distorted by neg_samp_distort
+    node_list = self._freq.keys()
+    freq_list = np.array(self._freq.values(), np.int32)**neg_samp_distort
+    norm = sum(freq_list)
+    freq_list = freq_list / norm
+    for idz, i in enumerate(id_list):
+      if len(self[i]) > 0:
+        count_nodes -= 1
       else:
-        if len(self[i]) > 0:
-          count_nodes -= 1
-        else:
-          continue
+        continue
+      print('Node used for walk: %d' % idz)
       walk = wfunc(length=walk_length, start_node=i)
       for j, target in enumerate(walk):
         lower = max(0, j - window_size)
         upper = min(walk_length, j + window_size+1)
         for _ in xrange(num_skip):
           # TODO: Check situation where rand_node == target
-          rand_node = random.Random().choice(walk[lower:upper])
+          rand_node = np.random.choice(walk[lower:upper])
           node_tuples.append([target, rand_node])
           labels.append(1.0) # Possitive sample
-      
+        for _ in xrange(neg_samp):
+          rand_node = np.random.choice(node_list, p = freq_list)
+          node_tuples.append([target, rand_node])
+          labels.append(-1.0) # Negative sample
+      if count_nodes <= 0:
+        print('yield')
+        yield node_tuples, labels
+        count_nodes = nodes_in_batch
+        labels = []
+        node_tuples = []
+
 # === END CLASS 'graph' ===
 
 # >>> HELPER FUNCTIONS <<<
@@ -412,13 +437,15 @@ def graph_from_pickle(pickle_filename, **graph_config):
   # Load data to the graph
   for key, val in data.iteritems():
     graph[key] = val
+    graph._freq[key] = len(val)
   # TODO: Log result of graph creation
   return graph
-
 
 # === END HELPER FUNCTIONS ===
 
     
+
+
 
 
 
