@@ -65,14 +65,51 @@ class EmbeddingNet(Sequential):
     # Data 
     self._graph = graph
     
-  def build(self, config=None):
+  def build_model(self, config=None):
     """
     Build the neural network.
     
     Parameters
     ----------
-      config: List of Keras layers to build. If None, a
-              default embedding model is loaded.
+      config: Dictionary of Keras layers to build. 
+              If None, a default embedding model is 
+              loaded.
+
+    Returns
+    -------
+      List of layer instances
+
+    Behavior
+    --------
+      Add layers to the model. Each model should only
+      be built once. Print warning when trying to build
+      the built model.
+    """
+    if self._built:
+      print('WARNING: Model was built.'
+            ' Performing more than one build...')
+    if not config:
+      self.add(Dense(32, input_dim=784))
+      self.add(Activation('relu'))
+      self.add(Dense(1000, input_dim=1000))
+    else:
+      for layer in config:
+        self.add(layer)
+    self._built = True
+
+  def compile_model(self, loss='categorical_crossentropy', 
+              optimizer='adam',
+              metrics=['accuracy']):
+    """
+    Compile the model by adding loss functions and
+    optimizer. 
+
+    Parameters
+    ----------
+      loss: String identifier for the loss function.
+      optimizer: String identifier for the optimizer.
+      metric: A list of metrics setting. Only 'accuracy'
+              for now.
 
     Returns
     -------
@@ -80,15 +117,64 @@ class EmbeddingNet(Sequential):
 
     Behavior
     --------
-      Add 
+      Compile the model and add appropriate loss and
+      optimization operation. Since this is a simple
+      sequential model, the input is the first layer
+      and loss function is computed at the last layer.
     """
-    
-    if not config:
-      self.add(Dense(32, input_dim=784))
-      self.add(Activation('relu'))
+    if self._compiled:
+      print('Model is compiled.')
+    else:
+      self.compile(loss=loss, optimizer=optimizer, 
+                   metrics=metrics)
+      self._compiled = True
 
-  def compile(self):
-    """
-    Compile the graph builded
+  def fit_data(x, y, nb_epoch):
     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
