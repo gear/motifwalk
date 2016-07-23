@@ -39,6 +39,7 @@ __email__ = "hoangnt@ai.cs.titech.ac.jp"
 class Graph(dict):
   """Graph is a dictionary contains nodes
   """
+  #############################################################################
   def __init__(self, directed=False, name='graph'):
     """
     Create a graph as default_dict with default
@@ -72,6 +73,7 @@ class Graph(dict):
     self._volume = None
     self._freq = dict()
 
+  #############################################################################
   def getLogger(self):
     """ 
     Create logger for the graph on demand.
@@ -80,12 +82,14 @@ class Graph(dict):
       self._logger = logging.getLogger(self._name)
     return self._logger
 
+  #############################################################################
   def nodes(self):
     """
     Return list of nodes in graph.
     """
     return self.keys()
 
+  #############################################################################
   # TODO: Implement edges
   def edges(self):
     """
@@ -94,6 +98,7 @@ class Graph(dict):
     return None
     
 
+  #############################################################################
   def subgraph(self, node_list = []):
     """
     Create and return a Graph instance as a subgraph
@@ -116,6 +121,7 @@ class Graph(dict):
     return subgraph
   
   ### GRAPH - VOLUME ###
+  #############################################################################
   def volume(self, node_list = None):
     """
     Return volume (inner edges count) of the subgraph
@@ -146,6 +152,7 @@ class Graph(dict):
     else:
       return subgraph._volume
 
+  #############################################################################
   def random_walk(self, length, start_node=None, rand_seed=None, reset = 0.0):
     """
     Return a list of nodes in a truncated random walk.
@@ -193,6 +200,7 @@ class Graph(dict):
         break
     return walk_path
 
+  #############################################################################
   def motif_walk(self, length, start_node=None, rand_seed=None, 
                  reset = 0.0, walk_bias = 0.9, motif=None):
     """
@@ -259,6 +267,7 @@ class Graph(dict):
       cur = cand
     return walk_path
 
+  #############################################################################
   def build_random_walk(self, num_walk = 20, length=128, start_node=None, 
              rand_seed=None, reset=0.0):
     """
@@ -290,6 +299,7 @@ class Graph(dict):
     # TODO: Log the walk
     return walk_path, set(walk_path)
 
+  #############################################################################
   def build_motif_walk(self, num_walk = 20, length=128, start_node=None, 
              rand_seed=None, reset=0.0, walk_bias=0.9):
     """
@@ -316,6 +326,7 @@ class Graph(dict):
     # TODO: Log the walk
     return walk_path, set(walk_path)
 
+  #############################################################################
   # TODO: fix bug when passing with key word walk_length=...
   def sample_walk_with_negative(self, walk_func_name, walk_length=5, num_walk=10,
                                 num_true=1, neg_samp=5, num_skip=5, 
@@ -406,7 +417,10 @@ class Graph(dict):
 # TODO:  
 # === END CLASS 'graph' ===
 
+
 # >>> HELPER FUNCTIONS <<<
+
+###############################################################################
 def graph_from_pickle(pickle_filename, **graph_config):
   """
   Load pickle file (stored as a dict or defaultdict) and

@@ -23,6 +23,7 @@ from keras import backend as K
 __author__ = "Hoang Nguyen"
 __email__ = "hoangnt@ai.cs.titech.ac.jp"
 
+# >>> BEGIN CLASS EmbeddingNet <<<
 class EmbeddingNet():
   """
   Contain computation graph for embedding operations.
@@ -30,8 +31,8 @@ class EmbeddingNet():
   node sampling. This model only perform embedding based
   on graph structure (explain the 'Net' name).
   """
-
-  def __init__(model=None, graph=None,
+  ##################################################################### __init__
+  def __init__(model=None, graph=None, epoch=10,
                name='EmbeddingNet', emb_dim=200, 
                learning_rate=0.01, batch_size=100, 
                neg_samp=5, save_file='EmbeddingNet.keras'):
@@ -41,7 +42,9 @@ class EmbeddingNet():
 
     Parameters
     ----------
+      model: Keras Model instance.
       graph: Graph instance contains graph adj list.
+      epoch: Number of pass through the whole network.
       name: Name of the model.
       layers: List of layer instances for model initialization.
       emb_dim: Embedding size.
@@ -60,6 +63,7 @@ class EmbeddingNet():
     # General hyperparameters for embeddings
     self._emb_dim = emb_dim
     self._learning_rate = learning_rate
+    self._epoch = epoch
     self._batch_size = batch_size
     self._neg_samp = neg_samp
     self._save_file = save_file
@@ -73,21 +77,21 @@ class EmbeddingNet():
 
     # Neural net
     self._model = model
-
+  ##################################################################### nce_loss 
   def nce_loss(y_true, y_pred):
     """
     Custom NCE loss function.
     """
     return -K.log(K.sigmoid(y_pred.sum() * y_true).sum())
-    
+  ######################################################################## build
   def build(self, loss=self.nce_loss, optimizer='adam'):
     """
     Build and compile neural net.
     
     Parameters
     ----------
-      loss: Loss function (Keras objectives). 
-      optimizer: String identifier for Keras optimizer.
+      loss: Loss function (String or Keras objectives).
+      optimizer: Keras optimizer (String or object).
 
     Returns
     -------
@@ -107,59 +111,44 @@ class EmbeddingNet():
     target_in = Input(shape=(self._batch_size, None), dtype='int32')
     class_in = Input(shape=(self._batch_size, None), dtype='int32')
     label_in = Input(shape=(self._batch_size, 1), dtype='floatX')
-
     # Embedding layers connect to target_in and class_in
     emb_in = Embedding(output_dim=self._emb_dim, input_dim=len(self._graph),
                        input_length=self._batch_size)(target_in)
     emb_out = Embedding(output_dim=self._emb_dim, input_dim=len(self._graph),
                         input_length=self._batch_size)(target_out)
-
     # Elemen-wise multiplication for dot product
     merge_emb = merge([emb_in, emb_out], mode='mul')
     dot_prod = merge_emb.sum(axis=1)
-  
     # Initialize model
     if self._model is not None:
       self._model = Model(input=[target_in, class_in, label_in], output=dot_prod)
-
     # Compile model
-    self._model.compile(loss=loss, optimizer=optimizer)
-    
-    
-
-  def train(self, loss='categorical_crossentropy', 
-              optimizer='adam',
-              metrics=['accuracy']):
+    if not self._compiled:
+      self._model.compile(loss=loss, optimizer=optimizer)
+  ######################################################################## train
+  def train(self, mode='random_walk'):
     """
-    Compile the model by adding loss functions and
-    optimizer. 
+    Load data and train the model.
 
     Parameters
     ----------
-      loss: String identifier for the loss function.
-      optimizer: String identifier for the optimizer.
-      metric: A list of metrics setting. Only 'accuracy'
-              for now.
+      mode: Data generation mode: 'random_walk' or 'motif_walk'.
 
     Returns
     -------
-      None.
+      None. Maybe weights of the embeddings?
 
     Behavior
     --------
-      Compile the model and add appropriate loss and
-      optimization operation. Since this is a simple
-      sequential model, the input is the first layer
-      and loss function is computed at the last layer.
+      Load data in batches and train the model.
     """
-    if self._compiled:
-      print('Model is compiled.')
-    else:
-      self.compile(loss=loss, optimizer=optimizer, 
-                   metrics=metrics)
-      self._compiled = True
-
+    data_generator
+    for _ in xrange(self._epoch):
+      for
     
+  ############################################################################## 
+
+# === END CLASS EmbeddingNet ===
 
 
 
