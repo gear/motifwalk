@@ -343,8 +343,8 @@ class Graph(dict):
   
     Yields
     ------
-      batch_tuples: List of tuples in the format: (target, class)
-      labels: List of corresponding labels for each sample in bath.
+      batch_tuples: np.array of tuples in the format: (target, class)
+      labels: np.array of corresponding labels for each sample in bath.
   
     Example
     -------
@@ -397,7 +397,8 @@ class Graph(dict):
           node_tuples.append([target, rand_node])
           labels.append(-1.0) # Negative sample
       if count_nodes <= 0:
-        yield node_tuples, labels
+        yield np.array(node_tuples, dtype=np.int32),
+              np.array(labels, dtype=np.float32)
         count_nodes = nodes_in_batch
         labels = []
         node_tuples = []
