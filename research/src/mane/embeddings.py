@@ -5,20 +5,25 @@
 # Created: 2016-07-21
 # Description:
 ## v0.0: File created. Simple Sequential model.
+## v0.1: Change to functional API model.
 
 from __future__ import division
 from __future__ import print_function
 
+import numpy as np
 import keras
 import theano
 
-from keras.models import Sequential
-from keras.layers import Dense, Activation
+# Import keras modules
+from keras.models import Model
+from keras.layers import Input, merge
+from keras.layers.embeddings import Embedding
+from keras import backend as K
 
 __author__ = "Hoang Nguyen"
 __email__ = "hoangnt@ai.cs.titech.ac.jp"
 
-class EmbeddingNet(Sequential):
+class EmbeddingNet():
   """
   Contain computation graph for embedding operations.
   The basic default model is similar to deepwalk with negative
@@ -26,11 +31,10 @@ class EmbeddingNet(Sequential):
   on graph structure (explain the 'Net' name).
   """
 
-  def __init__(self, graph=None,
-               name='EmbeddingNet', layers=[],
-               emb_dim=200, learning_rate=0.01,
-               batch_size=100, neg_samp=5, 
-               save_file='EmbeddingNet.keras'):
+  def __init__(model=None, graph=None,
+               name='EmbeddingNet', emb_dim=200, 
+               learning_rate=0.01, batch_size=100, 
+               neg_samp=5, save_file='EmbeddingNet.keras'):
     """
     Initialize a basic embedding neural network model with
     settings in kwargs.
@@ -49,10 +53,9 @@ class EmbeddingNet(Sequential):
     Behavior
     --------
       Create basic object to store neural network parameters.
-
     """
-    # Initialize with super proxy
-    super(self).__init__(layers=layers, name=name)
+    # Initialize with default super proxy
+    super(self).__init__()
 
     # General hyperparameters for embeddings
     self._emb_dim = emb_dim
@@ -67,40 +70,64 @@ class EmbeddingNet(Sequential):
 
     # Data 
     self._graph = graph
-    
-  def build_model(self, config=None):
+
+    # Neural net
+    self._model = model
+
+  def nce_loss(y_true, y_pred):
     """
-    Build the neural network.
+    Custom NCE loss function.
+    """
+    return -K.log(K.sigmoid(y_pred.sum() * y_true).sum())
+    
+  def build(self, loss=self.nce_loss, optimizer='adam'):
+    """
+    Build and compile neural net.
     
     Parameters
     ----------
-      config: Dictionary of Keras layers to build. 
-              If None, a default embedding model is 
-              loaded.
+      loss: Loss function (Keras objectives). 
+      optimizer: String identifier for Keras optimizer.
 
     Returns
     -------
-      List of layer instances
+      None.
 
     Behavior
     --------
-      Add layers to the model. Each model should only
-      be built once. Print warning when trying to build
-      the built model.
+      Construct neural net. Set built flag to True.
     """
     if self._built:
       print('WARNING: Model was built.'
             ' Performing more than one build...')
-    if not config:
-      self.add(Dense(32, input_dim=784))
-      self.add(Activation('relu'))
-      self.add(Dense(1000, input_dim=1000))
-    else:
-      for layer in config:
-        self.add(layer)
-    self._built = True
+    assert loss is None, 'Must provide a loss function.'
+    assert optimizer is None, 'Must provide optimizer.'
 
-  def compile_model(self, loss='categorical_crossentropy', 
+    # Input tensors
+    target_in = Input(shape=(self._batch_size, None), dtype='int32')
+    class_in = Input(shape=(self._batch_size, None), dtype='int32')
+    label_in = Input(shape=(self._batch_size, 1), dtype='floatX')
+
+    # Embedding layers connect to target_in and class_in
+    emb_in = Embedding(output_dim=self._emb_dim, input_dim=len(self._graph),
+                       input_length=self._batch_size)(target_in)
+    emb_out = Embedding(output_dim=self._emb_dim, input_dim=len(self._graph),
+                        input_length=self._batch_size)(target_out)
+
+    # Elemen-wise multiplication for dot product
+    merge_emb = merge([emb_in, emb_out], mode='mul')
+    dot_prod = merge_emb.sum(axis=1)
+  
+    # Initialize model
+    if self._model is not None:
+      self._model = Model(input=[target_in, class_in, label_in], output=dot_prod)
+
+    # Compile model
+    self._model.compile(loss=loss, optimizer=optimizer)
+    
+    
+
+  def train(self, loss='categorical_crossentropy', 
               optimizer='adam',
               metrics=['accuracy']):
     """
@@ -132,7 +159,6 @@ class EmbeddingNet(Sequential):
                    metrics=metrics)
       self._compiled = True
 
-  def fit_data(x, y, nb_epoch):
     
 
 
