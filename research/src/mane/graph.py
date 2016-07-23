@@ -39,7 +39,7 @@ __email__ = "hoangnt@ai.cs.titech.ac.jp"
 class Graph(dict):
   """Graph is a dictionary contains nodes
   """
-  #############################################################################
+  ##################################################################### __init__
   def __init__(self, directed=False, name='graph'):
     """
     Create a graph as default_dict with default
@@ -72,8 +72,7 @@ class Graph(dict):
     self._logger = None
     self._volume = None
     self._freq = dict()
-
-  #############################################################################
+  #################################################################### getLogger
   def getLogger(self):
     """ 
     Create logger for the graph on demand.
@@ -82,23 +81,20 @@ class Graph(dict):
       self._logger = logging.getLogger(self._name)
     return self._logger
 
-  #############################################################################
+  ######################################################################## nodes
   def nodes(self):
     """
     Return list of nodes in graph.
     """
     return self.keys()
-
-  #############################################################################
+  ######################################################################## edges
   # TODO: Implement edges
   def edges(self):
     """
     Return sets of edges tuples in graph.
     """
     return None
-    
-
-  #############################################################################
+  ##################################################################### subgraph
   def subgraph(self, node_list = []):
     """
     Create and return a Graph instance as a subgraph
@@ -119,9 +115,7 @@ class Graph(dict):
       if node_id in self:
         subgraph[node_id] = [n for n in self[node_id] if n in node_list]
     return subgraph
-  
-  ### GRAPH - VOLUME ###
-  #############################################################################
+  ####################################################################### volume
   def volume(self, node_list = None):
     """
     Return volume (inner edges count) of the subgraph
@@ -151,9 +145,9 @@ class Graph(dict):
         return count // 2
     else:
       return subgraph._volume
-
-  #############################################################################
-  def random_walk(self, length, start_node=None, rand_seed=None, reset = 0.0):
+  ################################################################## random_walk
+  def random_walk(self, length, start_node=None, 
+                  rand_seed=None, reset = 0.0):
     """
     Return a list of nodes in a truncated random walk.
     This function serves a comparision with our motif walk.
@@ -199,8 +193,7 @@ class Graph(dict):
       else:
         break
     return walk_path
-
-  #############################################################################
+  ################################################################### motif_walk
   def motif_walk(self, length, start_node=None, rand_seed=None, 
                  reset = 0.0, walk_bias = 0.9, motif=None):
     """
@@ -266,10 +259,9 @@ class Graph(dict):
       prev = cur
       cur = cand
     return walk_path
-
-  #############################################################################
-  def build_random_walk(self, num_walk = 20, length=128, start_node=None, 
-             rand_seed=None, reset=0.0):
+  ############################################################ build_random_walk
+  def build_random_walk(self, num_walk = 20, length=128, 
+                        start_node=None, rand_seed=None, reset=0.0):
     """
     Perform random walk num_walk times to create a list and set of 
     random walk nodes. This method is usually used with fixed start node.
@@ -299,9 +291,10 @@ class Graph(dict):
     # TODO: Log the walk
     return walk_path, set(walk_path)
 
-  #############################################################################
-  def build_motif_walk(self, num_walk = 20, length=128, start_node=None, 
-             rand_seed=None, reset=0.0, walk_bias=0.9):
+  ############################################################# build_motif_walk
+  def build_motif_walk(self, num_walk = 20, length=128, 
+                       start_node=None, rand_seed=None, 
+                       reset=0.0, walk_bias=0.9):
     """
     Perform motif walk num_walk times to create a list and set of 
     motif walk nodes. This method is usually used fixed start node.
@@ -310,11 +303,12 @@ class Graph(dict):
     ----------
       num_walk: Number of motif walk. Default to be 20. (Optional)
       length: Length of each motif wal. Default to be 128. (Optional)
-      start_node: Start location for the random walk. None means a random
-                  node will be selected. (Optional)
-      rand_seed: Seed for random module. None means system time is used. (Optional)
-      reset: Reset back to the start node probability for each motif walk.
-             Default 0.0. (Optional)
+      start_node: Start location for the random walk. None means 
+                  a random node will be selected. (Optional)
+      rand_seed: Seed for random module. None means system time 
+                 is used. (Optional)
+      reset: Reset back to the start node probability for each 
+             motif walk. Default 0.0. (Optional)
     """
     if not start_node:
       self.getLogger().warn('Creating random walk set with random start node.')
@@ -325,13 +319,12 @@ class Graph(dict):
       walk_path.extend(mwp)
     # TODO: Log the walk
     return walk_path, set(walk_path)
-
-  #############################################################################
+  #################################################### sample_walk_with_negative
   # TODO: fix bug when passing with key word walk_length=...
-  def sample_walk_with_negative(self, walk_func_name, walk_length=5, num_walk=10,
-                                num_true=1, neg_samp=5, num_skip=5, 
-                                shuffle=True, window_size=5, batch_size=100, 
-                                neg_samp_distort=0.75):
+  def sample_walk_with_negative(self, walk_func_name, walk_length=5, 
+                                num_walk=10, num_true=1, neg_samp=5, 
+                                num_skip=5, shuffle=True, window_size=5, 
+                                batch_size=100, neg_samp_distort=0.75):
     """
     Create training dataset using walk function list with negative
     sampling and negative distribution distorted. This function is
@@ -347,14 +340,16 @@ class Graph(dict):
       neg_samp: Number of negative sampling for each target.
       window_size: Window for getting sample from the random walk list.
       batch_size: Number of samples generated.
-      neg_samp_distort: Distort the uniform distribution for negative sampling.
-                        Float value of 0.0 means uniform sampling and value
-                        of 1.0 means normal unigram sampling. This scheme
-                        is the same as in word2vec model implementation.
+      neg_samp_distort: Distort the uniform distribution for negative 
+                        sampling. Float value of 0.0 means uniform 
+                        sampling and value of 1.0 means normal unigram 
+                        sampling. This scheme is the same as in word2vec
+                        model implementation.
   
     Yields
     ------
-      batch_tuples: np.array of tuples in the format: (target, class)
+      targets: np.array of target node
+      class: np.array of class associated with the target node
       labels: np.array of corresponding labels for each sample in bath.
   
     Example
@@ -408,8 +403,11 @@ class Graph(dict):
           node_tuples.append([target, rand_node])
           labels.append(-1.0) # Negative sample
       if count_nodes <= 0:
-        yield (np.array(node_tuples, dtype=np.int32),
-              np.array(labels, dtype=np.float32))
+        node_tuples = np.array(node_tuples, dtype=np.int32)
+        labels = np.array(labels, dtype=np.float32)
+        yield (node_tuples[:,0], 
+               node_tuples[:,1],
+               labels)
         count_nodes = nodes_in_batch
         labels = []
         node_tuples = []
@@ -420,7 +418,7 @@ class Graph(dict):
 
 # >>> HELPER FUNCTIONS <<<
 
-###############################################################################
+############################################################## graph_from_pickle
 def graph_from_pickle(pickle_filename, **graph_config):
   """
   Load pickle file (stored as a dict or defaultdict) and
