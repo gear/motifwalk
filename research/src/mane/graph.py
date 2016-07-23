@@ -397,8 +397,8 @@ class Graph(dict):
           node_tuples.append([target, rand_node])
           labels.append(-1.0) # Negative sample
       if count_nodes <= 0:
-        yield np.array(node_tuples, dtype=np.int32),
-              np.array(labels, dtype=np.float32)
+        yield (np.array(node_tuples, dtype=np.int32),
+              np.array(labels, dtype=np.float32))
         count_nodes = nodes_in_batch
         labels = []
         node_tuples = []
