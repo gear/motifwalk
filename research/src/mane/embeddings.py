@@ -92,7 +92,7 @@ class EmbeddingNet():
     """
     return -K.log(K.sigmoid(y_pred.sum() * y_true).sum())
   ######################################################################## build
-  def build(self, loss=self.nce_loss, optimizer='adam'):
+  def build(self, loss=None, optimizer='adam'):
     """
     Build and compile neural net.
     
@@ -112,8 +112,9 @@ class EmbeddingNet():
     if self._built:
       print('WARNING: Model was built.'
             ' Performing more than one build...')
-    assert loss is None, 'Must provide a loss function.'
     assert optimizer is None, 'Must provide optimizer.'
+    if loss is None:
+      loss = self.nce_loss
 
     # Input tensors: shape doesn't include batch_size
     target_in = Input(shape=(1,), dtype='int32')
@@ -155,12 +156,12 @@ class EmbeddingNet():
                                  self._walk_length,
                                  self._num_walk,
                                  num_true,
-                                 neg_samp=self._neg_samp,
-                                 num_skip=self._num_skip,
+                                 self._neg_samp,
+                                 self._num_skip,
                                  shuffle,
                                  self._window_size,
                                  self._batch_size,
-                                 neg_samp_distort=distort)
+                                 distort)
     for _ in xrange(self._epoch):
       for targets, classes, labels in data_generator:
         self._model.fit([targets, classes], labels, nb_epoch=1)
