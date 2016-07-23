@@ -80,6 +80,13 @@ class trans_model(base_model):
             l_gy = layers.DenseLayer(l_emb_in, num_ver,
                                      nonlinearity = lasagne.nonlinearities.softmax)
             pgy_sym = lasagne.layers.get_output(l_gy)
+            # In the case of using categorical_crossentropy, the second argument
+            # is the distribution for the true category. This can be a 2-D tensor
+            # where each row correspond to one output of first argument (prediction).
+            # The 2nd argument can also be a 1-D tensor of integers. Here, each integer
+            # is the index of one-hot encoding for each prediction. That explains why
+            # in this implementation the author crossentropy a list of dot products
+            # with a single integer -> This single integer prepresent a one-hot.
             g_loss = lasagne.objectives.categorical_crossentropy(pgy_sym, 
                                                                  lasagne.layers.get_output(l_emb_out)).sum()
         else:

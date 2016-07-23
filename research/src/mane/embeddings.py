@@ -176,8 +176,3 @@ class EmbeddingNet(Sequential):
 
 
 
-
-
-
-
-
