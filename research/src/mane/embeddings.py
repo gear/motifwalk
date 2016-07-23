@@ -15,6 +15,9 @@ import theano
 from keras.models import Sequential
 from keras.layers import Dense, Activation
 
+__author__ = "Hoang Nguyen"
+__email__ = "hoangnt@ai.cs.titech.ac.jp"
+
 class EmbeddingNet(Sequential):
   """
   Contain computation graph for embedding operations.
