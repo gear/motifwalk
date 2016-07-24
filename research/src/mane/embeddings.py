@@ -16,7 +16,7 @@ import theano
 
 # Import keras modules
 from keras.models import Model
-from keras.layers import Input, merge
+from keras.layers import Input, merge, Lambda
 from keras.layers.embeddings import Embedding
 from keras import backend as K
 
@@ -82,13 +82,6 @@ class EmbeddingNet():
     self._input_tensors = []
     self._output_tensors = []
     self._model = model
-  ##################################################################### nce_loss 
-  @staticmethod
-  def nce_loss(y_true, y_pred):
-    """
-    Custom NCE loss function.
-    """
-    return -K.log(K.sigmoid(y_pred.sum(axis=1) * y_true).sum())
   ######################################################################## build
   def build(self, loss=None, optimizer='adam'):
     """
@@ -111,21 +104,22 @@ class EmbeddingNet():
       print('WARNING: Model was built.'
             ' Performing more than one build...')
     if loss is None:
-      loss = self.nce_loss
+      loss = nce_loss
 
     # Input tensors: shape doesn't include batch_size
-    target_in = Input(shape=(1,1,), dtype='int32', name='target_in')
-    class_in = Input(shape=(1,1,), dtype='int32', name='class_in')
+    target_in = Input(shape=(1,), dtype='int32', name='target_in')
+    class_in = Input(shape=(1,), dtype='int32', name='class_in')
     # Embedding layers connect to target_in and class_in
     emb_in = Embedding(output_dim=self._emb_dim, input_dim=len(self._graph),
-                       input_length=self._batch_size)(target_in)
+                       input_length=self._batch_size, name='emb_in')(target_in)
     emb_out = Embedding(output_dim=self._emb_dim, input_dim=len(self._graph),
-                        input_length=self._batch_size)(class_in)
+                       input_length=self._batch_size, name='emb_out')(class_in)
     # Elemen-wise multiplication for dot product
-    merge_emb = merge([emb_in, emb_out], mode='mul')
+    elem_mul = merge([emb_in, emb_out], mode='mul')
+    dot_prod = Lambda(reduce_sum, output_shape=(100,1))(elem_mul)
     # Initialize model
     if self._model is None:
-      self._model = Model(input=[target_in, class_in], output=merge_emb)
+      self._model = Model(input=[target_in, class_in], output=dot_prod)
     # Compile model
     if not self._compiled:
       self._model.compile(loss=loss, optimizer=optimizer)
@@ -160,22 +154,30 @@ class EmbeddingNet():
     # TODO: Now using makeshift reshape - Fix data generation later
     for _ in xrange(self._epoch):
       for targets, classes, labels in data_generator:
-        targets = targets[np.newaxis].T.reshape(100,1,1)
-        classes = classes[np.newaxis].T.reshape(100,1,1)
-        labels = labels[np.newaxis].T.reshape(100,1,1)
+        targets = targets[np.newaxis].T
+        classes = classes[np.newaxis].T
+        labels = labels[np.newaxis].T
         print(targets.shape)
         print(classes.shape)
         print(labels.shape)
         self._model.fit([targets, classes], labels, 
                         batch_size=self._batch_size, nb_epoch=1)
-  ############################################################################## 
 
 # === END CLASS EmbeddingNet ===
 
+# >>> HELPER FUNCTIONS <<<
 
+####################################################################### nce_loss 
+def nce_loss(y_true, y_pred):
+    """
+    Custom NCE loss function.
+    """
+    return -K.log(K.sigmoid(y_pred * y_true)).sum()
 
+# === END HELPER FUNCTIONS ===
 
-
+def reduce_sum(x):
+  return K.sum(x, axis=2)
 
 
 
