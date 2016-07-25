@@ -85,6 +85,11 @@ class EmbeddingNet():
     self._input_tensors = []
     self._output_tensors = []
     self._model = model
+
+    # Inputs and output
+    self._target = None
+    self._class = None
+    self._score = None
   ######################################################################## build
   def build(self, loss=None, optimizer='adam'):
     """
@@ -112,13 +117,16 @@ class EmbeddingNet():
     # Input tensors: shape doesn't include batch_size
     target_in = Input(batch_shape=(self._batch_size,1), dtype='int32', name='target_in')
     class_in = Input(batch_shape=(self._batch_size,1), dtype='int32', name='class_in')
+    self._target = target_in
+    self._class = class_in
     # Embedding layers connect to target_in and class_in
     emb_in = Embedding(output_dim=self._emb_dim, input_dim=len(self._graph),
                        input_length=self._batch_size, name='emb_in')(target_in)
     emb_out = Embedding(output_dim=self._emb_dim, input_dim=len(self._graph),
                        input_length=self._batch_size, name='emb_out')(class_in)
     # Elemen-wise multiplication for dot product
-    dot_prod = RowDot()([emb_in, emb_out])
+    dot_prod = Merge(mode=row_wise_dot, output_shape=(100,1))([emb_in, emb_out])
+    self._score = dot_prod
     # Initialize model
     if self._model is None:
       self._model = Model(input=[target_in, class_in], output=dot_prod)
@@ -162,8 +170,9 @@ class EmbeddingNet():
         print(targets.shape)
         print(classes.shape)
         print(labels.shape)
-        self._model.fit([targets, classes], labels, 
-                        batch_size=self._batch_size, nb_epoch=1)
+        self._model.fit({'target_in':targets, 'class_in':classes}, 
+                        {'dot_prod':labels}, batch_size=self._batch_size, 
+                        nb_epoch=1)
 
   def build_sequential(self, loss=None, optimizer='adam'):
     """
