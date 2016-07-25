@@ -115,23 +115,21 @@ class EmbeddingNet():
       loss = nce_loss
 
     # Input tensors: shape doesn't include batch_size
-    target_in = Input(batch_shape=(1,), 
+    target_in = Input(batch_shape=(self._batch_size,1), 
                       dtype='int32', name='target_in')
-    class_in = Input(batch_shape=(1,), 
+    class_in = Input(batch_shape=(self._batch_size,1), 
                      dtype='int32', name='class_in')
     # Embedding layers connect to target_in and class_in
     emb_in = Embedding(input_dim=len(self._graph),
                        output_dim=self._emb_dim, 
-                       input_length=self._batch_size, 
                        name='emb_in')(target_in)
     reshape_in = Reshape(target_shape=(self._emb_dim,))(emb_in)
     emb_out = Embedding(input_dim=len(self._graph),
                         output_dim=self._emb_dim, 
-                        input_length=self._batch_size, 
                         name='emb_out')(class_in)
     reshape_out = Reshape(target_shape=(self._emb_dim,))(emb_out)
     # Elemen-wise multiplication for dot product
-    dot_prod = Merge(mode=row_wise_dot, output_shape=(100,1), 
+    dot_prod = Merge(mode=row_wise_dot, output_shape=(1,), 
                      name='dot_prod')([reshape_in, reshape_out])
     # Initialize model
     if self._model is None:
@@ -210,12 +208,12 @@ class EmbeddingNet():
     
     # Target embedding construct
     emb_in.add(Embedding(input_dim=len(self._graph), output_dim=self._emb_dim,
-                         input_length=self._batch_size, name='emb_in_layer'))
+                         name='emb_in_layer'))
     # Class embedding construct
     emb_out.add(Embedding(input_dim=len(self._graph), output_dim=self._emb_dim,
-                         input_length=self._batch_size, name='emb_out_layer'))
+                          name='emb_out_layer'))
     # Merge emb_in and emb_out
-    merged = Merge([emb_in, emb_out], mode=row_wise_dot, output_shape=(100,1)) #TODO: Quick fix output_shape
+    merged = Merge([emb_in, emb_out], mode=row_wise_dot, output_shape=(1,)) #TODO: Quick fix output_shape
 
     # Final model
     self._model.add(merged)
@@ -239,7 +237,7 @@ def row_wise_dot(inputs):
     """
     a = inputs[0]
     b = inputs[1]
-    return K.batch_dot(a,b,axes=[2,2])
+    return K.batch_dot(a,b,axes=[1,1])
 
 # === END HELPER FUNCTIONS ===
 
