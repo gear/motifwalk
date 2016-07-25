@@ -16,7 +16,7 @@ import theano
 
 # Import keras modules
 from keras.models import Model, Sequential
-from keras.layers import Input, merge, Lambda, Merge
+from keras.layers import Input, Merge, Reshape
 from keras.layers.embeddings import Embedding
 from keras import backend as K
 
@@ -115,23 +115,21 @@ class EmbeddingNet():
       loss = nce_loss
 
     # Input tensors: shape doesn't include batch_size
-    target_in = Input(batch_shape=(self._batch_size,1), 
+    target_in = Input(batch_shape=(1,), 
                       dtype='int32', name='target_in')
-    class_in = Input(batch_shape=(self._batch_size,1), 
+    class_in = Input(batch_shape=(1,), 
                      dtype='int32', name='class_in')
     # Embedding layers connect to target_in and class_in
-    emb_in = Embedding(output_dim=self._emb_dim, 
-                       input_dim=len(self._graph),
-                       input_length=1, 
+    emb_in = Embedding(input_dim=len(self._graph),
+                       output_dim=self._emb_dim, 
+                       input_length=self._batch_size, 
                        name='emb_in')(target_in)
-    reshape_in = Reshape(target_shape=(self._batch_size,
-                         self._emb_dim))(emb_in)
-    emb_out = Embedding(output_dim=self._emb_dim, 
-                        input_dim=len(self._graph),
-                        input_length=1, 
+    reshape_in = Reshape(target_shape=(self._emb_dim,))(emb_in)
+    emb_out = Embedding(input_dim=len(self._graph),
+                        output_dim=self._emb_dim, 
+                        input_length=self._batch_size, 
                         name='emb_out')(class_in)
-    reshape_out = Reshape(target_shape=(self._batch_size,
-                         self._emb_dim))(emb_out)
+    reshape_out = Reshape(target_shape=(self._emb_dim,))(emb_out)
     # Elemen-wise multiplication for dot product
     dot_prod = Merge(mode=row_wise_dot, output_shape=(100,1), 
                      name='dot_prod')([reshape_in, reshape_out])
