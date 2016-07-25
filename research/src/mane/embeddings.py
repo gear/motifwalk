@@ -119,21 +119,22 @@ class EmbeddingNet():
                       dtype='int32', name='target_in')
     class_in = Input(batch_shape=(self._batch_size,1), 
                      dtype='int32', name='class_in')
-    self._target = target_in
-    self._class = class_in
     # Embedding layers connect to target_in and class_in
     emb_in = Embedding(output_dim=self._emb_dim, 
                        input_dim=len(self._graph),
                        input_length=1, 
                        name='emb_in')(target_in)
+    reshape_in = Reshape(target_shape=(self._batch_size,
+                         self._emb_dim))(emb_in)
     emb_out = Embedding(output_dim=self._emb_dim, 
                         input_dim=len(self._graph),
                         input_length=1, 
                         name='emb_out')(class_in)
+    reshape_out = Reshape(target_shape=(self._batch_size,
+                         self._emb_dim))(emb_out)
     # Elemen-wise multiplication for dot product
     dot_prod = Merge(mode=row_wise_dot, output_shape=(100,1), 
-                     name='dot_prod')([emb_in, emb_out])
-    self._score = dot_prod
+                     name='dot_prod')([reshape_in, reshape_out])
     # Initialize model
     if self._model is None:
       self._model = Model(input=[target_in, class_in], output=dot_prod)
