@@ -107,22 +107,22 @@ class EmbeddingNet():
       loss = nce_loss
 
     # Input tensors: shape doesn't include batch_size
-    target_in = Input(shape=(1,), dtype='int32', name='target_in')
-    class_in = Input(shape=(1,), dtype='int32', name='class_in')
+    target_in = Input(batch_shape=(self._batch_size,1), dtype='int32', name='target_in')
+    class_in = Input(batch_shape=(self._batch_size,1), dtype='int32', name='class_in')
     # Embedding layers connect to target_in and class_in
     emb_in = Embedding(output_dim=self._emb_dim, input_dim=len(self._graph),
                        input_length=self._batch_size, name='emb_in')(target_in)
     emb_out = Embedding(output_dim=self._emb_dim, input_dim=len(self._graph),
                        input_length=self._batch_size, name='emb_out')(class_in)
     # Elemen-wise multiplication for dot product
-    elem_mul = merge([emb_in, emb_out], mode='mul')
-    dot_prod = Lambda(reduce_sum, output_shape=(100,1))(elem_mul)
+    elem_mul = merge([emb_in, emb_out], mode='mul', name='elem_mul')
+    dot_prod = Lambda(reduce_sum, output_shape=(100,1), name='elem_add')(elem_mul)
     # Initialize model
     if self._model is None:
       self._model = Model(input=[target_in, class_in], output=dot_prod)
     # Compile model
     if not self._compiled:
-      self._model.compile(loss=loss, optimizer=optimizer)
+      self._model.compile(loss=loss, optimizer=optimizer, name='model')
   ######################################################################## train
   def train(self, mode='random_walk', num_true=1, shuffle=True, distort=0.75):
     """
@@ -156,7 +156,7 @@ class EmbeddingNet():
       for targets, classes, labels in data_generator:
         targets = targets[np.newaxis].T
         classes = classes[np.newaxis].T
-        labels = labels[np.newaxis].T
+        labels = np.reshape(labels[np.newaxis].T, (100,1,1))
         print(targets.shape)
         print(classes.shape)
         print(labels.shape)
@@ -172,6 +172,7 @@ def nce_loss(y_true, y_pred):
     """
     Custom NCE loss function.
     """
+    y_true = K.sum(y_true, axis=0)
     return -K.log(K.sigmoid(y_pred * y_true)).sum()
 
 # === END HELPER FUNCTIONS ===
