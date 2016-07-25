@@ -15,13 +15,13 @@ import keras
 import theano
 
 # Import keras modules
-from keras.models import Model
-from keras.layers import Input, merge, Lambda
+from keras.models import Model, Sequential
+from keras.layers import Input, merge, Lambda, Merge
 from keras.layers.embeddings import Embedding
 from keras import backend as K
 
 # Import custom layers
-from custom_layers import RowDot 
+from custom_layers import RowDot
 
 __author__ = "Hoang Nguyen"
 __email__ = "hoangnt@ai.cs.titech.ac.jp"
@@ -88,7 +88,7 @@ class EmbeddingNet():
   ######################################################################## build
   def build(self, loss=None, optimizer='adam'):
     """
-    Build and compile neural net.
+    Build and compile neural net with functional API.
     
     Parameters
     ----------
@@ -118,7 +118,7 @@ class EmbeddingNet():
     emb_out = Embedding(output_dim=self._emb_dim, input_dim=len(self._graph),
                        input_length=self._batch_size, name='emb_out')(class_in)
     # Elemen-wise multiplication for dot product
-    dot_prod = RowDot([emb_in, emb_out])
+    dot_prod = RowDot()([emb_in, emb_out])
     # Initialize model
     if self._model is None:
       self._model = Model(input=[target_in, class_in], output=dot_prod)
@@ -165,6 +165,48 @@ class EmbeddingNet():
         self._model.fit([targets, classes], labels, 
                         batch_size=self._batch_size, nb_epoch=1)
 
+  def build_sequential(self, loss=None, optimizer='adam'):
+    """
+    Build and compile neural net using Sequential model.
+
+    Parameters
+    ----------
+      loss: Loss function (String or Keras objectives).
+      optimizer: Keras optimizer (String or object).
+
+    Returns
+    -------
+      None.
+
+    Behavior
+    --------
+      Construct neural net. Set built flag to True.
+    """
+    if self._built:
+      print('WARNING: Model was built.'
+            ' Performing more than one build...')
+    if loss is None:
+      loss = nce_loss
+
+    # Create blocks for adding layers
+    self._model = Sequential()
+    emb_in = Sequential()
+    emb_out = Sequential()
+    
+    # Target embedding construct
+    emb_in.add(Embedding(input_dim=len(self._graph), output_dim=self._emb_dim,
+                         input_length=self._batch_size, name='emb_in_layer'))
+    # Class embedding construct
+    emb_out.add(Embedding(input_dim=len(self._graph), output_dim=self._emb_dim,
+                         input_length=self._batch_size, name='emb_out_layer'))
+    # Merge emb_in and emb_out
+    merged = Merge([emb_in, emb_out], mode=row_wise_dot)
+
+    # Final model
+    self._model.add(merged)
+    self._model.compile(optimizer=optimizer, loss=loss)
+    
+
 # === END CLASS EmbeddingNet ===
 
 # >>> HELPER FUNCTIONS <<<
@@ -175,6 +217,14 @@ def nce_loss(y_true, y_pred):
     Custom NCE loss function.
     """
     return -K.log(K.sigmoid(y_pred * y_true)).sum()
+
+def row_wise_dot(inputs)
+    """
+    Custom function for loss
+    """
+    a = inputs[0]
+    b = inputs[1]
+    return K.batch_dot(a,b,axes=[2,2])
 
 # === END HELPER FUNCTIONS ===
 
