@@ -157,8 +157,8 @@ class EmbeddingNet():
     for _ in xrange(self._epoch):
       for targets, classes, labels in data_generator:
         targets = targets[np.newaxis].T
-        classes = classes[np.newaxis].T
-        labels = np.reshape(labels[np.newaxis].T, (100,1,1))
+        classes = classes[np.newaxis].T 
+        labels = labels[np.newaxis].T
         print(targets.shape)
         print(classes.shape)
         print(labels.shape)
@@ -200,7 +200,7 @@ class EmbeddingNet():
     emb_out.add(Embedding(input_dim=len(self._graph), output_dim=self._emb_dim,
                          input_length=self._batch_size, name='emb_out_layer'))
     # Merge emb_in and emb_out
-    merged = Merge([emb_in, emb_out], mode=row_wise_dot)
+    merged = Merge([emb_in, emb_out], mode=row_wise_dot, output_shape=(100,1)) #TODO: Quick fix output_shape
 
     # Final model
     self._model.add(merged)
@@ -218,7 +218,7 @@ def nce_loss(y_true, y_pred):
     """
     return -K.log(K.sigmoid(y_pred * y_true)).sum()
 
-def row_wise_dot(inputs)
+def row_wise_dot(inputs):
     """
     Custom function for loss
     """
