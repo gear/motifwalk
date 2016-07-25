@@ -20,6 +20,9 @@ from keras.layers import Input, merge, Lambda
 from keras.layers.embeddings import Embedding
 from keras import backend as K
 
+# Import custom layers
+from custom_layers import RowDot 
+
 __author__ = "Hoang Nguyen"
 __email__ = "hoangnt@ai.cs.titech.ac.jp"
 
@@ -115,8 +118,7 @@ class EmbeddingNet():
     emb_out = Embedding(output_dim=self._emb_dim, input_dim=len(self._graph),
                        input_length=self._batch_size, name='emb_out')(class_in)
     # Elemen-wise multiplication for dot product
-    elem_mul = merge([emb_in, emb_out], mode='mul', name='elem_mul')
-    dot_prod = Lambda(reduce_sum, output_shape=(100,1), name='elem_add')(elem_mul)
+    dot_prod = RowDot([emb_in, emb_out])
     # Initialize model
     if self._model is None:
       self._model = Model(input=[target_in, class_in], output=dot_prod)
@@ -172,26 +174,9 @@ def nce_loss(y_true, y_pred):
     """
     Custom NCE loss function.
     """
-    y_true = K.sum(y_true, axis=0)
     return -K.log(K.sigmoid(y_pred * y_true)).sum()
 
 # === END HELPER FUNCTIONS ===
-
-def reduce_sum(x):
-  return K.sum(x, axis=2)
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -16,9 +16,9 @@ from keras import backend as K
 from keras.engine.topology import Merge
 import numpy as np
 
-# >>> BEGIN CLASS MergeRowDot <<<
+# >>> BEGIN CLASS RowDot <<<
 
-class MergeRowDot(Merge):
+class RowDot(Merge):
   """
   Layer for element wise merge mul and take sum along
   the second axis.
@@ -29,7 +29,7 @@ class MergeRowDot(Merge):
     """
     Init function.
     """
-    super(MergeRowDot, self).__init__(**kwargs)
+    super(RowDot, self).__init__(**kwargs)
 
   ######################################################################### call
   def call(self, inputs):
@@ -38,7 +38,7 @@ class MergeRowDot(Merge):
     """
     l1 = inputs[0]
     l2 = inputs[1]
-    output = K.sum(K.prod(l1,l2, keepdims=True), axis=1)
+    output = K.sum(inputs[0], inputs[1], axis=[1,1])
     return output
   
 # === End CLASS MergeRowDot <<<      
