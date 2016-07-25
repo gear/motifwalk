@@ -115,17 +115,24 @@ class EmbeddingNet():
       loss = nce_loss
 
     # Input tensors: shape doesn't include batch_size
-    target_in = Input(batch_shape=(self._batch_size,1), dtype='int32', name='target_in')
-    class_in = Input(batch_shape=(self._batch_size,1), dtype='int32', name='class_in')
+    target_in = Input(batch_shape=(self._batch_size,1), 
+                      dtype='int32', name='target_in')
+    class_in = Input(batch_shape=(self._batch_size,1), 
+                     dtype='int32', name='class_in')
     self._target = target_in
     self._class = class_in
     # Embedding layers connect to target_in and class_in
-    emb_in = Embedding(output_dim=self._emb_dim, input_dim=len(self._graph),
-                       input_length=self._batch_size, name='emb_in')(target_in)
-    emb_out = Embedding(output_dim=self._emb_dim, input_dim=len(self._graph),
-                       input_length=self._batch_size, name='emb_out')(class_in)
+    emb_in = Embedding(output_dim=self._emb_dim, 
+                       input_dim=len(self._graph),
+                       input_length=1, 
+                       name='emb_in')(target_in)
+    emb_out = Embedding(output_dim=self._emb_dim, 
+                        input_dim=len(self._graph),
+                        input_length=1, 
+                        name='emb_out')(class_in)
     # Elemen-wise multiplication for dot product
-    dot_prod = Merge(mode=row_wise_dot, output_shape=(100,1))([emb_in, emb_out])
+    dot_prod = Merge(mode=row_wise_dot, output_shape=(100,1), 
+                     name='dot_prod')([emb_in, emb_out])
     self._score = dot_prod
     # Initialize model
     if self._model is None:
