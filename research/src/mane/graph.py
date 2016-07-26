@@ -11,6 +11,7 @@
 ## v0.3: Generate set of nodes result from random and 
 ##       motif walk. Frequency of node is ignored.
 ## v0.4: Create a batch generator.
+## v0.5: Negative sampling by contrasting walks.
 
 from __future__ import print_function
 from __future__ import division
@@ -289,7 +290,7 @@ class Graph(dict):
                              rand_seed=rand_seed, reset=reset)
       walk_path.extend(rwp)
     # TODO: Log the walk
-    return walk_path, set(walk_path)
+    return set(walk_path)
 
   ############################################################# build_motif_walk
   def build_motif_walk(self, num_walk = 20, length=128, 
@@ -318,13 +319,14 @@ class Graph(dict):
                             rand_seed=rand_seed, reset=reset)
       walk_path.extend(mwp)
     # TODO: Log the walk
-    return walk_path, set(walk_path)
-  #################################################### sample_walk_with_negative
+    return set(walk_path)
+  ############################################################ gen_with_negative
   # TODO: fix bug when passing with key word walk_length=...
-  def sample_walk_with_negative(self, walk_func_name, walk_length=5, 
+  def gen_with_negative(self, walk_func_name, walk_length=5, 
                                 num_walk=10, num_true=1, neg_samp=5, 
                                 num_skip=5, shuffle=True, window_size=5, 
-                                batch_size=100, neg_samp_distort=0.75):
+                                batch_size=100, neg_samp_distort=0.75,
+                                neg_samp_generator=None):
     """
     Create training dataset using walk function list with negative
     sampling and negative distribution distorted. This function is
@@ -345,6 +347,9 @@ class Graph(dict):
                         sampling and value of 1.0 means normal unigram 
                         sampling. This scheme is the same as in word2vec
                         model implementation.
+      neg_samp_generator: Negative sampling generator function. Default
+                          None means that a distorted unigram distribution
+                          is used.
   
     Yields
     ------
@@ -384,7 +389,13 @@ class Graph(dict):
     freq_list = np.array(self._freq.values(), np.int32)**neg_samp_distort
     norm = sum(freq_list)
     freq_list = freq_list / norm
-    for idz, i in enumerate(id_list):
+    # Negative sample creation function
+    if neg_samp_generator is not None:
+      neg_func = neg_samp_generator
+    else:
+      neg_func = np.random.choice
+    for i in (id_list):
+      # Perform walk if the node is connected
       if len(self[i]) > 0:
         count_nodes -= 1
       else:
@@ -412,7 +423,6 @@ class Graph(dict):
         labels = []
         node_tuples = []
 
-# TODO:  
 # === END CLASS 'graph' ===
 
 
