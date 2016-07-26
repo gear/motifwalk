@@ -11,6 +11,7 @@
 ## v0.3: Generate set of nodes result from random and 
 ##       motif walk. Frequency of node is ignored.
 ## v0.4: Create a batch generator.
+## v0.5: Create contrast walk generator.
 
 from __future__ import print_function
 from __future__ import division
@@ -445,6 +446,7 @@ class Graph(dict):
   
     Example
     -------
+    """
 
     
 # === END CLASS 'graph' ===
