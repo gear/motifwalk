@@ -154,10 +154,10 @@ class EmbeddingNet():
     --------
       Load data in batches and train the model.
     """
-    # Graph data generator with negative sampling
-    data_generator = self._graph.sample_walk_with_negative(mode,
+    for j in xrange(self._epoch):
+      # Graph data generator with negative sampling
+      data_generator = self._graph.gen_walk(mode,
                                  self._walk_length,
-                                 self._num_walk,
                                  num_true,
                                  self._neg_samp,
                                  self._num_skip,
@@ -165,60 +165,16 @@ class EmbeddingNet():
                                  self._window_size,
                                  self._batch_size,
                                  distort)
-    # TODO: Now using makeshift reshape - Fix data generation later
-    for _ in xrange(self._epoch):
+      i = 1
       for targets, classes, labels in data_generator:
         targets = targets[np.newaxis].T
         classes = classes[np.newaxis].T 
         labels = labels[np.newaxis].T
-        print(targets.shape)
-        print(classes.shape)
-        print(labels.shape)
         self._model.fit({'target_in':targets, 'class_in':classes}, 
                         {'dot_prod':labels}, batch_size=self._batch_size, 
                         nb_epoch=1)
-
-  def build_sequential(self, loss=None, optimizer='adam'):
-    """
-    Build and compile neural net using Sequential model.
-
-    Parameters
-    ----------
-      loss: Loss function (String or Keras objectives).
-      optimizer: Keras optimizer (String or object).
-
-    Returns
-    -------
-      None.
-
-    Behavior
-    --------
-      Construct neural net. Set built flag to True.
-    """
-    if self._built:
-      print('WARNING: Model was built.'
-            ' Performing more than one build...')
-    if loss is None:
-      loss = nce_loss
-
-    # Create blocks for adding layers
-    self._model = Sequential()
-    emb_in = Sequential()
-    emb_out = Sequential()
-    
-    # Target embedding construct
-    emb_in.add(Embedding(input_dim=len(self._graph), output_dim=self._emb_dim,
-                         name='emb_in_layer'))
-    # Class embedding construct
-    emb_out.add(Embedding(input_dim=len(self._graph), output_dim=self._emb_dim,
-                          name='emb_out_layer'))
-    # Merge emb_in and emb_out
-    merged = Merge([emb_in, emb_out], mode=row_wise_dot, output_shape=(1,)) #TODO: Quick fix output_shape
-
-    # Final model
-    self._model.add(merged)
-    self._model.compile(optimizer=optimizer, loss=loss)
-    
+        print('Batch number: ',j, i)
+        i = i+1
 
 # === END CLASS EmbeddingNet ===
 
