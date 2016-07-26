@@ -320,11 +320,10 @@ class Graph(dict):
     # TODO: Log the walk
     return walk_path, set(walk_path)
   #################################################### sample_walk_with_negative
-  # TODO: fix bug when passing with key word walk_length=...
-  def sample_walk_with_negative(self, walk_func_name, walk_length=5, 
-                                num_walk=10, num_true=1, neg_samp=5, 
-                                num_skip=5, shuffle=True, window_size=5, 
-                                batch_size=100, neg_samp_distort=0.75):
+  def gen_walk(self, walk_func_name, walk_length=5, 
+               num_true=1, neg_samp=5, num_skip=5, 
+               shuffle=True, window_size=5, 
+               batch_size=100, neg_samp_distort=0.75):
     """
     Create training dataset using walk function list with negative
     sampling and negative distribution distorted. This function is
@@ -333,7 +332,7 @@ class Graph(dict):
     Parameters
     ----------
       walk_func_name: Walk function name (e.g. 'random_walk')
-      graph_size: Total number of nodes in graph.
+      walk_length: Total number of nodes in each walk.
       num_true: Number of true class for each sample.
       num_skip: Number of samples generated for each target.
       shuffle: If node list is shuffled before generating random walk.
@@ -395,6 +394,7 @@ class Graph(dict):
         upper = min(walk_length, j + window_size+1)
         for _ in xrange(num_skip):
           # TODO: Check situation where rand_node == target
+          # TODO: Use num_true. Now assume default value
           rand_node = np.random.choice(walk[lower:upper])
           node_tuples.append([target, rand_node])
           labels.append(1.0) # Possitive sample
@@ -412,7 +412,41 @@ class Graph(dict):
         labels = []
         node_tuples = []
 
-# TODO:  
+  ################################################################# gen_contrast
+  def gen_contrast(self, walk_func_name, walk_length=5, 
+                   num_true=1, neg_samp=5, num_skip=5, 
+                   shuffle=True, window_size=5, 
+                   batch_size=100, neg_samp_distort=0.75):
+    """
+    Create training dataset using possitive samples from motif walk
+    and the negative samples from random walk.
+    
+    Parameters
+    ----------
+      walk_func_name: Positive walk function name (e.g. 'random_walk')
+      graph_size: Total number of nodes in graph.
+      num_true: Number of true class for each sample.
+      num_skip: Number of samples generated for each target.
+      shuffle: If node list is shuffled before generating random walk.
+      neg_samp: Number of negative sampling for each target.
+      window_size: Window for getting sample from the random walk list.
+      batch_size: Number of samples generated.
+      neg_samp_distort: Distort the uniform distribution for negative 
+                        sampling. Float value of 0.0 means uniform 
+                        sampling and value of 1.0 means normal unigram 
+                        sampling. This scheme is the same as in word2vec
+                        model implementation.
+  
+    Yields
+    ------
+      targets: np.array of target node
+      class: np.array of class associated with the target node
+      labels: np.array of corresponding labels for each sample in bath.
+  
+    Example
+    -------
+
+    
 # === END CLASS 'graph' ===
 
 
