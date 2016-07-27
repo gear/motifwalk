@@ -18,6 +18,7 @@ import theano
 from keras.models import Model, Sequential
 from keras.layers import Input, Merge, Reshape
 from keras.layers.embeddings import Embedding
+from keras.optimizers import SGD, Adam
 from keras import backend as K
 
 # Import custom layers
@@ -172,7 +173,7 @@ class EmbeddingNet():
         labels = labels[np.newaxis].T
         self._model.fit({'target_in':targets, 'class_in':classes}, 
                         {'dot_prod':labels}, batch_size=self._batch_size, 
-                        nb_epoch=1)
+                        nb_epoch=10)
         print('Batch number: ',j, i)
         i = i+1
 
@@ -196,16 +197,3 @@ def row_wise_dot(inputs):
     return K.batch_dot(a,b,axes=[1,1])
 
 # === END HELPER FUNCTIONS ===
-
-
-
-
-
-
-
-
-
-
-
-
-
