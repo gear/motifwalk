@@ -414,9 +414,9 @@ class Graph(dict):
         node_tuples = []
 
   ################################################################# gen_contrast
-  def gen_contrast(self, walk_func_name, walk_length=5, 
-                   num_true=1, neg_samp=5, num_skip=5, 
-                   shuffle=True, window_size=5, 
+  def gen_contrast(self, possitive_name, negative_name,
+                   walk_length=5, num_true=1, neg_samp=5, 
+                   num_skip=5, shuffle=True, window_size=5, 
                    batch_size=100, neg_samp_distort=0.75):
     """
     Create training dataset using possitive samples from motif walk
@@ -424,7 +424,7 @@ class Graph(dict):
     
     Parameters
     ----------
-      walk_func_name: Positive walk function name (e.g. 'random_walk')
+      walk_func_name: Positive walk function name (e.g. 'motif_walk')
       graph_size: Total number of nodes in graph.
       num_true: Number of true class for each sample.
       num_skip: Number of samples generated for each target.
