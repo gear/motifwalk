@@ -26,7 +26,7 @@ fb = g.graph_from_pickle('data/egonets.graph')
 name_rand = 'nce_egonets_e20_b200_n10_ns10_nw10_wl100_ws20_rand'
 name_motif = 'nce_egonets_e20_b200_n10_ns10_nw10_wl100_ws20_motif'
 
-no_train = True
+no_train = False
 
 if no_train:
   pass
@@ -42,8 +42,7 @@ else:
                            window_size=20)
   adam_opt = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
   model_a_r.build(optimizer=adam_opt)
-  model_a_r.train(mode='random_walk')
-  weight_a_r = model_a_r._model.get_weights()
+  model_a_r.train(mode='random_walk', verbose=0)
 if no_train:
   pass
 else:
@@ -58,9 +57,10 @@ else:
                            window_size=20)
   adam_opt = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
   model_a_m.build(optimizer=adam_opt)
-  model_a_m.train(mode='motif_walk')
-  weight_a_m = model_a_m._model.get_weights()
+  model_a_m.train(mode='motif_walk', verbose=0)
 
+weight_a_r = model_a_r._model.get_weights()
+weight_a_m = model_a_m._model.get_weights()
 # Save model
 if not os.path.exists(name_rand+'.model'):
   with open(name_rand+'.model', 'wb') as f:

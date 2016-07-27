@@ -139,7 +139,8 @@ class EmbeddingNet():
     self._built = True
     
   ######################################################################## train
-  def train(self, mode='random_walk', num_true=1, shuffle=True, distort=0.75):
+  def train(self, mode='random_walk', num_true=1, 
+            shuffle=True, verbose=2, distort=0.75):
     """
     Load data and train the model.
 
@@ -157,6 +158,7 @@ class EmbeddingNet():
     """
     self._trained = True
     for j in xrange(self._epoch):
+      print('Epoch: ', j)
       # Graph data generator with negative sampling
       data_generator = self._graph.gen_walk(mode,
                                  self._walk_length,
@@ -167,16 +169,17 @@ class EmbeddingNet():
                                  self._window_size,
                                  self._batch_size,
                                  distort)
-      i = 1
       for targets, classes, labels in data_generator:
         targets = targets[np.newaxis].T
         classes = classes[np.newaxis].T 
         labels = labels[np.newaxis].T
+        if (np.random.rand() > 0.99):
+          print(targets[:5])
+          print(classes[:5])
+          print(labels[:5])
         self._model.fit({'target_in':targets, 'class_in':classes}, 
                         {'dot_prod':labels}, batch_size=self._batch_size, 
-                        nb_epoch=10)
-        print('Batch number: ',j, i)
-        i = i+1
+                        nb_epoch=10, verbose=verbose)
 
 # === END CLASS EmbeddingNet ===
 
