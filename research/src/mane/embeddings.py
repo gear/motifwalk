@@ -175,7 +175,7 @@ class EmbeddingNet():
         labels = labels[np.newaxis].T
         self._model.fit({'target_in':targets, 'class_in':classes}, 
                         {'dot_prod':labels}, batch_size=self._batch_size, 
-                        nb_epoch=10, verbose=verbose)
+                        nb_epoch=1, verbose=verbose)
 
 # === END CLASS EmbeddingNet ===
 
