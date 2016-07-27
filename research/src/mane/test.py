@@ -23,16 +23,16 @@ from sklearn.manifold import TSNE
 
 fb = g.graph_from_pickle('data/egonets.graph')
 
-name_rand = 'nce_egonets_e20_b200_n10_ns10_nw10_wl100_ws20_rand'
-name_motif = 'nce_egonets_e20_b200_n10_ns10_nw10_wl100_ws20_motif'
+name_rand = 'nce_egonets_d100_e20_b200_n10_ns10_nw10_wl100_ws20_adam_rand'
+name_motif = 'nce_egonets_d100_e20_b200_n10_ns10_nw10_wl100_ws20_adam_motif'
 
-no_train = True
+no_train = False
 
 if no_train:
   pass
 else:
   model_a_r = e.EmbeddingNet(graph=fb, 
-                           emb_dim=200,
+                           emb_dim=100,
                            epoch=20, 
                            batch_size=500,
                            neg_samp=5,
@@ -48,7 +48,7 @@ if no_train:
   pass
 else:
   model_a_m = e.EmbeddingNet(graph=fb, 
-                           emb_dim=200,
+                           emb_dim=100,
                            epoch=20, 
                            batch_size=500,
                            neg_samp=5,
