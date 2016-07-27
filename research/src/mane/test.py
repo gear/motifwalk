@@ -37,9 +37,9 @@ model_a_r.train(mode='random_walk')
 model_a_m = e.EmbeddingNet(graph=fb, 
                          emb_dim=200,
                          epoch=20, 
-                         batch_size=200,
-                         neg_samp=10,
-                         num_skip=10,
+                         batch_size=500,
+                         neg_samp=5,
+                         num_skip=5,
                          num_walk=10,
                          walk_length=50,
                          window_size=20)
