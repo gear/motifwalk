@@ -43,6 +43,7 @@ else:
   adam_opt = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
   model_a_r.build(optimizer=adam_opt)
   model_a_r.train(mode='random_walk', verbose=0)
+  weight_a_r = model_a_r._model.get_weights()
 if no_train:
   pass
 else:
@@ -58,9 +59,8 @@ else:
   adam_opt = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
   model_a_m.build(optimizer=adam_opt)
   model_a_m.train(mode='motif_walk', verbose=0)
+  weight_a_m = model_a_m._model.get_weights()
 
-weight_a_r = model_a_r._model.get_weights()
-weight_a_m = model_a_m._model.get_weights()
 # Save model
 if not os.path.exists(name_rand+'.model'):
   with open(name_rand+'.model', 'wb') as f:
@@ -84,7 +84,7 @@ else:
     weight_a_m = p.load(f)
 
 tsne_weight_a_r_in = TSNE(learning_rate=50).fit_transform(weight_a_r[0])
-tsne_weight_a_r_out = TSNE(learning_rate=50).fit_tranform(weight_a_r[1])
+tsne_weight_a_r_out = TSNE(learning_rate=50).fit_transform(weight_a_r[1])
 
 tsne_weight_a_m_in = TSNE(learning_rate=50).fit_transform(weight_a_m[0])
 tsne_weight_a_m_out = TSNE(learning_rate=50).fit_transform(weight_a_m[1])
