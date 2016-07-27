@@ -24,23 +24,15 @@ import matplotlib.pyplot as plt
 
 fb = g.graph_from_pickle('data/egonets.graph')
 
-name_rand = 'nce_egonets_d100_e20_b200_ne2_ns2_nw10_wl50_ws5_adam_rand'
-name_motif = 'nce_egonets_d100_e20_b200_ne2_ns2_nw10_wl50_ws5_adam_motif'
+name_rand = 'nce_egonets_default_adam_rand'
+name_motif = 'nce_egonets_default_adam_motif'
 
-no_train = True
+no_train = False
 
 if no_train:
   pass
 else:
-  model_a_r = e.EmbeddingNet(graph=fb, 
-                           emb_dim=100,
-                           epoch=20, 
-                           batch_size=200,
-                           neg_samp=2,
-                           num_skip=2,
-                           num_walk=10,
-                           walk_length=50,
-                           window_size=5)
+  model_a_r = e.EmbeddingNet(graph=fb)
   adam_opt = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
   model_a_r.build(optimizer=adam_opt)
   model_a_r.train(mode='random_walk', verbose=0)
@@ -48,15 +40,7 @@ else:
 if no_train:
   pass
 else:
-  model_a_m = e.EmbeddingNet(graph=fb, 
-                           emb_dim=100,
-                           epoch=20, 
-                           batch_size=200,
-                           neg_samp=2,
-                           num_skip=2,
-                           num_walk=10,
-                           walk_length=50,
-                           window_size=5)
+  model_a_m = e.EmbeddingNet(graph=fb)
   adam_opt = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
   model_a_m.build(optimizer=adam_opt)
   model_a_m.train(mode='motif_walk', verbose=0)
@@ -86,8 +70,8 @@ else:
 
 # Save or load tsne
 if not os.path.exists(name_rand+'.tsne'):
-  tsne_weight_a_r_in = TSNE(learning_rate=50).fit_transform(weight_a_r[0])
-  tsne_weight_a_r_out = TSNE(learning_rate=50).fit_transform(weight_a_r[1])
+  tsne_weight_a_r_in = TSNE(learning_rate=100).fit_transform(weight_a_r[0])
+  tsne_weight_a_r_out = TSNE(learning_rate=100).fit_transform(weight_a_r[1])
   with open(name_rand+'.tsne', 'wb') as f:
     tsne = (tsne_weight_a_r_in, tsne_weight_a_r_out)
     p.dump(tsne, f, p.HIGHEST_PROTOCOL)
@@ -95,8 +79,8 @@ else:
   with open(name_rand+'.tsne', 'rb') as f:
     tsne_weight_a_r_in, tsne_weight_a_r_out = p.load(f)
 if not os.path.exists(name_motif+'.tsne'):
-  tsne_weight_a_m_in = TSNE(learning_rate=50).fit_transform(weight_a_m[0])
-  tsne_weight_a_m_out = TSNE(learning_rate=50).fit_transform(weight_a_m[1])
+  tsne_weight_a_m_in = TSNE(learning_rate=100).fit_transform(weight_a_m[0])
+  tsne_weight_a_m_out = TSNE(learning_rate=100).fit_transform(weight_a_m[1])
   with open(name_motif+'.tsne', 'wb') as f:
     tsne = (tsne_weight_a_m_in, tsne_weight_a_m_out)
     p.dump(tsne, f, p.HIGHEST_PROTOCOL)
