@@ -61,13 +61,22 @@ else:
   model_a_m.train(mode='motif_walk')
   weight_a_m = model_a_m._model.get_weights()
 
-if not os.path.exists(name_rand):
+# Save model
+if not os.path.exists(name_rand+'.model'):
+  with open(name_rand+'.model', 'wb') as f:
+    p.dump(model_a_r, f, p.HIGHEST_PROTOCOL)
+if not os.path.exists(name_rand+'.model'):
+  with open(name_motif+'.model', 'wb') as f:
+    p.dump(model_a_m, f, p.HIGHEST_PROTOCOL)
+
+# Save or load data
+if not os.path.exists(name_rand+'.weights'):
   with open(name_rand+'.weights', 'wb') as f:
     p.dump(weight_a_r, f, p.HIGHEST_PROTOCOL)
 else:
   with open(name_rand+'.weights', 'rb') as f:
     weight_a_r = p.load(f)
-if not os.path.exists(name_motif):
+if not os.path.exists(name_motif+'.weights'):
   with open(name_motif+'.weights', 'wb') as f:
     p.dump(weight_a_m, f, p.HIGHEST_PROTOCOL)
 else:
