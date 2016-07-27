@@ -20,6 +20,7 @@ import os
 
 from keras.optimizers import Adam
 from sklearn.manifold import TSNE
+import matplotlib.pyplot as plt
 
 fb = g.graph_from_pickle('data/egonets.graph')
 
@@ -83,19 +84,33 @@ else:
   with open(name_motif+'.weights', 'rb') as f:
     weight_a_m = p.load(f)
 
-tsne_weight_a_r_in = TSNE(learning_rate=50).fit_transform(weight_a_r[0])
-tsne_weight_a_r_out = TSNE(learning_rate=50).fit_transform(weight_a_r[1])
+# Save or load tsne
+if not os.path.exists(name_rand+'.tsne'):
+  tsne_weight_a_r_in = TSNE(learning_rate=50).fit_transform(weight_a_r[0])
+  tsne_weight_a_r_out = TSNE(learning_rate=50).fit_transform(weight_a_r[1])
+  with open(name_rand+'.tsne', 'wb') as f:
+    tsne = (tsne_weight_a_r_in, tsne_weight_a_r_out)
+    p.dump(tsne, f, p.HIGHEST_PROTOCOL)
+else:
+  with open(name_rand+'.tsne', 'rb') as f:
+    tsne_weight_a_r_in, tsne_weight_a_r_in = p.load(f)
+if not os.path.exists(name_motif+'.tsne'):
+  tsne_weight_a_m_in = TSNE(learning_rate=50).fit_transform(weight_a_m[0])
+  tsne_weight_a_m_out = TSNE(learning_rate=50).fit_transform(weight_a_m[1])
+  with open(name_motif+'.tsne', 'wb') as f:
+    tsne = (tsne_weight_a_m_in, tsne_weight_a_m_out)
+    p.dump(tsne, f, p.HIGHEST_PROTOCOL)
+else:
+  with open(name_motif+'.tsne', 'rb') as f:
+    tsne_weight_a_m_in, tsne_weight_a_m_in = p.load(f)
 
-tsne_weight_a_m_in = TSNE(learning_rate=50).fit_transform(weight_a_m[0])
-tsne_weight_a_m_out = TSNE(learning_rate=50).fit_transform(weight_a_m[1])
-
-figure(figsize=(10,10))
-subplot(221)
-scatter(tsne_weight_a_r_in[:,0], tsne_weight_a_r_in[:,1])
-subplot(222)
-scatter(tsne_weight_a_r_out[:,0], tsne_weight_a_r_out[:,1])
-subplot(223)
-scatter(tsne_weight_a_m_in[:,0], tnse_weight_a_m_in[:,1])
-subplot(224)
-scatter(tsne_weight_a_[:,0], tnse_weight_a_m_in[:,1])
+plt.figure(figsize=(10,10))
+plt.subplot(221)
+plt.scatter(tsne_weight_a_r_in[:,0], tsne_weight_a_r_in[:,1])
+plt.subplot(222)
+plt.scatter(tsne_weight_a_r_out[:,0], tsne_weight_a_r_out[:,1])
+plt.subplot(223)
+plt.scatter(tsne_weight_a_m_in[:,0], tnse_weight_a_m_in[:,1])
+plt.subplot(224)
+plt.scatter(tsne_weight_a_[:,0], tnse_weight_a_m_in[:,1])
 
