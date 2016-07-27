@@ -24,8 +24,8 @@ import matplotlib.pyplot as plt
 
 fb = g.graph_from_pickle('data/egonets.graph')
 
-name_rand = 'nce_egonets_d100_e20_b200_n10_ns10_nw10_wl100_ws20_adam_rand'
-name_motif = 'nce_egonets_d100_e20_b200_n10_ns10_nw10_wl100_ws20_adam_motif'
+name_rand = 'nce_egonets_d100_e20_b200_ne2_ns2_nw10_wl50_ws5_adam_rand'
+name_motif = 'nce_egonets_d100_e20_b200_ne2_ns2_nw10_wl50_ws5_adam_motif'
 
 no_train = False
 
