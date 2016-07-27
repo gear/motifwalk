@@ -26,7 +26,7 @@ fb = g.graph_from_pickle('data/egonets.graph')
 name_rand = 'nce_egonets_e20_b200_n10_ns10_nw10_wl100_ws20_rand'
 name_motif = 'nce_egonets_e20_b200_n10_ns10_nw10_wl100_ws20_motif'
 
-no_train = False
+no_train = True
 
 if no_train:
   pass
@@ -65,7 +65,7 @@ weight_a_m = model_a_m._model.get_weights()
 if not os.path.exists(name_rand+'.model'):
   with open(name_rand+'.model', 'wb') as f:
     p.dump(model_a_r, f, p.HIGHEST_PROTOCOL)
-if not os.path.exists(name_rand+'.model'):
+if not os.path.exists(name_motif+'.model'):
   with open(name_motif+'.model', 'wb') as f:
     p.dump(model_a_m, f, p.HIGHEST_PROTOCOL)
 
@@ -84,7 +84,7 @@ else:
     weight_a_m = p.load(f)
 
 tsne_weight_a_r_in = TSNE(learning_rate=50).fit_transform(weight_a_r[0])
-tsne_weight_a_r_out = TSNE(learning_rate=50).fit_transorm(weight_a_r[1])
+tsne_weight_a_r_out = TSNE(learning_rate=50).fit_tranform(weight_a_r[1])
 
 tsne_weight_a_m_in = TSNE(learning_rate=50).fit_transform(weight_a_m[0])
 tsne_weight_a_m_out = TSNE(learning_rate=50).fit_transform(weight_a_m[1])
