@@ -27,7 +27,7 @@ fb = g.graph_from_pickle('data/egonets.graph')
 name_rand = 'nce_egonets_d100_e20_b200_n10_ns10_nw10_wl100_ws20_adam_rand'
 name_motif = 'nce_egonets_d100_e20_b200_n10_ns10_nw10_wl100_ws20_adam_motif'
 
-no_train = False
+no_train = True
 
 if no_train:
   pass
