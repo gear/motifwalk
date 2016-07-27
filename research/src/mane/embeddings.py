@@ -77,7 +77,7 @@ class EmbeddingNet():
 
     # Status flags
     self._built = False
-    self._compiled = False
+    self._trained = False
 
     # Data 
     self._graph = graph
@@ -133,11 +133,11 @@ class EmbeddingNet():
     dot_prod = Merge(mode=row_wise_dot, output_shape=(1,), 
                      name='dot_prod')([reshape_in, reshape_out])
     # Initialize model
-    if self._model is None:
-      self._model = Model(input=[target_in, class_in], output=dot_prod)
+    self._model = Model(input=[target_in, class_in], output=dot_prod)
     # Compile model
-    if not self._compiled:
-      self._model.compile(loss=loss, optimizer=optimizer, name='model')
+    self._model.compile(loss=loss, optimizer=optimizer, name='model')
+    self._built = True
+    
   ######################################################################## train
   def train(self, mode='random_walk', num_true=1, shuffle=True, distort=0.75):
     """
@@ -155,6 +155,7 @@ class EmbeddingNet():
     --------
       Load data in batches and train the model.
     """
+    self._trained = True
     for j in xrange(self._epoch):
       # Graph data generator with negative sampling
       data_generator = self._graph.gen_walk(mode,

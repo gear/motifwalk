@@ -54,7 +54,7 @@ with open('nce_egonets_e20_b200_n10_ns10_nw10_wl100_ws20_rand', 'wb') as f:
   p.dump(weight_a_r, f, p.HIGHEST_PROTOCOL)
 
 with open('nce_egonets_e20_b200_n10_ns10_nw10_wl100_ws20_motif', 'wb') as f:
-  p.dump(wight_a_m, f, p.HIGHEST_PROTOCOL)
+  p.dump(weight_a_m, f, p.HIGHEST_PROTOCOL)
 
 tsne_weight_a_r_in = TSNE(learning_rate=100).fit_transform(weight_a_r[0])
 tsne_weight_a_r_out = TSNE(learning_rate=100).fit_transorm(weight_a_r[1])
