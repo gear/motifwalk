@@ -93,7 +93,7 @@ if not os.path.exists(name_rand+'.tsne'):
     p.dump(tsne, f, p.HIGHEST_PROTOCOL)
 else:
   with open(name_rand+'.tsne', 'rb') as f:
-    tsne_weight_a_r_in, tsne_weight_a_r_in = p.load(f)
+    tsne_weight_a_r_in, tsne_weight_a_r_out = p.load(f)
 if not os.path.exists(name_motif+'.tsne'):
   tsne_weight_a_m_in = TSNE(learning_rate=50).fit_transform(weight_a_m[0])
   tsne_weight_a_m_out = TSNE(learning_rate=50).fit_transform(weight_a_m[1])
@@ -102,7 +102,7 @@ if not os.path.exists(name_motif+'.tsne'):
     p.dump(tsne, f, p.HIGHEST_PROTOCOL)
 else:
   with open(name_motif+'.tsne', 'rb') as f:
-    tsne_weight_a_m_in, tsne_weight_a_m_in = p.load(f)
+    tsne_weight_a_m_in, tsne_weight_a_m_out = p.load(f)
 
 plt.figure(figsize=(10,10))
 plt.subplot(221)
@@ -110,7 +110,7 @@ plt.scatter(tsne_weight_a_r_in[:,0], tsne_weight_a_r_in[:,1])
 plt.subplot(222)
 plt.scatter(tsne_weight_a_r_out[:,0], tsne_weight_a_r_out[:,1])
 plt.subplot(223)
-plt.scatter(tsne_weight_a_m_in[:,0], tnse_weight_a_m_in[:,1])
+plt.scatter(tsne_weight_a_m_in[:,0], tsne_weight_a_m_in[:,1])
 plt.subplot(224)
-plt.scatter(tsne_weight_a_[:,0], tnse_weight_a_m_in[:,1])
-
+plt.scatter(tsne_weight_a_m_out[:,0], tsne_weight_a_m_in[:,1])
+plt.show()
