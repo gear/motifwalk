@@ -173,10 +173,6 @@ class EmbeddingNet():
         targets = targets[np.newaxis].T
         classes = classes[np.newaxis].T 
         labels = labels[np.newaxis].T
-        if (np.random.rand() > 0.99):
-          print(targets[:5])
-          print(classes[:5])
-          print(labels[:5])
         self._model.fit({'target_in':targets, 'class_in':classes}, 
                         {'dot_prod':labels}, batch_size=self._batch_size, 
                         nb_epoch=10, verbose=verbose)

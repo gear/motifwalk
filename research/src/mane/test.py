@@ -35,12 +35,12 @@ else:
   model_a_r = e.EmbeddingNet(graph=fb, 
                            emb_dim=100,
                            epoch=20, 
-                           batch_size=500,
-                           neg_samp=5,
-                           num_skip=5,
+                           batch_size=200,
+                           neg_samp=2,
+                           num_skip=2,
                            num_walk=10,
                            walk_length=50,
-                           window_size=20)
+                           window_size=5)
   adam_opt = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
   model_a_r.build(optimizer=adam_opt)
   model_a_r.train(mode='random_walk', verbose=0)
@@ -51,12 +51,12 @@ else:
   model_a_m = e.EmbeddingNet(graph=fb, 
                            emb_dim=100,
                            epoch=20, 
-                           batch_size=500,
-                           neg_samp=5,
-                           num_skip=5,
+                           batch_size=200,
+                           neg_samp=2,
+                           num_skip=2,
                            num_walk=10,
                            walk_length=50,
-                           window_size=20)
+                           window_size=5)
   adam_opt = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
   model_a_m.build(optimizer=adam_opt)
   model_a_m.train(mode='motif_walk', verbose=0)
