@@ -25,20 +25,26 @@ class RowDot(Merge):
   """
   
   ##################################################################### __init__
-  def __init__(self, **kwargs):
+  def __init__(self, layers=None, **kwargs):
     """
     Init function.
     """
-    super(RowDot, self).__init__(**kwargs)
+    super(RowDot, self).__init__(layers=None, **kwargs)
 
   ######################################################################### call
-  def call(self, inputs):
+  def call(self, inputs, **kwargs):
     """
     Layer logic.
     """
+    print('Inputs 0 shape: %s' % str(inputs[0].shape))
+    print('Inputs 1 shape: %s' % str(inputs[1].shape))
     l1 = inputs[0]
     l2 = inputs[1]
-    output = K.sum(inputs[0], inputs[1], axis=[1,1])
+    output = K.batch_dot(inputs[0], inputs[1], axes=[1,1])
     return output
   
 # === End CLASS MergeRowDot <<<      
+
+# >>> BEGIN HELPER FUNCTIONS <<<
+
+############################################################################ dot

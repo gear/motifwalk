@@ -15,13 +15,14 @@ import keras
 import theano
 
 # Import keras modules
-from keras.models import Model
-from keras.layers import Input, merge, Lambda
+from keras.models import Model, Sequential
+from keras.layers import Input, Merge, Reshape
 from keras.layers.embeddings import Embedding
+from keras.optimizers import SGD, Adam
 from keras import backend as K
 
 # Import custom layers
-from custom_layers import RowDot 
+from custom_layers import RowDot
 
 __author__ = "Hoang Nguyen"
 __email__ = "hoangnt@ai.cs.titech.ac.jp"
@@ -76,7 +77,7 @@ class EmbeddingNet():
 
     # Status flags
     self._built = False
-    self._compiled = False
+    self._trained = False
 
     # Data 
     self._graph = graph
@@ -85,10 +86,15 @@ class EmbeddingNet():
     self._input_tensors = []
     self._output_tensors = []
     self._model = model
+
+    # Inputs and output
+    self._target = None
+    self._class = None
+    self._score = None
   ######################################################################## build
   def build(self, loss=None, optimizer='adam'):
     """
-    Build and compile neural net.
+    Build and compile neural net with functional API.
     
     Parameters
     ----------
@@ -110,23 +116,31 @@ class EmbeddingNet():
       loss = nce_loss
 
     # Input tensors: shape doesn't include batch_size
-    target_in = Input(batch_shape=(self._batch_size,1), dtype='int32', name='target_in')
-    class_in = Input(batch_shape=(self._batch_size,1), dtype='int32', name='class_in')
+    target_in = Input(batch_shape=(self._batch_size,1), 
+                      dtype='int32', name='target_in')
+    class_in = Input(batch_shape=(self._batch_size,1), 
+                     dtype='int32', name='class_in')
     # Embedding layers connect to target_in and class_in
-    emb_in = Embedding(output_dim=self._emb_dim, input_dim=len(self._graph),
-                       input_length=self._batch_size, name='emb_in')(target_in)
-    emb_out = Embedding(output_dim=self._emb_dim, input_dim=len(self._graph),
-                       input_length=self._batch_size, name='emb_out')(class_in)
+    emb_in = Embedding(input_dim=len(self._graph),
+                       output_dim=self._emb_dim, 
+                       name='emb_in')(target_in)
+    reshape_in = Reshape(target_shape=(self._emb_dim,))(emb_in)
+    emb_out = Embedding(input_dim=len(self._graph),
+                        output_dim=self._emb_dim, 
+                        name='emb_out')(class_in)
+    reshape_out = Reshape(target_shape=(self._emb_dim,))(emb_out)
     # Elemen-wise multiplication for dot product
-    dot_prod = RowDot([emb_in, emb_out])
+    dot_prod = Merge(mode=row_wise_dot, output_shape=(1,), 
+                     name='dot_prod')([reshape_in, reshape_out])
     # Initialize model
-    if self._model is None:
-      self._model = Model(input=[target_in, class_in], output=dot_prod)
+    self._model = Model(input=[target_in, class_in], output=dot_prod)
     # Compile model
-    if not self._compiled:
-      self._model.compile(loss=loss, optimizer=optimizer, name='model')
+    self._model.compile(loss=loss, optimizer=optimizer, name='model')
+    self._built = True
+    
   ######################################################################## train
-  def train(self, mode='random_walk', num_true=1, shuffle=True, distort=0.75):
+  def train(self, mode='random_walk', num_true=1, 
+            shuffle=True, verbose=2, distort=0.75):
     """
     Load data and train the model.
 
@@ -142,10 +156,12 @@ class EmbeddingNet():
     --------
       Load data in batches and train the model.
     """
-    # Graph data generator with negative sampling
-    data_generator = self._graph.sample_walk_with_negative(mode,
+    self._trained = True
+    for j in xrange(self._epoch):
+      print('Epoch: ', j)
+      # Graph data generator with negative sampling
+      data_generator = self._graph.gen_walk(mode,
                                  self._walk_length,
-                                 self._num_walk,
                                  num_true,
                                  self._neg_samp,
                                  self._num_skip,
@@ -153,17 +169,13 @@ class EmbeddingNet():
                                  self._window_size,
                                  self._batch_size,
                                  distort)
-    # TODO: Now using makeshift reshape - Fix data generation later
-    for _ in xrange(self._epoch):
       for targets, classes, labels in data_generator:
         targets = targets[np.newaxis].T
-        classes = classes[np.newaxis].T
-        labels = np.reshape(labels[np.newaxis].T, (100,1,1))
-        print(targets.shape)
-        print(classes.shape)
-        print(labels.shape)
-        self._model.fit([targets, classes], labels, 
-                        batch_size=self._batch_size, nb_epoch=1)
+        classes = classes[np.newaxis].T 
+        labels = labels[np.newaxis].T
+        self._model.fit({'target_in':targets, 'class_in':classes}, 
+                        {'dot_prod':labels}, batch_size=self._batch_size, 
+                        nb_epoch=1, verbose=verbose)
 
 # === END CLASS EmbeddingNet ===
 
@@ -176,17 +188,12 @@ def nce_loss(y_true, y_pred):
     """
     return -K.log(K.sigmoid(y_pred * y_true)).sum()
 
+def row_wise_dot(inputs):
+    """
+    Custom function for loss
+    """
+    a = inputs[0]
+    b = inputs[1]
+    return K.batch_dot(a,b,axes=[1,1])
+
 # === END HELPER FUNCTIONS ===
-
-
-
-
-
-
-
-
-
-
-
-
-
