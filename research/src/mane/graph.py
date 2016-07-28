@@ -323,10 +323,10 @@ class Graph(dict):
   ############################################################ gen_with_negative
   # TODO: fix bug when passing with key word walk_length=...
   def gen_with_negative(self, walk_func_name, walk_length=5, 
-                                num_walk=10, num_true=1, neg_samp=5, 
-                                num_skip=5, shuffle=True, window_size=5, 
-                                batch_size=100, neg_samp_distort=0.75,
-                                neg_samp_generator=None):
+                        num_walk=10, num_true=1, neg_samp=5, 
+                        num_skip=5, shuffle=True, window_size=5, 
+                        batch_size=100, neg_samp_distort=0.75,
+                        neg_samp_generator=None):
     """
     Create training dataset using walk function list with negative
     sampling and negative distribution distorted. This function is
@@ -424,8 +424,6 @@ class Graph(dict):
         labels = []
         node_tuples = []
 
-<<<<<<< HEAD
-=======
   ################################################################# gen_contrast
   def gen_contrast(self, possitive_name, negative_name,
                    walk_length=5, num_true=1, neg_samp=5, 
@@ -462,7 +460,6 @@ class Graph(dict):
     """
 
     
->>>>>>> f165e140e9d949b0d9c446bf3b17746c85577f8f
 # === END CLASS 'graph' ===
 
 
