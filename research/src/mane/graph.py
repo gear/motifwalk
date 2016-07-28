@@ -425,8 +425,8 @@ class Graph(dict):
         node_tuples = []
 
   ################################################################# gen_contrast
-  def gen_contrast(self, possitive_name, negative_name,
-                   walk_length=5, num_true=1, neg_samp=5, 
+  def gen_contrast(self, possitive_name=None, negative_name=None,
+                   walk_length=5, num_walk=5, num_true=1, neg_samp=5, 
                    num_skip=5, shuffle=True, window_size=5, 
                    batch_size=100, neg_samp_distort=0.75):
     """
@@ -436,18 +436,13 @@ class Graph(dict):
     Parameters
     ----------
       walk_func_name: Positive walk function name (e.g. 'motif_walk')
-      graph_size: Total number of nodes in graph.
+      walk_length: Length for a walk
       num_true: Number of true class for each sample.
       num_skip: Number of samples generated for each target.
       shuffle: If node list is shuffled before generating random walk.
       neg_samp: Number of negative sampling for each target.
       window_size: Window for getting sample from the random walk list.
       batch_size: Number of samples generated.
-      neg_samp_distort: Distort the uniform distribution for negative 
-                        sampling. Float value of 0.0 means uniform 
-                        sampling and value of 1.0 means normal unigram 
-                        sampling. This scheme is the same as in word2vec
-                        model implementation.
   
     Yields
     ------
@@ -458,6 +453,57 @@ class Graph(dict):
     Example
     -------
     """
+    assert possitive_name is not None and negative_name is not None
+    assert window_size >= num_skip, 'Window size is too small.'
+    assert batch_size % (walk_length*(num_skip + neg_samp)) == 0, 'Batch size must match.'
+    pos_func = getattr(self, possitive_name)
+    neg_func = getattr(self, negative_name)
+    # Number of random walk for each batch
+    nodes_in_batch = batch_size // (walk_length*(num_skip + neg_samp))
+    # Shuffle the node ids list for better SGD performance [DeepWalk]
+    if shuffle:
+      id_list = np.random.permutation(self.keys())
+    else:
+      id_list = self.keys()
+    count_nodes = nodes_in_batch
+    node_tuples = []
+    labels = []
+    for i in (id_list):
+      # Perform walk if the node is connected
+      if len(self[i]) > 0:
+        count_nodes -= 1
+      else:
+        continue
+      # Perform 2 walks and return set of nodes
+      pos_walk = pos_func(start_node=i, length=walk_length, 
+                          num_walk=num_walk) 
+      neg_walk = neg_func(start_node=i, length=walk_length,
+                          num_walk=num_walk)
+      # The set of negative samples is the contrast between 2 walks
+      neg_samps = neg_walk - pos_walk
+      for j, target in enumerate(pos_walk):
+        lower = max(0, j - window_size)
+        upper = min(walk_length, j + window_size+1)
+        for _ in xrange(num_skip):
+          # TODO: Check situation where rand_node == target
+          # TODO: Use num_true. Now assume default value
+          rand_node = np.random.choice(walk[lower:upper])
+          node_tuples.append([target, rand_node])
+          labels.append(1.0) # Possitive sample
+        for _ in xrange(neg_samp):
+          rand_node = np.random.choice(node_list, p = freq_list)
+          node_tuples.append([target, rand_node])
+          labels.append(-1.0) # Negative sample
+      if count_nodes <= 0:
+        node_tuples = np.array(node_tuples, dtype=np.int32)
+        labels = np.array(labels, dtype=np.float32)
+        yield (node_tuples[:,0], 
+               node_tuples[:,1],
+               labels)
+        count_nodes = nodes_in_batch
+        labels = []
+        node_tuples = []
+
 
     
 # === END CLASS 'graph' ===
