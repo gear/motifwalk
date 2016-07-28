@@ -321,12 +321,10 @@ class Graph(dict):
     # TODO: Log the walk
     return set(walk_path)
   ############################################################ gen_with_negative
-  # TODO: fix bug when passing with key word walk_length=...
-  def gen_with_negative(self, walk_func_name, walk_length=5, 
-                        num_walk=10, num_true=1, neg_samp=5, 
-                        num_skip=5, shuffle=True, window_size=5, 
-                        batch_size=100, neg_samp_distort=0.75,
-                        neg_samp_generator=None):
+  def gen_walk(self, walk_func_name, walk_length=5, 
+               num_walk=5, num_true=1, neg_samp=5, 
+               num_skip=5, shuffle=True, window_size=5, 
+               batch_size=100, neg_samp_distort=0.75):
     """
     Create training dataset using walk function list with negative
     sampling and negative distribution distorted. This function is
@@ -336,10 +334,11 @@ class Graph(dict):
     ----------
       walk_func_name: Walk function name (e.g. 'random_walk')
       walk_length: Total number of nodes in each walk.
+      num_walk: Number of walk performed for each starting node.
       num_true: Number of true class for each sample.
+      neg_samp: Number of negative samples for each target.
       num_skip: Number of samples generated for each target.
       shuffle: If node list is shuffled before generating random walk.
-      neg_samp: Number of negative sampling for each target.
       window_size: Window for getting sample from the random walk list.
       batch_size: Number of samples generated.
       neg_samp_distort: Distort the uniform distribution for negative 
@@ -347,26 +346,14 @@ class Graph(dict):
                         sampling and value of 1.0 means normal unigram 
                         sampling. This scheme is the same as in word2vec
                         model implementation.
-      neg_samp_generator: Negative sampling generator function. Default
-                          None means that a distorted unigram distribution
-                          is used.
   
     Yields
     ------
-      targets: np.array of target node
-      class: np.array of class associated with the target node
-      labels: np.array of corresponding labels for each sample in bath.
+      Yields a single tuple of: ( (target, label), label )
+        target: id of target node
+        class: id of class associated with the target node
+        labels: 1 for possitive sample, -1 for negative sample.
   
-    Example
-    -------
-      >>> walk_func = 'random_walk'
-      >>> batch_tuples, batch_labels = sample_walk_with_negative(walk_func, ...)
-      >>> batch_tuples
-      ... [(0,1), (0,2), (0,9), ...] 
-          # List of node pairs
-      >>> labels
-      ... [1, -1, 1, 1, -1, -1 ...]
-          # 1 is true sample and -1 is negative (fake)
     """
     # Make sure generated dataset has correct count.
     assert window_size >= num_skip, 'Window size is too small.'
@@ -503,8 +490,6 @@ class Graph(dict):
         count_nodes = nodes_in_batch
         labels = []
         node_tuples = []
-
-
     
 # === END CLASS 'graph' ===
 

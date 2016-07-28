@@ -24,15 +24,15 @@ import matplotlib.pyplot as plt
 
 fb = g.graph_from_pickle('data/egonets.graph')
 
-name_rand = 'nce_egonets_defult_adam_rand'
-name_motif = 'nce_egonets_defult_adam_motif'
+name_rand = 'nce_egonets_e200_bs1_adam_rand'
+name_motif = 'nce_egonets_e200_bs1_adam_motif'
 
-no_train = True
+no_train = False
 
 if no_train:
   pass
 else:
-  model_r = e.EmbeddingNet(graph=fb, epoch=100)
+  model_r = e.EmbeddingNet(graph=fb, epoch=200, batch_size=50)
   adam_opt = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
   model_r.build(optimizer='adam')
   model_r.train(mode='random_walk', verbose=0)
@@ -40,7 +40,7 @@ else:
 if no_train:
   pass
 else:
-  model_m = e.EmbeddingNet(graph=fb, epoch=100)
+  model_m = e.EmbeddingNet(graph=fb, epoch=200, batch_size=50)
   adam_opt = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
   model_m.build(optimizer='adam')
   model_m.train(mode='motif_walk', verbose=0)

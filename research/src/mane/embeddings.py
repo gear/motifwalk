@@ -38,7 +38,7 @@ class EmbeddingNet():
   ##################################################################### __init__
   def __init__(self, model=None, graph=None, epoch=10,
                name='EmbeddingNet', emb_dim=200, 
-               learning_rate=0.01, batch_size=100, 
+               learning_rate=0.01, batch_size=1, 
                neg_samp=5, num_skip=5, num_walk=5,
                walk_length=5, window_size=5,
                save_file='EmbeddingNet.keras'):
