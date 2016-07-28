@@ -6,6 +6,7 @@
 # Description:
 ## v0.0: File created. Simple Sequential model.
 ## v0.1: Change to functional API model.
+## v0.2: Test use fit_generator for basic model.
 
 from __future__ import division
 from __future__ import print_function
@@ -82,15 +83,10 @@ class EmbeddingNet():
     # Data 
     self._graph = graph
 
-    # Neural net
-    self._input_tensors = []
-    self._output_tensors = []
-    self._model = model
+    # Epoch size
+    self._sample_per_epoch = len(graph) * num_walk * walk_length * 
+                             (num_skip + neg_samp)
 
-    # Inputs and output
-    self._target = None
-    self._class = None
-    self._score = None
   ######################################################################## build
   def build(self, loss=None, optimizer='adam'):
     """
@@ -124,14 +120,12 @@ class EmbeddingNet():
     emb_in = Embedding(input_dim=len(self._graph),
                        output_dim=self._emb_dim, 
                        name='emb_in')(target_in)
-    reshape_in = Reshape(target_shape=(self._emb_dim,))(emb_in)
     emb_out = Embedding(input_dim=len(self._graph),
                         output_dim=self._emb_dim, 
                         name='emb_out')(class_in)
-    reshape_out = Reshape(target_shape=(self._emb_dim,))(emb_out)
     # Elemen-wise multiplication for dot product
     dot_prod = Merge(mode=row_wise_dot, output_shape=(1,), 
-                     name='dot_prod')([reshape_in, reshape_out])
+                     name='dot_prod')([emb_in, emb_out])
     # Initialize model
     self._model = Model(input=[target_in, class_in], output=dot_prod)
     # Compile model
@@ -157,17 +151,15 @@ class EmbeddingNet():
       Load data in batches and train the model.
     """
     self._trained = True
-    for j in xrange(self._epoch):
-      print('Epoch: ', j)
-      # Graph data generator with negative sampling
-      data_generator = self._graph.gen_walk(mode,
+    # Graph data generator with negative sampling
+    data_generator = self._graph.gen_walk(mode,
                                  self._walk_length,
+                                 self._num_walk,
                                  num_true,
                                  self._neg_samp,
                                  self._num_skip,
                                  shuffle,
                                  self._window_size,
-                                 self._batch_size,
                                  distort)
       for targets, classes, labels in data_generator:
         targets = targets[np.newaxis].T

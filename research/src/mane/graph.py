@@ -348,7 +348,7 @@ class Graph(dict):
   
     Yields
     ------
-      Yields a single tuple of: ( (target, label), label )
+      Yields a single tuple: ( {'target':..., 'label':...}, {'label':...} )
         target: id of target node
         class: id of class associated with the target node
         labels: 1 for possitive sample, -1 for negative sample.
