@@ -24,6 +24,7 @@ import itertools
 import multiprocessing
 import cPickle as pickle
 import numpy as np
+from itertools import izip 
 from time import time
 
 # My modules
@@ -318,17 +319,15 @@ class Graph(dict):
       mwp = self.motif_walk(length=length, start_node=start_node,
                             rand_seed=rand_seed, reset=reset)
       walk_path.extend(mwp)
-    # TODO: Log the walk
     return set(walk_path)
   ############################################################ gen_with_negative
   def gen_walk(self, walk_func_name, walk_length=5, 
                num_walk=5, num_true=1, neg_samp=5, 
                num_skip=5, shuffle=True, window_size=5, 
-               batch_size=100, neg_samp_distort=0.75):
+               neg_samp_distort=0.75):
     """
-    Create training dataset using walk function list with negative
-    sampling and negative distribution distorted. This function is
-    a generator for feeding data to the shit
+    Infinite loop generating data as a simple skipgram model
+    with negative sampling.
     
     Parameters
     ----------
@@ -353,69 +352,65 @@ class Graph(dict):
         target: id of target node
         class: id of class associated with the target node
         labels: 1 for possitive sample, -1 for negative sample.
+
+    Note
+    ----
+      The number of samples for ... 
+        - Each starting node: num_walk * walk_length * (num_skip + neg_samp) 
+        - Each epoch: #nodes * num_walk * walk_length * (num_skip + neg_samp)
+      E.g.
+        - Default setting: 
+            #nodes * 5 * 5 * (5 + 5) = 250 * #nodes
   
     """
     # Make sure generated dataset has correct count.
     assert window_size >= num_skip, 'Window size is too small.'
-    assert batch_size % (walk_length*(num_skip + neg_samp)) == 0, 'Batch size must match.'
-    # Number of random walk for each batch
-    nodes_in_batch = batch_size // (walk_length*(num_skip + neg_samp))
-    # TODO: Add logger for this process. log = self.getLogger()
     wfunc = getattr(self, walk_func_name)
-    # Shuffle the node ids list for better SGD performance [DeepWalk]
-    if shuffle:
-      id_list = np.random.permutation(self.keys())
-    else:
-      id_list = self.keys()
-    # TODO: Use kwargs to pass all arguments to walk funciton
-    count_nodes = nodes_in_batch
-    node_tuples = []
-    labels = []
     # Node degree distribution distorted by neg_samp_distort
     node_list = self._freq.keys()
     freq_list = np.array(self._freq.values(), np.int32)**neg_samp_distort
     norm = sum(freq_list)
     freq_list = freq_list / norm
-    # Negative sample creation function
-    if neg_samp_generator is not None:
-      neg_func = neg_samp_generator
-    else:
-      neg_func = np.random.choice
-    for i in (id_list):
-      # Perform walk if the node is connected
-      if len(self[i]) > 0:
-        count_nodes -= 1
+    # Infinite loop generating samples
+    while True:
+      if shuffle:
+        id_list = np.random.permutation(self.keys())
       else:
-        continue
-      walk = wfunc(length=walk_length, start_node=i)
-      for j, target in enumerate(walk):
-        lower = max(0, j - window_size)
-        upper = min(walk_length, j + window_size+1)
-        for _ in xrange(num_skip):
-          # TODO: Check situation where rand_node == target
-          # TODO: Use num_true. Now assume default value
-          rand_node = np.random.choice(walk[lower:upper])
-          node_tuples.append([target, rand_node])
-          labels.append(1.0) # Possitive sample
-        for _ in xrange(neg_samp):
-          rand_node = np.random.choice(node_list, p = freq_list)
-          node_tuples.append([target, rand_node])
-          labels.append(-1.0) # Negative sample
-      if count_nodes <= 0:
-        node_tuples = np.array(node_tuples, dtype=np.int32)
-        labels = np.array(labels, dtype=np.float32)
-        yield (node_tuples[:,0], 
-               node_tuples[:,1],
-               labels)
-        count_nodes = nodes_in_batch
-        labels = []
-        node_tuples = []
+        id_list = self.keys()
+      for i in (id_list):
+        # Perform walk if the node is connected
+        if len(self[i]) > 0:
+          count_nodes -= 1
+        else:
+          continue
+        walk = []
+        for _ in xrange(num_walk):
+          walk.extend( wfunc(length=walk_length, start_node=i) )
+        for j, target in enumerate(walk):
+          # Window [lower:upper] for skipping
+          lower = max(0, j - window_size)
+          upper = min(walk_length, j + window_size+1)
+          targets = []
+          classes = []
+          labels = []
+          for _ in xrange(num_skip):
+            rand_node = np.random.choice(walk[lower:upper])
+            targets.append(target)
+            classes.append(rand_node)
+            labels.append(1.0) # Possitive sample
+          for _ in xrange(neg_samp):
+            rand_node = np.random.choice(node_list, p = freq_list)
+            targets.append(target)
+            classes.append(rand_node)
+            labels.append(-1.0) # Negative sample
+          for t,c,l in izip(targets,classes,labels):
+            yield ([t,c],l)
 
   ################################################################# gen_contrast
   def gen_contrast(self, possitive_name=None, negative_name=None,
                    walk_length=5, num_walk=5, num_true=1, neg_samp=5, 
                    num_skip=5, shuffle=True, window_size=5, 
-                   batch_size=100, neg_samp_distort=0.75):
+                   neg_samp_distort=0.75):
     """
     Create training dataset using possitive samples from motif walk
     and the negative samples from random walk.
@@ -429,7 +424,6 @@ class Graph(dict):
       shuffle: If node list is shuffled before generating random walk.
       neg_samp: Number of negative sampling for each target.
       window_size: Window for getting sample from the random walk list.
-      batch_size: Number of samples generated.
   
     Yields
     ------
@@ -442,7 +436,6 @@ class Graph(dict):
     """
     assert possitive_name is not None and negative_name is not None
     assert window_size >= num_skip, 'Window size is too small.'
-    assert batch_size % (walk_length*(num_skip + neg_samp)) == 0, 'Batch size must match.'
     pos_func = getattr(self, possitive_name)
     neg_func = getattr(self, negative_name)
     # Number of random walk for each batch
@@ -452,9 +445,6 @@ class Graph(dict):
       id_list = np.random.permutation(self.keys())
     else:
       id_list = self.keys()
-    count_nodes = nodes_in_batch
-    node_tuples = []
-    labels = []
     for i in (id_list):
       # Perform walk if the node is connected
       if len(self[i]) > 0:
