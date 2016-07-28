@@ -27,7 +27,7 @@ fb = g.graph_from_pickle('data/egonets.graph')
 name_rand = 'nce_egonets_defult_adam_rand'
 name_motif = 'nce_egonets_defult_adam_motif'
 
-no_train = False
+no_train = True
 
 if no_train:
   pass
@@ -36,7 +36,7 @@ else:
   adam_opt = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
   model_r.build(optimizer='adam')
   model_r.train(mode='random_walk', verbose=0)
-  weight_r = model_a_r._model.get_weights()
+  weight_r = model_r._model.get_weights()
 if no_train:
   pass
 else:
@@ -44,7 +44,7 @@ else:
   adam_opt = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
   model_m.build(optimizer='adam')
   model_m.train(mode='motif_walk', verbose=0)
-  weigha_m = model_a_m._model.get_weights()
+  weigha_m = model_m._model.get_weights()
 
 # Save model
 if not os.path.exists(name_rand+'.model'):
@@ -73,14 +73,15 @@ weight_m_avg = (weight_m[0] + weight_m[1]) / 2
 
 # Save or load tsne
 if not os.path.exists(name_rand+'.tsne'):
-  tsne_weight_r_in = TSNE(learning_rate=100).fit_transform(weight_a_r[0])
-  tsne_weight_r_out = TSNE(learning_rate=100).fit_transform(weight_a_r[1])
+  tsne_weight_r_in = TSNE(learning_rate=100).fit_transform(weight_r[0])
+  tsne_weight_r_out = TSNE(learning_rate=100).fit_transform(weight_r[1])
   with open(name_rand+'.tsne', 'wb') as f:
     tsne = (tsne_weight_r_in, tsne_weight_r_out)
     p.dump(tsne, f, p.HIGHEST_PROTOCOL)
 else:
   with open(name_rand+'.tsne', 'rb') as f:
     tsne_weight_r_in, tsne_weight_r_out = p.load(f)
+
 if not os.path.exists(name_motif+'.tsne'):
   tsne_weight_m_in = TSNE(learning_rate=100).fit_transform(weight_m[0])
   tsne_weight_m_out = TSNE(learning_rate=100).fit_transform(weight_m[1])
@@ -91,17 +92,33 @@ else:
   with open(name_motif+'.tsne', 'rb') as f:
     tsne_weight_m_in, tsne_weight_m_out = p.load(f)
 
+if not os.path.exists(name_rand+'_avg.tsne'):
+  tsne_weight_r = TSNE(learning_rate=100).fit_transform(weight_r_avg)
+  with open(name_rand+'_avg.tsne', 'wb') as f:
+    p.dump(tsne_weight_r, f, p.HIGHEST_PROTOCOL)
+else:
+  with open(name_rand+'_avg.tsne', 'rb') as f:
+    tsne_weight_r = p.load(f)
+
+if not os.path.exists(name_motif+'_avg.tsne'):
+  tsne_weight_m = TSNE(learning_rate=100).fit_transform(weight_m_avg)
+  with open(name_motif+'_avg.tsne', 'wb') as f:
+    p.dump(tsne_weight_m, f, p.HIGHEST_PROTOCOL)
+else:
+  with open(name_motif+'_avg.tsne', 'rb') as f:
+    tsne_weight_m = p.load(f)
+
 plt.figure(figsize=(10,15))
 plt.subplot(321)
-plt.scatter(tsne_weight_a_r_in[:,0], tsne_weight_a_r_in[:,1])
+plt.scatter(tsne_weight_r_in[:,0], tsne_weight_r_in[:,1])
 plt.subplot(322)
-plt.scatter(tsne_weight_a_r_out[:,0], tsne_weight_a_r_out[:,1])
+plt.scatter(tsne_weight_r_out[:,0], tsne_weight_r_out[:,1])
 plt.subplot(323)
-plt.scatter(tsne_weight_a_m_in[:,0], tsne_weight_a_m_in[:,1])
+plt.scatter(tsne_weight_m_in[:,0], tsne_weight_m_in[:,1])
 plt.subplot(324)
-plt.scatter(tsne_weight_a_m_out[:,0], tsne_weight_a_m_out[:,1])
+plt.scatter(tsne_weight_m_out[:,0], tsne_weight_m_out[:,1])
 plt.subplot(325)
-plt.scatter(tsne_weight_a_r[:,0], tsne_weight_a_r[:,1])
+plt.scatter(tsne_weight_r[:,0], tsne_weight_r[:,1])
 plt.subplot(326)
-plt.scatter(tsne_weight_a_m[:,0], tsne_weight_a_m[:,1])
+plt.scatter(tsne_weight_m[:,0], tsne_weight_m[:,1])
 plt.show()
