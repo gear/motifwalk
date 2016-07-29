@@ -22,27 +22,27 @@ from keras.optimizers import Adam
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 
-fb = g.graph_from_pickle('data/egonets.graph')
+fb = g.graph_from_pickle('data/youtube.graph')
 
-name_rand = 'nce_egonets_e200_bs1_adam_rand'
-name_motif = 'nce_egonets_e200_bs1_adam_motif'
+name_rand = 'nce_youtube_e200_ne2_ns2_nw10_wl10_ws2_adam_rand'
+name_motif = 'nce_youtube_e200_ne2_ns2_nw10_wl10_ws2_adam_motif'
 
 no_train = False
 
 if no_train:
   pass
 else:
-  model_r = e.EmbeddingNet(graph=fb, epoch=200, batch_size=50)
-  adam_opt = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
-  model_r.build(optimizer='adam')
+  model_r = e.EmbeddingNet(graph=fb, epoch=200, neg_samp=2, num_skip=2, num_walk=10, walk_length=10, window_size=2)
+  adam_opt = Adam(lr=0.01, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
+  model_r.build(optimizer=adam_opt)
   model_r.train(mode='random_walk', verbose=0)
   weight_r = model_r._model.get_weights()
 if no_train:
   pass
 else:
-  model_m = e.EmbeddingNet(graph=fb, epoch=200, batch_size=50)
-  adam_opt = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
-  model_m.build(optimizer='adam')
+  model_m = e.EmbeddingNet(graph=fb, epoch=200, neg_samp=2, num_skip=2, num_walk=10, walk_length=10, window_size=2)
+  adam_opt = Adam(lr=0.01, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
+  model_m.build(optimizer=adam_opt)
   model_m.train(mode='motif_walk', verbose=0)
   weight_m = model_m._model.get_weights()
 
