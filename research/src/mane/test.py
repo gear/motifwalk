@@ -44,7 +44,7 @@ else:
   adam_opt = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
   model_m.build(optimizer='adam')
   model_m.train(mode='motif_walk', verbose=0)
-  weigha_m = model_m._model.get_weights()
+  weight_m = model_m._model.get_weights()
 
 # Save model
 if not os.path.exists(name_rand+'.model'):
