@@ -42,6 +42,7 @@ class EmbeddingNet():
                learning_rate=0.01, batch_size=1, 
                neg_samp=5, num_skip=5, num_walk=5,
                walk_length=5, window_size=5,
+               samples_per_epoch=1000000,
                save_file='EmbeddingNet.keras'):
     """
     Initialize a basic embedding neural network model with
@@ -84,8 +85,7 @@ class EmbeddingNet():
     self._graph = graph
 
     # Epoch size
-    each_start_node =  num_walk * walk_length * (num_skip + neg_samp)
-    self._samples_per_epoch = len(graph) * each_start_node
+    self._samples_per_epoch = samples_per_epoch
 
   ######################################################################## build
   def build(self, loss=None, optimizer='adam'):
