@@ -107,18 +107,20 @@ Tsuyoshi Murata\\ %\titlenote{Prof. Murata is the supervisor}\\
 
 \maketitle
 \begin{abstract}
-In this paper, we describe current advancement in graph embedding research
-and propose a novel algorithm, named \emph{MotifWalk}. By incooporating the
-local motif structure of a network, \emph{MotifWalk} learns the vector 
-representation of a network based not only on local connection, but also
-based on the structural of that connections. Our algorithm is scalable
-for large network and parallel processing. Moreover, it outperforms 
-other algorithms in all statistical test as well as visualization test.
-Our algorithm enables the extension of current NLP paradigm to learn even
-grammar and meanings or structured sentences. Although this paper focus
-on learning structural representation of an arbitary network, but we
-also included a experimental result of our algorithm in natural language
-processing.
+Given a large complex graph, how can we learn a lower dimension
+vector representation of each vertex that preserves structural 
+information? Recent advancements in graph embedding has used
+word embeddings techniques and deep architectures to propose a
+feasible answer to this question. However, most of these work
+only consider the notion of ``neighborhood'' by adjacency list.
+In this paper, we propose a novel graph embedding algorithm that
+consider graph motif structures into the latent vectors learning
+process. By contrasting between sets of nodes created by normal
+random walk and sets of nodes created by biased \emph{motif walk},
+we showed that our algorithm's embedding results improves accuracy
+in various benchmark graph mining task compare to existing algorithms.
+
+
 \end{abstract}
 
 
