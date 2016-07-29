@@ -35,7 +35,7 @@ else:
   model_r = e.EmbeddingNet(graph=fb, epoch=200, neg_samp=2, num_skip=2, num_walk=10, walk_length=10, window_size=2)
   adam_opt = Adam(lr=0.01, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
   model_r.build(optimizer=adam_opt)
-  model_r.train(mode='random_walk', verbose=0)
+  model_r.train(mode='random_walk', threads=8)
   weight_r = model_r._model.get_weights()
 if no_train:
   pass
@@ -43,7 +43,7 @@ else:
   model_m = e.EmbeddingNet(graph=fb, epoch=200, neg_samp=2, num_skip=2, num_walk=10, walk_length=10, window_size=2)
   adam_opt = Adam(lr=0.01, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
   model_m.build(optimizer=adam_opt)
-  model_m.train(mode='motif_walk', verbose=0)
+  model_m.train(mode='motif_walk', threads=8)
   weight_m = model_m._model.get_weights()
 
 # Save model
