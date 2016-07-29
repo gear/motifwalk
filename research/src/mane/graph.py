@@ -387,7 +387,7 @@ class Graph(dict):
         for j, target in enumerate(walk):
           # Window [lower:upper] for skipping
           lower = max(0, j - window_size)
-          upper = min(walk_length, j + window_size+1)
+          upper = min(len(walk), j + window_size+1)
           targets = []
           classes = []
           labels = []
