@@ -348,10 +348,10 @@ class Graph(dict):
   
     Yields
     ------
-      Yields a single tuple: ( {'target':..., 'label':...}, {'label':...} )
+      Yields a single tuple: ( {'target':..., 'class':...}, {'label':...} )
         target: id of target node
         class: id of class associated with the target node
-        labels: 1 for possitive sample, -1 for negative sample.
+        label: 1 for possitive sample, -1 for negative sample.
 
     Note
     ----
@@ -379,9 +379,7 @@ class Graph(dict):
         id_list = self.keys()
       for i in (id_list):
         # Perform walk if the node is connected
-        if len(self[i]) > 0:
-          count_nodes -= 1
-        else:
+        if not len(self[i]) > 0:
           continue
         walk = []
         for _ in xrange(num_walk):
@@ -403,8 +401,10 @@ class Graph(dict):
             targets.append(target)
             classes.append(rand_node)
             labels.append(-1.0) # Negative sample
-          for t,c,l in izip(targets,classes,labels):
-            yield ([t,c],l)
+          targets = np.array(targets, dtype=np.int32)
+          classes = np.array(classes, dtype=np.int32)
+          labels = np.array(labels, dtype=np.float32)
+          yield ({'target':targets, 'class':classes},{'label':labels})
 
   ################################################################# gen_contrast
   def gen_contrast(self, possitive_name=None, negative_name=None,

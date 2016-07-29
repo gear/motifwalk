@@ -84,8 +84,8 @@ class EmbeddingNet():
     self._graph = graph
 
     # Epoch size
-    self._sample_per_epoch = len(graph) * num_walk * walk_length * 
-                             (num_skip + neg_samp)
+    each_start_node =  num_walk * walk_length * (num_skip + neg_samp)
+    self._samples_per_epoch = len(graph) * each_start_node
 
   ######################################################################## build
   def build(self, loss=None, optimizer='adam'):
@@ -112,20 +112,22 @@ class EmbeddingNet():
       loss = nce_loss
 
     # Input tensors: shape doesn't include batch_size
-    target_in = Input(batch_shape=(self._batch_size,1), 
-                      dtype='int32', name='target_in')
-    class_in = Input(batch_shape=(self._batch_size,1), 
-                     dtype='int32', name='class_in')
+    target_in = Input(shape=(1,), 
+                      dtype='int32', name='target')
+    class_in = Input(shape=(1,), 
+                     dtype='int32', name='class')
     # Embedding layers connect to target_in and class_in
     emb_in = Embedding(input_dim=len(self._graph),
                        output_dim=self._emb_dim, 
                        name='emb_in')(target_in)
+    emb_in = Reshape((self._emb_dim,1))(emb_in)
     emb_out = Embedding(input_dim=len(self._graph),
                         output_dim=self._emb_dim, 
                         name='emb_out')(class_in)
+    emb_out = Reshape((self._emb_dim,1))(emb_out)
     # Elemen-wise multiplication for dot product
     dot_prod = Merge(mode=row_wise_dot, output_shape=(1,), 
-                     name='dot_prod')([emb_in, emb_out])
+                     name='label')([emb_in, emb_out])
     # Initialize model
     self._model = Model(input=[target_in, class_in], output=dot_prod)
     # Compile model
@@ -134,7 +136,8 @@ class EmbeddingNet():
     
   ######################################################################## train
   def train(self, mode='random_walk', num_true=1, 
-            shuffle=True, verbose=2, distort=0.75):
+            shuffle=True, verbose=2, distort=0.75,
+            threads=1):
     """
     Load data and train the model.
 
@@ -161,14 +164,9 @@ class EmbeddingNet():
                                  shuffle,
                                  self._window_size,
                                  distort)
-      for targets, classes, labels in data_generator:
-        targets = targets[np.newaxis].T
-        classes = classes[np.newaxis].T 
-        labels = labels[np.newaxis].T
-        self._model.fit({'target_in':targets, 'class_in':classes}, 
-                        {'dot_prod':labels}, batch_size=self._batch_size, 
-                        nb_epoch=1, verbose=verbose)
-
+    self._model.fit_generator(data_generator,
+                              samples_per_epoch=self._samples_per_epoch,
+                              nb_epoch=self._epoch, nb_worker=threads)
 # === END CLASS EmbeddingNet ===
 
 # >>> HELPER FUNCTIONS <<<
