@@ -166,7 +166,7 @@ class EmbeddingNet():
                                  distort)
     self._model.fit_generator(data_generator,
                               samples_per_epoch=self._samples_per_epoch,
-                              nb_epoch=self._epoch, nb_worker=threads)
+                              nb_epoch=self._epoch) # TODO: nb_worker on gtx
 # === END CLASS EmbeddingNet ===
 
 # >>> HELPER FUNCTIONS <<<
