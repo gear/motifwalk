@@ -33,7 +33,7 @@ motif_train = True
 if not rand_train:
   pass
 else:
-  model_r = e.EmbeddingNet(graph=fb, epoch=1, neg_samp=2, num_skip=2, num_walk=10, walk_length=10, window_size=2, samples_per_epoch=1000000)
+  model_r = e.EmbeddingNet(graph=fb, epoch=0, neg_samp=2, num_skip=2, num_walk=10, walk_length=10, window_size=2, samples_per_epoch=1000000)
   adam_opt = Adam(lr=0.01, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
   model_r.build(optimizer='rmsprop')
   model_r.train(mode='random_walk', threads=8)
@@ -41,7 +41,7 @@ else:
 if not motif_train:
   pass
 else:
-  model_m = e.EmbeddingNet(graph=fb, epoch=1, neg_samp=2, num_skip=2, num_walk=10, walk_length=10, window_size=2, samples_per_epoch=1000000)
+  model_m = e.EmbeddingNet(graph=fb, epoch=0, neg_samp=2, num_skip=2, num_walk=10, walk_length=10, window_size=2, samples_per_epoch=1000000)
   adam_opt = Adam(lr=0.01, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
   model_m.build(optimizer='rmsprop')
   model_m.train(mode='motif_walk', threads=8)
@@ -109,17 +109,26 @@ else:
   with open(name_motif+'_avg.tsne', 'rb') as f:
     tsne_weight_m = p.load(f)
 
-plt.figure(figsize=(10,15))
-plt.subplot(321)
-plt.scatter(tsne_weight_r_in[:,0], tsne_weight_r_in[:,1])
-plt.subplot(322)
-plt.scatter(tsne_weight_r_out[:,0], tsne_weight_r_out[:,1])
-plt.subplot(323)
-plt.scatter(tsne_weight_m_in[:,0], tsne_weight_m_in[:,1])
-plt.subplot(324)
-plt.scatter(tsne_weight_m_out[:,0], tsne_weight_m_out[:,1])
-plt.subplot(325)
-plt.scatter(tsne_weight_r[:,0], tsne_weight_r[:,1])
-plt.subplot(326)
-plt.scatter(tsne_weight_m[:,0], tsne_weight_m[:,1])
+fig = plt.figure(figsize=(10,15))
+fig.suptitle(name_rand[:-5], fontsize=16)
+a=plt.subplot(321)
+a.set_title("Random walk in embedding")
+a.scatter(tsne_weight_r_in[:,0], tsne_weight_r_in[:,1])
+b=plt.subplot(322)
+b.set_title("Random walk out embedding")
+b.scatter(tsne_weight_r_out[:,0], tsne_weight_r_out[:,1])
+c=plt.subplot(323)
+c.set_title("Motif walk in embedding")
+c.scatter(tsne_weight_m_in[:,0], tsne_weight_m_in[:,1])
+d=plt.subplot(324)
+d.set_title("Motif walk out embedding")
+d.scatter(tsne_weight_m_out[:,0], tsne_weight_m_out[:,1])
+e=plt.subplot(325)
+e.set_title("Random walk average embedding")
+e.scatter(tsne_weight_r[:,0], tsne_weight_r[:,1])
+f=plt.subplot(326)
+f.set_title("Motif walk average embedding")
+f.scatter(tsne_weight_m[:,0], tsne_weight_m[:,1])
+plt.savefig(name_rand[:-5]+'.png')
 plt.show()
+
