@@ -42,7 +42,7 @@ class EmbeddingNet():
                learning_rate=0.01, batch_size=1, 
                neg_samp=5, num_skip=5, num_walk=5,
                walk_length=5, window_size=5,
-               samples_per_epoch=1000000,
+               samples_per_epoch=100000,
                save_file='EmbeddingNet.keras'):
     """
     Initialize a basic embedding neural network model with
