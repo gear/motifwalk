@@ -24,11 +24,11 @@ import matplotlib.pyplot as plt
 
 fb = g.graph_from_pickle('data/egonets.graph')
 
-name_rand = 'nce_egonets_ns106_e30_ne2_ns2_nw10_wl10_ws2_adam_rand'
-name_motif = 'nce_egonets_ns106_e30_ne2_ns2_nw10_wl10_ws2_adam_motif'
+name_rand = 'nce_egonets_e10_ne2_ns2_nw10_wl10_ws2_adam_rand'
+name_motif = 'nce_egonets_e10_ne2_ns2_nw10_wl10_ws2_adam_motif'
 
-rand_train = True
-motif_train = True
+rand_train = False
+motif_train = False
 
 if not rand_train:
   pass
