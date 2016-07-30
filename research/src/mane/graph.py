@@ -404,7 +404,8 @@ class Graph(dict):
           targets = np.array(targets, dtype=np.int32)
           classes = np.array(classes, dtype=np.int32)
           labels = np.array(labels, dtype=np.float32)
-          yield ({'target':targets, 'class':classes},{'label':labels})
+          for t,c,l in izip(targets, classes, labels):
+            yield ({'target':t, 'class':c},{'label':l})
 
   ################################################################# gen_contrast
   def gen_contrast(self, possitive_name='motif_walk', 
