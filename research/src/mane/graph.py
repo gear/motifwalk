@@ -405,6 +405,9 @@ class Graph(dict):
           classes = np.array(classes, dtype=np.int32)
           labels = np.array(labels, dtype=np.float32)
           for t,c,l in izip(targets, classes, labels):
+            t = np.array(t, dtype=np.int32)
+            c = np.array(c, dtype=np.int32)
+            l = np.array(l ,dtype=np.float32)
             yield ({'target':t, 'class':c},{'label':l})
 
   ################################################################# gen_contrast
