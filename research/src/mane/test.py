@@ -33,7 +33,7 @@ motif_train = True
 if not rand_train:
   pass
 else:
-  model_r = e.EmbeddingNet(graph=fb, epoch=2, neg_samp=2, 
+  model_r = e.EmbeddingNet(graph=fb, epoch=2, neg_samp=2, batch_size=100,
                            num_skip=2, num_walk=5, walk_length=10, 
                            window_size=3, samples_per_epoch=3433150)
   adam_opt = Adam(lr=0.01, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
@@ -43,7 +43,7 @@ else:
 if not motif_train:
   pass
 else:
-  model_m = e.EmbeddingNet(graph=fb, epoch=2, neg_samp=2, 
+  model_m = e.EmbeddingNet(graph=fb, epoch=2, neg_samp=2, batch_size=100,
                            num_skip=2, num_walk=5, walk_length=10, 
                            window_size=3, samples_per_epoch=3433150)
   adam_opt = Adam(lr=0.01, beta_1=0.9, beta_2=0.999, epsilon=1e-08)

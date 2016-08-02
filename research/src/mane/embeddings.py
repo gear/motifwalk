@@ -160,8 +160,9 @@ class EmbeddingNet():
     nce_bias = Embedding(input_dim=len(self._graph),
                          output_dim=1, name='nce_bias',
                          input_length=1, init='zero') (class_in)
+    nce_bias = Reshape(target_shape=(1,)) (nce_bias)
     # Elemen-wise multiplication for dot product
-    dot_prod = Merge(mode=row_wise_dot, output_shape=(1,), 
+    dot_prod = Merge(mode=row_dot, output_shape=merge_shape, 
                      name='row_wise_dot')([embeddings, nce_weights])
     logits = Merge(mode='sum', output_shape=(1,),  
                    name='logits') ([dot_prod, nce_bias])
@@ -227,12 +228,13 @@ class EmbeddingNet():
 
 ######################################################################## row_dot
 def row_dot(inputs):
-    """
-    Compute row-element-wise dot
-    for input 2D matrices
-    """
-    a = inputs[0]
-    b = inputs[1]
-    return K.batch_dot(a,b,axes=[1,1])
+  """
+  Compute row-element-wise dot
+  for input 2D matrices
+  """
+  return K.batch_dot(inputs[0],inputs[1],axes=1)
+
+def merge_shape(inputs):
+  return (100,1)
 
 # === END HELPER FUNCTIONS ===
