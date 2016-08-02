@@ -12,6 +12,7 @@
 ##       motif walk. Frequency of node is ignored.
 ## v0.4: Create a batch generator.
 ## v0.5: Create contrast walk generator.
+## v0.6: Fix batch generator for new model (label={0,1}).
 
 from __future__ import print_function
 from __future__ import division
@@ -321,9 +322,9 @@ class Graph(dict):
       walk_path.extend(mwp)
     return set(walk_path)
   ############################################################ gen_with_negative
-  def gen_walk(self, walk_func_name, walk_length=5, 
-               num_walk=5, num_true=1, neg_samp=5, 
-               num_skip=5, shuffle=True, window_size=5, 
+  def gen_walk(self, walk_func_name, walk_length=10, 
+               num_walk=5, num_true=1, neg_samp=15, 
+               num_skip=2, shuffle=True, window_size=3, 
                neg_samp_distort=0.75):
     """
     Infinite loop generating data as a simple skipgram model
@@ -358,10 +359,6 @@ class Graph(dict):
       The number of samples for ... 
         - Each starting node: num_walk * walk_length * (num_skip + neg_samp) 
         - Each epoch: #nodes * num_walk * walk_length * (num_skip + neg_samp)
-      E.g.
-        - Default setting: 
-            #nodes * 5 * 5 * (5 + 5) = 250 * #nodes
-  
     """
     # Make sure generated dataset has correct count.
     assert window_size >= num_skip, 'Window size is too small.'
@@ -400,7 +397,7 @@ class Graph(dict):
             rand_node = np.random.choice(node_list, p = freq_list)
             targets.append(target)
             classes.append(rand_node)
-            labels.append(-1.0) # Negative sample
+            labels.append(0.0) # Negative sample
           targets = np.array(targets, dtype=np.int32)
           classes = np.array(classes, dtype=np.int32)
           labels = np.array(labels, dtype=np.float32)
