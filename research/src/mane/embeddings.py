@@ -7,20 +7,23 @@
 ## v0.0: File created. Simple Sequential model.
 ## v0.1: Change to functional API model.
 ## v0.2: Test use fit_generator for basic model.
+## v1.0: Change architecture for xentropy and negative sampling.
 
 from __future__ import division
 from __future__ import print_function
+from __future__ import absolute_import
 
 import numpy as np
 import keras
 import theano
 
 # Import keras modules
-from keras.models import Model, Sequential
-from keras.layers import Input, Merge, Reshape
+from keras.models import Model 
+from keras.layers import Input, Merge, Reshape, Activation
 from keras.layers.embeddings import Embedding
 from keras.optimizers import SGD, Adam
 from keras import backend as K
+from keras import initializations as init
 
 # Import custom layers
 from custom_layers import RowDot
@@ -88,7 +91,7 @@ class EmbeddingNet():
     self._samples_per_epoch = samples_per_epoch
 
   ######################################################################## build
-  def build(self, loss=None, optimizer='adam'):
+  def build(self, loss='binary_crossentropy', optimizer='adam'):
     """
     Build and compile neural net with functional API.
     
@@ -104,34 +107,70 @@ class EmbeddingNet():
     Behavior
     --------
       Construct neural net. Set built flag to True.
+      The architecture for v1.0 using binary xentropy: (batch size: 100, dim: 200)
+      _____________________________________________________________________
+      Layer (type)              Output Shape    Param # Connected to       
+      =====================================================================
+      class (InputLayer)        (100, 1)        0                          
+      _____________________________________________________________________
+      target (InputLayer)       (100, 1)        0                          
+      _____________________________________________________________________
+      nce_emb (Embedding)       (100, 1, 200)   807800  class[0][0]        
+      _____________________________________________________________________
+      target_emb (Embedding)    (100, 1, 200)   807800  target[0][0]       
+      _____________________________________________________________________
+      nce_bias (Embedding)      (100, 1, 1)     4039    target[0][0]       
+      _____________________________________________________________________
+      reshape_8 (Reshape)       (100, 200)      0       target_emb[0][0]   
+      _____________________________________________________________________
+      reshape_9 (Reshape)       (100, 200)      0       nce_emb[0][0]      
+      _____________________________________________________________________
+      reshape_10 (Reshape)      (100, 1)        0       nce_bias[0][0]     
+      _____________________________________________________________________
+      row_wise_dot (Merge)      (100, 1)        0       reshape_8[0][0]    
+                                                        reshape_9[0][0]    
+      _____________________________________________________________________
+      logits (Merge)            (100, 1)        0       row_wise_dot[0][0] 
+                                                        reshape_10[0][0]   
+      _____________________________________________________________________
+      activation_1 (Activation) (100, 1)        0       logits[0][0]       
+      =====================================================================
+      Total params: 1619639
     """
     if self._built:
       print('WARNING: Model was built.'
             ' Performing more than one build...')
-    if loss is None:
-      loss = nce_loss
 
-    # Input tensors: shape doesn't include batch_size
-    target_in = Input(shape=(1,), 
+    # Input tensors: batch_shape includes batch_size 
+    target_in = Input(batch_shape=(self._batch_size,1), 
                       dtype='int32', name='target')
-    class_in = Input(shape=(1,), 
+    class_in = Input(batch_shape=(self._batch_size,1), 
                      dtype='int32', name='class')
     # Embedding layers connect to target_in and class_in
-    emb_in = Embedding(input_dim=len(self._graph),
-                       output_dim=self._emb_dim, 
-                       name='emb_in')(target_in)
-    emb_in = Reshape((self._emb_dim,1))(emb_in)
-    emb_out = Embedding(input_dim=len(self._graph),
-                        output_dim=self._emb_dim, 
-                        name='emb_out')(class_in)
-    emb_out = Reshape((self._emb_dim,1))(emb_out)
+    embeddings = Embedding(input_dim=len(self._graph),
+                           output_dim=self._emb_dim, 
+                           name='embeddings', input_length=1 
+                           init=self.init_uniform) (target_in)
+    embeddings = Reshape((self._emb_dim,))(embeddings)
+    nce_weights = Embedding(input_dim=len(self._graph),
+                            output_dim=self._emb_dim, 
+                            name='nce_weights', input_length=1
+                            init=self.init_normal) (class_in)
+    nce_weights = Reshape((self._emb_dim,)) (nce_weights)
+    nce_bias = Embedding(input_dim=len(self._graph),
+                         output_dim=1, name='nce_bias',
+                         input_length=1, init='zero') (class_in)
     # Elemen-wise multiplication for dot product
     dot_prod = Merge(mode=row_wise_dot, output_shape=(1,), 
-                     name='label')([emb_in, emb_out])
+                     name='row_wise_dot')([embeddings, nce_weights])
+    logits = Merge(mode='sum', output_shape=(1,),  
+                   name='logits') ([dot_prod, nce_bias])
+    # Final output layer. name='label' for data input reason
+    sigm = Activation('sigmoid', name='label')  (logits)
     # Initialize model
-    self._model = Model(input=[target_in, class_in], output=dot_prod)
+    self._model = Model(input=[target_in, class_in], output=sigm)
     # Compile model
-    self._model.compile(loss=loss, optimizer=optimizer, name='model')
+    self._model.compile(loss=loss, optimizer=optimizer, name='EmbeddingNet')
     self._built = True
     
   ######################################################################## train
@@ -167,21 +206,30 @@ class EmbeddingNet():
     self._model.fit_generator(data_generator,
                               samples_per_epoch=self._samples_per_epoch,
                               nb_epoch=self._epoch) # TODO: nb_worker on gtx
+
+  ################################################################## init_normal
+  def init_normal(self, shape, name=None):
+    """
+    Custom normal initializer for nce
+    embedding. Shrink stddev.
+    """
+    return init.normal(shape=shape, scale=1/np.sqrt(self._emb_dim))
+  ################################################################# init_uniform
+  def init_uniform(self, shape, name=None):
+    """
+    Custom uniform initializer for input
+    embedding. Values between 1 and -1.
+    """
+    return init.uniform(shape=shape, scale=1, name=name)
 # === END CLASS EmbeddingNet ===
 
 # >>> HELPER FUNCTIONS <<<
 
-####################################################################### nce_loss 
-def nce_loss(y_true, y_pred):
+######################################################################## row_dot
+def row_dot(inputs):
     """
-    Custom NCE loss function.
-    """
-    y_pred = y_pred.reshape(y_true.shape)
-    return -K.log(K.sigmoid(y_pred * y_true))
-
-def row_wise_dot(inputs):
-    """
-    Custom function for loss
+    Compute row-element-wise dot
+    for input 2D matrices
     """
     a = inputs[0]
     b = inputs[1]
