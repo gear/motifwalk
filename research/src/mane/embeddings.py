@@ -149,12 +149,12 @@ class EmbeddingNet():
     # Embedding layers connect to target_in and class_in
     embeddings = Embedding(input_dim=len(self._graph),
                            output_dim=self._emb_dim, 
-                           name='embeddings', input_length=1 
+                           name='embeddings', input_length=1,
                            init=self.init_uniform) (target_in)
     embeddings = Reshape((self._emb_dim,))(embeddings)
     nce_weights = Embedding(input_dim=len(self._graph),
                             output_dim=self._emb_dim, 
-                            name='nce_weights', input_length=1
+                            name='nce_weights', input_length=1,
                             init=self.init_normal) (class_in)
     nce_weights = Reshape((self._emb_dim,)) (nce_weights)
     nce_bias = Embedding(input_dim=len(self._graph),
