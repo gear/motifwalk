@@ -176,6 +176,7 @@ def nce_loss(y_true, y_pred):
     """
     Custom NCE loss function.
     """
+    y_pred = y_pred.reshape(y_true.shape)
     return -K.log(K.sigmoid(y_pred * y_true))
 
 def row_wise_dot(inputs):
