@@ -212,7 +212,8 @@ class EmbeddingNet():
                                     self._window_size,
                                     distort)
     iterations = self._iters // num_batches
-    for _ in xrange(iterations):
+    for i in xrange(iterations):
+      print('Iteration %d / %d:' % (i, iterations))
       data = next(data_gen)
       self._model.fit(x=data[0], y=data[1], batch_size=self._batch_size, 
                       nb_epoch=self._epoch, verbose=verbose)

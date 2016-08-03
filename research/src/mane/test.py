@@ -29,7 +29,7 @@ name_rand = 'nce_blogcatalog_e10_ed5_ne5_ns1_nw5_wl5_ws2_it1_adam_rand'
 name_motif = 'nce_blogcatalog_e10_ed5_ne5_ns1_nw5_wl5_ws2_it1_adam_motif'
 name_contrast = 'nce_blogcatalog_e10_ed5_ne5_ns1_nw5_wl5_ws2_it1_adam_contrast'
 
-rand_train = True
+rand_train = False
 motif_train = True
 contrast_train = True
 
@@ -40,7 +40,7 @@ save_contrast = True
 if not rand_train:
   pass
 else:
-  model_r = e.EmbeddingNet(graph=fb, epoch=10, emb_dim=5, neg_samp=5, 
+  model_r = e.EmbeddingNet(graph=fb, epoch=1, emb_dim=5, neg_samp=5, 
                            num_skip=1, num_walk=5, walk_length=5, 
                            window_size=2, iters=5.0)
   adam_opt = Adam(lr=0.01, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
@@ -52,9 +52,9 @@ else:
 if not motif_train:
   pass
 else:
-  model_m = e.EmbeddingNet(graph=fb, epoch=10, emb_dim=5, neg_samp=5,
+  model_m = e.EmbeddingNet(graph=fb, epoch=1, emb_dim=50, neg_samp=5,
                            num_skip=1, num_walk=5, walk_length=5, 
-                           window_size=2, iters=5.0)
+                           window_size=2, iters=2.0)
   adam_opt = Adam(lr=0.01, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
   model_m.build(optimizer='adam')
   model_m.train(mode='motif_walk')
@@ -63,8 +63,8 @@ else:
 if not contrast_train:
   pass
 else:
-  model_c = e.EmbeddingNet(graph=fb, epoch=10, emb_dim=5, neg_samp=5,
-                           num_skip=1, num_walk=5, walk_length=5,
+  model_c = e.EmbeddingNet(graph=fb, epoch=1, emb_dim=50, neg_samp=5,
+                           num_skip=1, num_walk=2, walk_length=5,
                            window_size=2, iters=5.0) # reset default at 0.3
   model_c.build(optimizer='adam')
   model_c.train_mce()
