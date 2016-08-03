@@ -57,7 +57,6 @@ def txt_edgelist_to_pickle(filename, pickle_name='default.graph'):
   # Save as a pickle file
   with open(pickle_name, 'wb') as pfile:
     pickle.dump(graph, pfile, pickle.HIGHEST_PROTOCOL)
-  return graph
 
 def walk_length_stat_test(build_walk_func, num_walk, 
                           walk_length, start_node, num_build):
@@ -115,3 +114,34 @@ def walk_length_stat_test(build_walk_func, num_walk,
   var_path = count_path / (num_build - 1)
   var_unique = count_unique / (num_build - 1)
   return avg_unique, math.sqrt(var_unique), avg_path, math.sqrt(var_path)
+
+def txt_community_to_pickle(filename, picklename='default.community'):
+  """
+  File format: line[node_id community_id]
+  """
+  community = dict()
+  with open(filename, 'rb') as txt:
+    for line in txt.readlines():
+      arr = line.split()
+      if not community.has_key(int(arr[1])):
+        community[int(arr[1])] = set()
+      community[int(arr[1])].add(int(arr[0]))
+  with open(piclename, 'wb') as pfile:
+    pickle.dump(community, pfile, pickle.HIGHEST_PROTOCOL)
+
+def txt_adjlist_to_pickle(filename, picklename='default.graph'):
+  """
+  Create pickle graph file from adjlist
+  """
+  graph = dict()
+  with open(filename, 'rb') as txt:
+    for line in gfile.readlines():
+      arr = line.split()
+      for i in arr[1:]:
+        if not graph.has_key(int(arr[0])):
+          graph[int(arr[0])] = list()
+        if int(i) not in graph[int(arr[0])]:
+          graph[int(arr[0])].append(int(i))
+  with open(picklename, 'wb') as pfile:
+    pickle.dump(graph, pfile, pickle.HIGHEST_PROTOCOL)
+
