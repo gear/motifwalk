@@ -322,7 +322,7 @@ class Graph(dict):
       walk_path.extend(mwp)
     return set(walk_path)
   ############################################################ gen_with_negative
-  def gen_walk(self, walk_func_name, walk_length=10, 
+  def gen_walk(self, walk_func_name, num_batches=1, walk_length=10, 
                num_walk=5, num_true=1, neg_samp=15, 
                num_skip=2, shuffle=True, window_size=3, 
                neg_samp_distort=0.75):
@@ -368,37 +368,48 @@ class Graph(dict):
     freq_list = np.array(self._freq.values(), np.int32)**neg_samp_distort
     norm = sum(freq_list)
     freq_list = freq_list / norm
-    for _ in xrange(num_walk):
-      if shuffle:
-        id_list = np.random.permutation(self.keys())
-      else:
-        id_list = self.keys()
-      for i in (id_list):
-        # Perform walk if the node is connected
-        if not len(self[i]) > 0:
-          continue
-        walk = wfunc(length=walk_length, start_node=i)
+    # Generator loops forever
+    while True:
+      for _ in xrange(num_walk):
+        if shuffle:
+          id_list = np.random.permutation(self.keys())
+        else:
+          id_list = self.keys()
+        # Accumulator for each batch
+        count_batch = num_batches - 1
         targets = []
         classes = []
         labels = []
-        for j, target in enumerate(walk):
-          # Window [lower:upper] for skipping
-          lower = max(0, j - window_size)
-          upper = min(len(walk), j + window_size+1)
-          for _ in xrange(num_skip):
-            rand_node = np.random.choice(walk[lower:upper])
-            targets.append(target)
-            classes.append(rand_node)
-            labels.append(1.0) # Possitive sample
-          for _ in xrange(neg_samp):
-            rand_node = np.random.choice(node_list, p = freq_list)
-            targets.append(target)
-            classes.append(rand_node)
-            labels.append(0.0) # Negative sample
-        targets = np.array(targets, dtype=np.int32)
-        classes = np.array(classes, dtype=np.int32)
-        labels = np.array(labels, dtype=np.float32)
-        yield ({'target':targets, 'class':classes},{'label':labels})
+        for i in (id_list):
+          # Perform walk if the node is connected
+          if not len(self[i]) > 0:
+            continue
+          walk = wfunc(length=walk_length, start_node=i)
+          for j, target in enumerate(walk):
+            # Window [lower:upper] for skipping
+            lower = max(0, j - window_size)
+            upper = min(len(walk), j + window_size+1)
+            for _ in xrange(num_skip):
+              rand_node = np.random.choice(walk[lower:upper])
+              targets.append(target)
+              classes.append(rand_node)
+              labels.append(1.0) # Possitive sample
+            for _ in xrange(neg_samp):
+              rand_node = np.random.choice(node_list, p = freq_list)
+              targets.append(target)
+              classes.append(rand_node)
+              labels.append(0.0) # Negative sample
+          if count_batch <= 0 or i == id_list[-1]:
+            targets = np.array(targets, dtype=np.int32)
+            classes = np.array(classes, dtype=np.int32)
+            labels = np.array(labels, dtype=np.float32)
+            yield ({'target':targets, 'class':classes},{'label':labels})
+            count_batch = num_batches
+            targets = []
+            classes = []
+            labels = []
+          else:
+            count_batch -= 1
 
   ################################################################# gen_contrast
   def gen_contrast(self, possitive_name='motif_walk', 

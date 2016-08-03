@@ -20,44 +20,37 @@ import os
 
 from keras.optimizers import Adam
 from sklearn.manifold import TSNE
+from sklearn.preprocessing import normalize
 import matplotlib.pyplot as plt
 
 fb = g.graph_from_pickle('data/egonets.graph')
 
-name_rand = 'nce_egonets_e200_ne15_ns2_nw5_wl10_ws3_spe100_adam_rand'
-name_motif = 'nce_egonets_e200_ne15_ns2_nw5_wl10_ws3_spe100_adam_motif'
+name_rand = 'nce_egonets_e10_ne15_ns2_nw5_wl10_ws3_it1_adam_rand'
+name_motif = 'nce_egonets_e10_ne15_ns2_nw5_wl10_ws3_it1_adam_motif'
 
-rand_train = True
-motif_train = True
+rand_train = False
+motif_train = False
 
 if not rand_train:
   pass
 else:
-  model_r = e.EmbeddingNet(graph=fb, epoch=2, neg_samp=2, batch_size=100,
+  model_r = e.EmbeddingNet(graph=fb, epoch=10, emb_dim=200, neg_samp=15, 
                            num_skip=2, num_walk=5, walk_length=10, 
-                           window_size=3, samples_per_epoch=3433150)
+                           window_size=3, iters=1.0)
   adam_opt = Adam(lr=0.01, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
   model_r.build(optimizer='adam')
-  model_r.train(mode='random_walk', threads=8)
+  model_r.train(mode='random_walk')
   weight_r = model_r._model.get_weights()
 if not motif_train:
   pass
 else:
-  model_m = e.EmbeddingNet(graph=fb, epoch=2, neg_samp=2, batch_size=100,
+  model_m = e.EmbeddingNet(graph=fb, epoch=10, emb_dim=200, neg_samp=15,
                            num_skip=2, num_walk=5, walk_length=10, 
-                           window_size=3, samples_per_epoch=3433150)
+                           window_size=3, iters=1.0)
   adam_opt = Adam(lr=0.01, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
   model_m.build(optimizer='adam')
-  model_m.train(mode='motif_walk', threads=8)
+  model_m.train(mode='motif_walk')
   weight_m = model_m._model.get_weights()
-
-# Save model
-if not os.path.exists(name_rand+'.model'):
-  with open(name_rand+'.model', 'wb') as f:
-    p.dump(model_r, f, p.HIGHEST_PROTOCOL)
-if not os.path.exists(name_motif+'.model'):
-  with open(name_motif+'.model', 'wb') as f:
-    p.dump(model_m, f, p.HIGHEST_PROTOCOL)
 
 # Save or load data
 if not os.path.exists(name_rand+'.weights'):
@@ -73,8 +66,9 @@ else:
   with open(name_motif+'.weights', 'rb') as f:
     weight_m = p.load(f)
 
-weight_r_avg = (weight_r[0] + weight_r[1]) / 2
-weight_m_avg = (weight_m[0] + weight_m[1]) / 2
+# Normalize
+weight_r_avg = normalize(weight_r[0])
+weight_m_avg = normalize(weight_m[0])
 
 # Save or load tsne
 if not os.path.exists(name_rand+'.tsne'):

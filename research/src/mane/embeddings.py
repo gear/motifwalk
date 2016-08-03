@@ -91,7 +91,7 @@ class EmbeddingNet():
     # Computed property
     bs = walk_length * (num_skip + neg_samp)
     self._batch_size = bs
-    self._iters = int(iters * num_walk * len(graph) * bs)
+    self._iters = int(iters * num_walk * len(graph))
 
   ######################################################################## build
   def build(self, loss='binary_crossentropy', optimizer='adam'):
@@ -179,14 +179,18 @@ class EmbeddingNet():
     
   ######################################################################## train
   def train(self, mode='random_walk', num_true=1, 
-            shuffle=True, verbose=2, distort=0.75,
-            threads=1):
+            shuffle=True, verbose=1, distort=0.75, num_batches=1000):
     """
     Load data and train the model.
 
     Parameters
     ----------
       mode: Data generation mode: 'random_walk' or 'motif_walk'.
+      num_true: Number of true labels (not in use).
+      shuffle: True if ids list is shuffed before walk.
+      verbose: How much to print.
+      distort: Power of the unigram distribution.
+      num_batches: Number of batches to yield data.
 
     Returns
     -------
@@ -198,20 +202,20 @@ class EmbeddingNet():
     """
     self._trained = True
     # Graph data generator with negative sampling
-    for _ in xrange(self._iters):
-      data = self._graph.gen_walk(
-                                 self._walk_length,
-                                 self._num_walk,
-                                 num_true,
-                                 self._neg_samp,
-                                 self._num_skip,
-                                 shuffle,
-                                 self._window_size,
-                                 distort)
-    self._model.fit_generator(data_generator,
-                              self._samples_per_epoch,
-                              self._epoch, 1, [], None, None,
-                              dict(), 10, threads, True)
+    data_gen = self._graph.gen_walk(mode, num_batches,
+                                    self._walk_length,
+                                    self._num_walk,
+                                    num_true,
+                                    self._neg_samp,
+                                    self._num_skip,
+                                    shuffle,
+                                    self._window_size,
+                                    distort)
+    iterations = self._iters // num_batches
+    for _ in xrange(iterations):
+      data = next(data_gen)
+      self._model.fit(x=data[0], y=data[1], batch_size=self._batch_size, 
+                      nb_epoch=self._epoch, verbose=verbose)
 
   ################################################################## init_normal
   def init_normal(self, shape, name=None):
@@ -240,6 +244,6 @@ def row_dot(inputs):
   return K.batch_dot(inputs[0],inputs[1],axes=1)
 
 def merge_shape(inputs):
-  return (inputs[0].shape[0], 1)
+  return (inputs[0][0], 1)
 
 # === END HELPER FUNCTIONS ===
