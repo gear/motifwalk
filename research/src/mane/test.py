@@ -23,26 +23,44 @@ from sklearn.manifold import TSNE
 from sklearn.preprocessing import normalize
 import matplotlib.pyplot as plt
 
-fb = g.graph_from_pickle('data/karate.graph')
 
-name_rand = 'nce_karate_e10_ed5_ne5_ns1_nw5_wl5_ws2_it1_adam_rand'
-name_motif = 'nce_karate_e10_ed5_ne5_ns1_nw5_wl5_ws2_it1_adam_motif'
-name_contrast = 'nce_karate_e10_ed5_ne5_ns1_nw5_wl5_ws2_it1_adam_contrast'
+dataset_name = "blogcatalog"
+epoch = 5
+emb_dim = 5
+neg_samp = 5
+num_skip = 1
+num_walk = 5
+walk_length = 5
+window_size = 2
+iters = 5
 
-rand_train = True
+fb = g.graph_from_pickle('data/{}.graph'.format(dataset_name))
+
+exp_name = "nce_{}_e{}_ed{}_ne{}_ns{}_nw{}_wl{}_ws{}_it{}_adam".format(
+                data_name, epoch, emb_dim, neg_samp, num_skip, num_walk,
+                walk_length, window_size, iters)
+
+
+
+name_rand = exp_name + '_rand'
+name_motif = exp_name + '_motif'
+name_contrast = exp_name + '_contrast'
+
+rand_train = False
 motif_train = True
 contrast_train = True
 
-save_rand = True
+save_rand = False
 save_motif = True
 save_contrast = True
 
 if not rand_train:
   pass
 else:
-  model_r = e.EmbeddingNet(graph=fb, epoch=10, emb_dim=5, neg_samp=5, 
-                           num_skip=1, num_walk=5, walk_length=5, 
-                           window_size=2, iters=5.0)
+  model_r = e.EmbeddingNet(graph=fb, epoch=epoch, emb_dim=emb_dim,
+                           neg_samp=neg_samp, num_skip=num_skip,
+                           num_walk=num_walk, walk_length=walk_length, 
+                           window_size=window_size, iters=iters)
   adam_opt = Adam(lr=0.01, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
   model_r.build(optimizer='adam')
   model_r.train(mode='random_walk')
@@ -52,9 +70,10 @@ else:
 if not motif_train:
   pass
 else:
-  model_m = e.EmbeddingNet(graph=fb, epoch=10, emb_dim=5, neg_samp=5,
-                           num_skip=1, num_walk=5, walk_length=5, 
-                           window_size=2, iters=5.0)
+  model_m = e.EmbeddingNet(graph=fb, epoch=epoch, emb_dim=emb_dim,
+                           neg_samp=neg_samp, num_skip=num_skip,
+                           num_walk=num_walk, walk_length=walk_length, 
+                           window_size=window_size, iters=iters)
   adam_opt = Adam(lr=0.01, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
   model_m.build(optimizer='adam')
   model_m.train(mode='motif_walk')
@@ -63,9 +82,10 @@ else:
 if not contrast_train:
   pass
 else:
-  model_c = e.EmbeddingNet(graph=fb, epoch=10, emb_dim=5, neg_samp=5,
-                           num_skip=1, num_walk=5, walk_length=5,
-                           window_size=2, iters=5.0) # reset default at 0.3
+  model_c = e.EmbeddingNet(graph=fb, epoch=epoch, emb_dim=emb_dim,
+                           neg_samp=neg_samp, num_skip=num_skip,
+                           num_walk=num_walk, walk_length=walk_length,
+                           window_size=window_size, iters=iters) # reset default at 0.3
   model_c.build(optimizer='adam')
   model_c.train_mce()
   weight_c = model_c._model.get_weights()
