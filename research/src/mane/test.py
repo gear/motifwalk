@@ -40,13 +40,13 @@ save_contrast = True
 if not rand_train:
   pass
 else:
-  print('training la')
   model_r = e.EmbeddingNet(graph=fb, epoch=10, emb_dim=5, neg_samp=5, 
                            num_skip=1, num_walk=5, walk_length=5, 
                            window_size=2, iters=5.0)
   adam_opt = Adam(lr=0.01, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
   model_r.build(optimizer='adam')
   model_r.train(mode='random_walk')
+  print('trained')
   weight_r = model_r._model.get_weights()
 
 if not motif_train:
@@ -98,17 +98,17 @@ a=plt.subplot(311)
 a.set_title("Random walk embedding")
 a.scatter(tsne_weight_r_norm[:,0], tsne_weight_r_norm[:,1])
 for i, xy in enumerate(tsne_weight_r_norm):
-  a.annotate('%s' % i, xy=xy, textcoords='data')
+  a.annotate('%s' % (i+1), xy=xy, textcoords='data')
 b=plt.subplot(312)
 b.set_title("Motif walk embedding")
 b.scatter(tsne_weight_m_norm[:,0], tsne_weight_m_norm[:,1])
 for i, xy in enumerate(tsne_weight_m_norm):
-  b.annotate('%s' % i, xy=xy, textcoords='data')
+  b.annotate('%s' % (i+1), xy=xy, textcoords='data')
 c=plt.subplot(313)
 c.set_title("Contrast walk embedding")
 c.scatter(tsne_weight_c_norm[:,0], tsne_weight_c_norm[:,1])
 for i, xy in enumerate(tsne_weight_c_norm):
-  c.annotate('%s' % i, xy=xy, textcoords='data')
+  c.annotate('%s' % (i+1), xy=xy, textcoords='data')
 plt.savefig(name_rand[:-5]+'.png')
 plt.show()
 
