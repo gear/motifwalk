@@ -128,3 +128,20 @@ def txt_community_to_pickle(filename, picklename='default.community'):
       community[int(arr[1])].add(int(arr[0]))
   with open(piclename, 'wb') as pfile:
     pickle.dump(community, pfile, pickle.HIGHEST_PROTOCOL)
+
+def txt_adjlist_to_pickle(filename, picklename='default.graph'):
+  """
+  Create pickle graph file from adjlist
+  """
+  graph = dict()
+  with open(filename, 'rb') as txt:
+    for line in gfile.readlines():
+      arr = line.split()
+      for i in arr[1:]:
+        if not graph.has_key(int(arr[0])):
+          graph[int(arr[0])] = list()
+        if int(i) not in graph[int(arr[0])]:
+          graph[int(arr[0])].append(int(i))
+  with open(picklename, 'wb') as pfile:
+    pickle.dump(graph, pfile, pickle.HIGHEST_PROTOCOL)
+
