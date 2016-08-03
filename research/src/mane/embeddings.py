@@ -217,6 +217,48 @@ class EmbeddingNet():
       self._model.fit(x=data[0], y=data[1], batch_size=self._batch_size, 
                       nb_epoch=self._epoch, verbose=verbose)
 
+  ######################################################################## train
+  def train_mce(self, mode='random_walk', num_true=1, reset=0.3
+                shuffle=True, verbose=1, distort=0.75, num_batches=1000):
+    """
+    Load data and train the model.
+
+    Parameters
+    ----------
+      mode: Data generation mode: 'random_walk' or 'motif_walk'.
+      num_true: Number of true labels (not in use).
+      shuffle: True if ids list is shuffed before walk.
+      verbose: How much to print.
+      distort: Power of the unigram distribution.
+      num_batches: Number of batches to yield data.
+
+    Returns
+    -------
+      None. Maybe weights of the embeddings?
+
+    Behavior
+    --------
+      Load data in batches and train the model.
+    """
+    self._trained = True
+    # Graph data generator with negative sampling
+    data_gen = self._graph.gen_contrast('motif_walk', 'random_walk',
+                                        num_batches, reset,
+                                        self._walk_length,
+                                        self._num_walk,
+                                        num_true,
+                                        self._neg_samp,
+                                        self._num_skip,
+                                        shuffle,
+                                        self._window_size,
+                                        distort)
+    iterations = self._iters // num_batches
+    for i in xrange(iterations):
+      print('Iteration %d / %d:' % (i, iterations))
+      data = next(data_gen)
+      self._model.fit(x=data[0], y=data[1], batch_size=self._batch_size, 
+                      nb_epoch=self._epoch, verbose=verbose)
+
   ################################################################## init_normal
   def init_normal(self, shape, name=None):
     """

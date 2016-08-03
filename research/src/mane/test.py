@@ -27,9 +27,11 @@ fb = g.graph_from_pickle('data/egonets.graph')
 
 name_rand = 'nce_egonets_e10_ne15_ns2_nw5_wl10_ws3_it1_adam_rand'
 name_motif = 'nce_egonets_e10_ne15_ns2_nw5_wl10_ws3_it1_adam_motif'
+name_contrast = 'nce_egonets_e10_ne15_ns2_nw5_wl20_ws3_it1_adam_contrast'
 
 rand_train = False
 motif_train = False
+contrast_train = True
 
 if not rand_train:
   pass
@@ -41,6 +43,7 @@ else:
   model_r.build(optimizer='adam')
   model_r.train(mode='random_walk')
   weight_r = model_r._model.get_weights()
+
 if not motif_train:
   pass
 else:
@@ -51,6 +54,15 @@ else:
   model_m.build(optimizer='adam')
   model_m.train(mode='motif_walk')
   weight_m = model_m._model.get_weights()
+
+if not contrast_train:
+  pass
+else:
+  model_c = e.EmbeddingNet(graph=fb, epoch=10, emb_dim=200, neg_samp=15,
+                           num_skip=2, num_walk=5, walk_length=10,
+                           window_size=3, iters=1.0) # reset default at 0.3
+  model_m.build(optimizer='adam')
+  model_m.train(mode=
 
 # Save or load data
 if not os.path.exists(name_rand+'.weights'):
