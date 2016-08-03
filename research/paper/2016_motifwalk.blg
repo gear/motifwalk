@@ -1,0 +1,56 @@
+This is BibTeX, Version 0.99d (TeX Live 2015/Debian)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: 2016_motifwalk.aux
+The style file: abbrv.bst
+Illegal, another \bibdata command---line 62 of file 2016_motifwalk.aux
+ : \bibdata
+ :         {2016_motifwalk}
+I'm skipping whatever remains of this command
+Database file #1: sigproc.bib
+Warning--I didn't find a database entry for "word2vec"
+Warning--I didn't find a database entry for "deepwalk"
+Warning--I didn't find a database entry for "wordvec"
+Warning--I didn't find a database entry for "all_deep_learning_on_network"
+Warning--I didn't find a database entry for "la"
+You've used 6 entries,
+            2118 wiz_defined-function locations,
+            542 strings with 4515 characters,
+and the built_in function-call counts, 1813 in all, are:
+= -- 176
+> -- 59
+< -- 1
++ -- 25
+- -- 18
+* -- 122
+:= -- 303
+add.period$ -- 19
+call.type$ -- 6
+change.case$ -- 25
+chr.to.int$ -- 0
+cite$ -- 6
+duplicate$ -- 78
+empty$ -- 164
+format.name$ -- 18
+if$ -- 391
+int.to.chr$ -- 0
+int.to.str$ -- 6
+missing$ -- 8
+newline$ -- 33
+num.names$ -- 12
+pop$ -- 30
+preamble$ -- 1
+purify$ -- 21
+quote$ -- 0
+skip$ -- 49
+stack$ -- 0
+substring$ -- 114
+swap$ -- 14
+text.length$ -- 1
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 20
+warning$ -- 0
+while$ -- 17
+width$ -- 7
+write$ -- 69
+(There was 1 error message)
