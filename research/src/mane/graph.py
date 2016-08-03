@@ -415,7 +415,7 @@ class Graph(dict):
   ################################################################# gen_contrast
   def gen_contrast(self, possitive_name='motif_walk', 
                    negative_name='random_walk', num_batches=1, reset=0.0,
-                   walk_length=20, num_walk=5, num_true=1, neg_samp=15,
+                   walk_length=10, num_walk=5, num_true=1, neg_samp=15,
                    contrast_iter=5, num_skip=2, shuffle=True, window_size=3):
     """
     Create training dataset using possitive samples from motif walk
@@ -458,10 +458,18 @@ class Graph(dict):
           if not len(self[i]) > 0:
             continue
           # Perform 2 walks and return set of nodes
-          pos_walk = pos_func(start_node=i, length=walk_length) 
-          neg_walk = neg_func(start_node=i, length=walk_length, reset=reset)
+          pos_walk = []
+          neg_walk = []
+          for _ in xrange(contrast_iter):
+            pos_walk.extend(pos_func(start_node=i, length=walk_length))
+            neg_walk.extend(neg_func(start_node=i, length=walk_length))
           # The set of negative samples is the contrast between 2 walks
           neg_samps_set = set(neg_walk) - set(pos_walk)
+          neg_samps = list(neg_samps_set)
+          if len(neg_samps) == 0:
+            print('Skipping empty set')
+            continue
+          pos_walk = pos_func(start_node=i, length=walk_length) 
           for j, target in enumerate(pos_walk):
             # Window [lower:upper] for skipping
             lower = max(0, j - window_size)
@@ -472,7 +480,7 @@ class Graph(dict):
               classes.append(rand_node)
               labels.append(1.0) # Possitive sample
             for _ in xrange(neg_samp):
-              rand_node = np.random.choice(list(neg_samps_set))
+              rand_node = np.random.choice(neg_samps)
               targets.append(target)
               classes.append(rand_node)
               labels.append(0.0) # Negative sample
