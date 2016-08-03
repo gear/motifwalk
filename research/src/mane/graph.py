@@ -368,8 +368,7 @@ class Graph(dict):
     freq_list = np.array(self._freq.values(), np.int32)**neg_samp_distort
     norm = sum(freq_list)
     freq_list = freq_list / norm
-    # Infinite loop generating samples
-    while True:
+    for _ in xrange(num_walk):
       if shuffle:
         id_list = np.random.permutation(self.keys())
       else:
@@ -378,16 +377,14 @@ class Graph(dict):
         # Perform walk if the node is connected
         if not len(self[i]) > 0:
           continue
-        walk = []
-        for _ in xrange(num_walk):
-          walk.extend( wfunc(length=walk_length, start_node=i) )
+        walk = wfunc(length=walk_length, start_node=i)
+        targets = []
+        classes = []
+        labels = []
         for j, target in enumerate(walk):
           # Window [lower:upper] for skipping
           lower = max(0, j - window_size)
           upper = min(len(walk), j + window_size+1)
-          targets = []
-          classes = []
-          labels = []
           for _ in xrange(num_skip):
             rand_node = np.random.choice(walk[lower:upper])
             targets.append(target)
@@ -398,10 +395,10 @@ class Graph(dict):
             targets.append(target)
             classes.append(rand_node)
             labels.append(0.0) # Negative sample
-          targets = np.array(targets, dtype=np.int32)
-          classes = np.array(classes, dtype=np.int32)
-          labels = np.array(labels, dtype=np.float32)
-          yield ({'target':targets, 'class':classes},{'label':labels})
+        targets = np.array(targets, dtype=np.int32)
+        classes = np.array(classes, dtype=np.int32)
+        labels = np.array(labels, dtype=np.float32)
+        yield ({'target':targets, 'class':classes},{'label':labels})
 
   ################################################################# gen_contrast
   def gen_contrast(self, possitive_name='motif_walk', 

@@ -24,8 +24,8 @@ import matplotlib.pyplot as plt
 
 fb = g.graph_from_pickle('data/egonets.graph')
 
-name_rand = 'nce_egonets_e2_ne15_ns2_nw5_wl10_ws3_spe3433150_adam_rand'
-name_motif = 'nce_egonets_e2_ne15_ns2_nw5_wl10_ws3_spe3433150_adam_motif'
+name_rand = 'nce_egonets_e200_ne15_ns2_nw5_wl10_ws3_spe100_adam_rand'
+name_motif = 'nce_egonets_e200_ne15_ns2_nw5_wl10_ws3_spe100_adam_motif'
 
 rand_train = True
 motif_train = True
@@ -38,7 +38,7 @@ else:
                            window_size=3, samples_per_epoch=3433150)
   adam_opt = Adam(lr=0.01, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
   model_r.build(optimizer='adam')
-  model_r.train(mode='random_walk')
+  model_r.train(mode='random_walk', threads=8)
   weight_r = model_r._model.get_weights()
 if not motif_train:
   pass
@@ -48,7 +48,7 @@ else:
                            window_size=3, samples_per_epoch=3433150)
   adam_opt = Adam(lr=0.01, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
   model_m.build(optimizer='adam')
-  model_m.train(mode='motif_walk')
+  model_m.train(mode='motif_walk', threads=8)
   weight_m = model_m._model.get_weights()
 
 # Save model

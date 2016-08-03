@@ -42,11 +42,10 @@ class EmbeddingNet():
   ##################################################################### __init__
   def __init__(self, model=None, graph=None, epoch=10,
                name='EmbeddingNet', emb_dim=200, 
-               learning_rate=0.01, batch_size=1, 
-               neg_samp=5, num_skip=5, num_walk=5,
+               learning_rate=0.01, neg_samp=5, 
+               num_skip=5, num_walk=5,
                walk_length=5, window_size=5,
-               samples_per_epoch=100000,
-               save_file='EmbeddingNet.keras'):
+               iters=2.0, save_file='EmbeddingNet.keras'):
     """
     Initialize a basic embedding neural network model with
     settings in kwargs.
@@ -55,13 +54,16 @@ class EmbeddingNet():
     ----------
       model: Keras Model instance.
       graph: Graph instance contains graph adj list.
-      epoch: Number of pass through the whole network.
+      epoch: Number of pass for each batch.
       name: Name of the model.
-      layers: List of layer instances for model initialization.
       emb_dim: Embedding size.
       learning_rate: Learning rate (lr).
-      batch_size: Size of each training batch.
       neg_samp: Number of negative samples for each target.
+      num_skip: Number of possitive samples for each target.
+      num_walk: Number of walk performed.
+      walk_length:
+      window_size: Skipgram window for generating +data.
+      iters: #iterations = iters * (#batches per graph)
       save_file: File location to save the model.
       
     Behavior
@@ -72,7 +74,6 @@ class EmbeddingNet():
     self._emb_dim = emb_dim
     self._learning_rate = learning_rate
     self._epoch = epoch
-    self._batch_size = batch_size
     self._neg_samp = neg_samp
     self._save_file = save_file
     self._num_skip = num_skip
@@ -87,8 +88,10 @@ class EmbeddingNet():
     # Data 
     self._graph = graph
 
-    # Epoch size
-    self._samples_per_epoch = samples_per_epoch
+    # Computed property
+    bs = walk_length * (num_skip + neg_samp)
+    self._batch_size = bs
+    self._iters = int(iters * num_walk * len(graph) * bs)
 
   ######################################################################## build
   def build(self, loss='binary_crossentropy', optimizer='adam'):
@@ -195,7 +198,8 @@ class EmbeddingNet():
     """
     self._trained = True
     # Graph data generator with negative sampling
-    data_generator = self._graph.gen_walk(mode,
+    for _ in xrange(self._iters):
+      data = self._graph.gen_walk(
                                  self._walk_length,
                                  self._num_walk,
                                  num_true,
@@ -205,8 +209,9 @@ class EmbeddingNet():
                                  self._window_size,
                                  distort)
     self._model.fit_generator(data_generator,
-                              samples_per_epoch=self._samples_per_epoch,
-                              nb_epoch=self._epoch) # TODO: nb_worker on gtx
+                              self._samples_per_epoch,
+                              self._epoch, 1, [], None, None,
+                              dict(), 10, threads, True)
 
   ################################################################## init_normal
   def init_normal(self, shape, name=None):
@@ -235,6 +240,6 @@ def row_dot(inputs):
   return K.batch_dot(inputs[0],inputs[1],axes=1)
 
 def merge_shape(inputs):
-  return (100,1)
+  return (inputs[0].shape[0], 1)
 
 # === END HELPER FUNCTIONS ===
