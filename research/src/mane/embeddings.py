@@ -218,8 +218,9 @@ class EmbeddingNet():
                       nb_epoch=self._epoch, verbose=verbose)
 
   ######################################################################## train
-  def train_mce(self, mode='random_walk', num_true=1, reset=0.3
-                shuffle=True, verbose=1, distort=0.75, num_batches=1000):
+  def train_mce(self, pos='motif_walk', neg='random_walk', 
+                num_true=1, reset=0.0, shuffle=True, verbose=1, 
+                num_batches=1000):
     """
     Load data and train the model.
 
@@ -242,7 +243,7 @@ class EmbeddingNet():
     """
     self._trained = True
     # Graph data generator with negative sampling
-    data_gen = self._graph.gen_contrast('motif_walk', 'random_walk',
+    data_gen = self._graph.gen_contrast(pos, neg,
                                         num_batches, reset,
                                         self._walk_length,
                                         self._num_walk,
@@ -250,8 +251,7 @@ class EmbeddingNet():
                                         self._neg_samp,
                                         self._num_skip,
                                         shuffle,
-                                        self._window_size,
-                                        distort)
+                                        self._window_size)
     iterations = self._iters // num_batches
     for i in xrange(iterations):
       print('Iteration %d / %d:' % (i, iterations))
