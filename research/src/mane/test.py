@@ -33,22 +33,22 @@ motif_train = True
 if not rand_train:
   pass
 else:
-  model_r = e.EmbeddingNet(graph=fb, epoch=2, neg_samp=2, batch_size=100,
+  model_r = e.EmbeddingNet(graph=fb, epoch=10, emb_dim=200, neg_samp=15, 
                            num_skip=2, num_walk=5, walk_length=10, 
-                           window_size=3, samples_per_epoch=3433150)
+                           window_size=3, iters=1.0)
   adam_opt = Adam(lr=0.01, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
   model_r.build(optimizer='adam')
-  model_r.train(mode='random_walk', threads=8)
+  model_r.train(mode='random_walk')
   weight_r = model_r._model.get_weights()
 if not motif_train:
   pass
 else:
-  model_m = e.EmbeddingNet(graph=fb, epoch=2, neg_samp=2, batch_size=100,
+  model_m = e.EmbeddingNet(graph=fb, epoch=10, emb_dim=200, neg_samp=15,
                            num_skip=2, num_walk=5, walk_length=10, 
-                           window_size=3, samples_per_epoch=3433150)
+                           window_size=3, iters=1.0)
   adam_opt = Adam(lr=0.01, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
   model_m.build(optimizer='adam')
-  model_m.train(mode='motif_walk', threads=8)
+  model_m.train(mode='motif_walk')
   weight_m = model_m._model.get_weights()
 
 # Save model
