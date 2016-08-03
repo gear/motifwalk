@@ -380,6 +380,7 @@ class Graph(dict):
         targets = []
         classes = []
         labels = []
+        eol = id_list[-1]
         for i in (id_list):
           # Perform walk if the node is connected
           if not len(self[i]) > 0:
@@ -388,7 +389,7 @@ class Graph(dict):
           for j, target in enumerate(walk):
             # Window [lower:upper] for skipping
             lower = max(0, j - window_size)
-            upper = min(len(walk), j + window_size+1)
+            upper = min(walk_length, j + window_size+1)
             for _ in xrange(num_skip):
               rand_node = np.random.choice(walk[lower:upper])
               targets.append(target)
@@ -399,12 +400,12 @@ class Graph(dict):
               targets.append(target)
               classes.append(rand_node)
               labels.append(0.0) # Negative sample
-          if count_batch <= 0 or i == id_list[-1]:
+          if count_batch <= 0 or i == eol:
             targets = np.array(targets, dtype=np.int32)
             classes = np.array(classes, dtype=np.int32)
             labels = np.array(labels, dtype=np.float32)
             yield ({'target':targets, 'class':classes},{'label':labels})
-            count_batch = num_batches
+            count_batch = num_batches - 1
             targets = []
             classes = []
             labels = []
@@ -413,17 +414,18 @@ class Graph(dict):
 
   ################################################################# gen_contrast
   def gen_contrast(self, possitive_name='motif_walk', 
-                   negative_name='random_walk',
-                   num_walk=5, num_true=1, neg_samp=5,
-                   num_skip=5, shuffle=True, window_size=5):
+                   negative_name='random_walk', num_batches=1, reset=0.3,
+                   walk_length=20, num_walk=5, num_true=1, neg_samp=15,
+                   contrast_iter=5, num_skip=2, shuffle=True, window_size=3):
     """
     Create training dataset using possitive samples from motif walk
     and the negative samples from random walk.
     
     Parameters
     ----------
-      possitive_name : Positive sample function name (e.g. 'motif_walk')
-      negative_name : Negative sample function name (e.g. 'random_walk')
+      possitive_name: Positive sample function name (e.g. 'motif_walk')
+      negative_name: Negative sample function name (e.g. 'random_walk')
+      num_batches: Number of batches per yield
       num_walk: Number of walk performed each starting node
       num_true: Number of true class for each sample.
       neg_samp: Number of negative sampling for each target.
@@ -438,46 +440,53 @@ class Graph(dict):
     assert window_size >= num_skip, 'Window size is too small.'
     pos_func = getattr(self, possitive_name)
     neg_func = getattr(self, negative_name)
+    # Generator loops forever
     while True:
-      if shuffle:
-        id_list = np.random.permutation(self.keys())
-      else:
-        id_list = self.keys()
-      for i in (id_list):
-        # Perform walk if the node is connected
-        if len(self[i]) > 0:
-          count_nodes -= 1
+      for _ in xrange(num_walk):
+        if shuffle:
+          id_list = np.random.permutation(self.keys())
         else:
-          continue
-        # Perform 2 walks and return set of nodes
-        pos_walk = pos_func(start_node=i, length=walk_length, 
-                            num_walk=num_walk) 
-        neg_walk = neg_func(start_node=i, length=walk_length,
-                            num_walk=num_walk)
-        # The set of negative samples is the contrast between 2 walks
-        neg_samps = neg_walk - pos_walk
-        for j, target in enumerate(pos_walk):
-          lower = max(0, j - window_size)
-          upper = min(walk_length, j + window_size+1)
-          for _ in xrange(num_skip):
-            # TODO: Check situation where rand_node == target
-            # TODO: Use num_true. Now assume default value
-            rand_node = np.random.choice(walk[lower:upper])
-            node_tuples.append([target, rand_node])
-            labels.append(1.0) # Possitive sample
-          for _ in xrange(neg_samp):
-            rand_node = np.random.choice(node_list, p = freq_list)
-            node_tuples.append([target, rand_node])
-            labels.append(-1.0) # Negative sample
-        if count_nodes <= 0:
-          node_tuples = np.array(node_tuples, dtype=np.int32)
-          labels = np.array(labels, dtype=np.float32)
-          yield (node_tuples[:,0], 
-                 node_tuples[:,1],
-                 labels)
-          count_nodes = nodes_in_batch
-          labels = []
-          node_tuples = []
+          id_list = self.keys()
+        # Accumulator for each batch
+        count_batch = num_batches - 1
+        targets = []
+        classes = []
+        labels = []
+        eol = id_list[-1]
+        for i in (id_list):
+          # Perform walk if the node is connected
+          if not len(self[i]) > 0:
+            continue
+          # Perform 2 walks and return set of nodes
+          pos_walk = pos_func(start_node=i, length=walk_length, reset=reset) 
+          neg_walk = neg_func(start_node=i, length=walk_length, reset=reset)
+          # The set of negative samples is the contrast between 2 walks
+          neg_samps_set = set(neg_walk) - set(pos_walk)
+          for j, target in enumerate(pos_walk):
+            # Window [lower:upper] for skipping
+            lower = max(0, j - window_size)
+            upper = min(walk_length, j + window_size+1)
+            for _ in xrange(num_skip):
+              rand_node = np.random.choice(pos_walk[lower:upper])
+              targets.append(target)
+              classes.append(rand_node)
+              labels.append(1.0) # Possitive sample
+            for _ in xrange(neg_samp):
+              rand_node = np.random.choice(list(neg_samps_set))
+              targets.append(target)
+              classes.append(rand_node)
+              labels.append(0.0) # Negative sample
+          if count_batch <= 0 or i == eol:
+            targets = np.array(targets, dtype=np.int32)
+            classes = np.array(classes, dtype=np.int32)
+            labels = np.array(labels, dtype=np.float32)
+            yield ({'target':targets, 'class':classes},{'label':labels})
+            count_batch = num_batches - 1
+            targets = []
+            classes = []
+            labels = []
+          else:
+            count_batch -= 1
     
 # === END CLASS 'graph' ===
 
