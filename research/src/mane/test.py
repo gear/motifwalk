@@ -25,7 +25,7 @@ from sklearn.preprocessing import normalize
 import matplotlib.pyplot as plt
 
 
-rand_train = False
+rand_train = True
 motif_train = True
 contrast_train = True
 
@@ -33,9 +33,9 @@ save_rand = True
 save_motif = True
 save_contrast = True
 
-dataset_name = "egonets"
+dataset_name = "polblogs"
 epoch = 1
-emb_dim = 50
+emb_dim = 10
 neg_samp = 5
 num_skip = 1
 num_walk = 5
@@ -131,17 +131,17 @@ fig.suptitle(name_rand[:-5], fontsize=16)
 a = plt.subplot(311)
 a.set_title("Random walk embedding")
 a.scatter(tsne_weight_r_norm[:, 0], tsne_weight_r_norm[:, 1])
-for i, xy in enumerate(tsne_weight_r_norm):
-    a.annotate('%s' % (i + 1), xy=xy, textcoords='data')
+#for i, xy in enumerate(tsne_weight_r_norm):
+#    a.annotate('%s' % (i + 1), xy=xy, textcoords='data')
 b = plt.subplot(312)
 b.set_title("Motif walk embedding")
 b.scatter(tsne_weight_m_norm[:, 0], tsne_weight_m_norm[:, 1])
-for i, xy in enumerate(tsne_weight_m_norm):
-    b.annotate('%s' % (i + 1), xy=xy, textcoords='data')
+#for i, xy in enumerate(tsne_weight_m_norm):
+#    b.annotate('%s' % (i + 1), xy=xy, textcoords='data')
 c = plt.subplot(313)
 c.set_title("Contrast walk embedding")
 c.scatter(tsne_weight_c_norm[:, 0], tsne_weight_c_norm[:, 1])
-for i, xy in enumerate(tsne_weight_c_norm):
-    c.annotate('%s' % (i + 1), xy=xy, textcoords='data')
+#for i, xy in enumerate(tsne_weight_c_norm):
+#    c.annotate('%s' % (i + 1), xy=xy, textcoords='data')
 plt.savefig(name_rand[:-5] + '.png')
 plt.show()
