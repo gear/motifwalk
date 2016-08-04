@@ -46,13 +46,13 @@ name_rand = exp_name + '_rand'
 name_motif = exp_name + '_motif'
 name_contrast = exp_name + '_contrast'
 
-rand_train = False
+rand_train = True
 motif_train = True
-contrast_train = True
+contrast_train = False
 
-save_rand = False
+save_rand = True
 save_motif = True
-save_contrast = True
+save_contrast = False
 
 if not rand_train:
   pass

@@ -244,7 +244,7 @@ class EmbeddingNet():
     """
     self._trained = True
     # Graph data generator with negative sampling
-    data_gen = self._graph.gen_contrast(pos, neg,
+    data_gen = self._graph.gen_contrast2(pos, neg,
                                         num_batches, reset,
                                         self._walk_length,
                                         self._num_walk,
