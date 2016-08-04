@@ -26,18 +26,18 @@ import matplotlib.pyplot as plt
 
 dataset_name = "blogcatalog"
 epoch = 5
-emb_dim = 5
+emb_dim = 200
 neg_samp = 5
-num_skip = 1
+num_skip = 5
 num_walk = 5
-walk_length = 5
-window_size = 2
+walk_length = 128
+window_size = 5
 iters = 5
 
 fb = g.graph_from_pickle('data/{}.graph'.format(dataset_name))
 
 exp_name = "nce_{}_e{}_ed{}_ne{}_ns{}_nw{}_wl{}_ws{}_it{}_adam".format(
-                data_name, epoch, emb_dim, neg_samp, num_skip, num_walk,
+                dataset_name, epoch, emb_dim, neg_samp, num_skip, num_walk,
                 walk_length, window_size, iters)
 
 

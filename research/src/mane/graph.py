@@ -322,7 +322,7 @@ class Graph(dict):
       walk_path.extend(mwp)
     return set(walk_path)
   ############################################################ gen_with_negative
-  def gen_walk(self, walk_func_name, num_batches=1, walk_length=10, 
+  def gen_walk(self, walk_func_name, num_batches=100, walk_length=10, 
                num_walk=5, num_true=1, neg_samp=15, 
                num_skip=2, shuffle=True, window_size=3, 
                neg_samp_distort=0.75):
@@ -414,9 +414,9 @@ class Graph(dict):
 
   ################################################################# gen_contrast
   def gen_contrast(self, possitive_name='motif_walk', 
-                   negative_name='random_walk', num_batches=1, reset=0.0,
+                   negative_name='random_walk', num_batches=100, reset=0.0,
                    walk_length=10, num_walk=5, num_true=1, neg_samp=15,
-                   contrast_iter=5, num_skip=2, shuffle=True, window_size=3):
+                   contrast_iter=10, num_skip=2, shuffle=True, window_size=3):
     """
     Create training dataset using possitive samples from motif walk
     and the negative samples from random walk.
