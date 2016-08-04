@@ -10,9 +10,14 @@
 
 from __future__ import division
 
-import cPickle as pickle
+try:
+    import cPickle as pickle
+except:
+    import pickle
 import math
 import os
+import pandas as pd
+import csv
 
 def txt_edgelist_to_pickle(filename, pickle_name='default.graph'):
   """ 
@@ -145,3 +150,35 @@ def txt_adjlist_to_pickle(filename, picklename='default.graph'):
   with open(picklename, 'wb') as pfile:
     pickle.dump(graph, pfile, pickle.HIGHEST_PROTOCOL)
 
+
+def pickle_edges_to_txt(pickle_path, txt_path):
+    """
+    Read pickle and write pickle of edge list
+    (Used in python3)
+    """
+    edges = pd.read_pickle(pickle_path)
+    with open(txt_path, "w") as f:
+        writer = csv.writer(f, delimiter=" ")
+        writer.writerows(edges)
+
+def pickle_labels_to_txt(pickle_path, txt_path):
+    """
+    Read pickle and write pickle of labels list
+    (Used in python3)
+    """
+    labels = enumerate(pd.read_pickle(pickle_path))
+    with open(txt_path, "w") as f:
+        writer = csv.writer(f, delimiter=" ")
+        writer.writerows(labels)
+
+def read_correct_labels(txt_file, index_columns=True):
+    labels = {}
+    with open(txt_file) as f:
+        for i, line in enumerate(f):
+            data = line.strip().split(" ")
+            if index_columns:
+                labels[int(data[0])] = int(data[1])
+            else:
+                labels[i] = int(data[0])
+    labels = [labels[i] for i in range(len(labels))]
+    return labels
