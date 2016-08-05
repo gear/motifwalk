@@ -1,15 +1,38 @@
 \begin{thebibliography}{1}
 
+\bibitem{nce}
+M.~Gutmann and A.~Hyv{\"a}rinen.
+\newblock Noise-contrastive estimation: A new estimation principle for
+  unnormalized statistical models.
+\newblock In {\em AISTATS}, volume~1, page~6, 2010.
+
 \bibitem{w2v}
 T.~Mikolov and J.~Dean.
 \newblock Distributed representations of words and phrases and their
   compositionality.
 \newblock {\em Advances in neural information processing systems}, 2013.
 
+\bibitem{hsoftmax}
+F.~Morin and Y.~Bengio.
+\newblock Hierarchical probabilistic neural network language model.
+\newblock In {\em Aistats}, volume~5, pages 246--252. Citeseer, 2005.
+
 \bibitem{deepwalk}
 B.~Perozzi, R.~Al-Rfou, and S.~Skiena.
 \newblock Deepwalk: Online learning of social representations.
 \newblock In {\em Proceedings of the 20th ACM SIGKDD international conference
   on Knowledge discovery and data mining}, pages 701--710. ACM, 2014.
+
+\bibitem{line}
+J.~Tang, M.~Qu, M.~Wang, M.~Zhang, J.~Yan, and Q.~Mei.
+\newblock Line: Large-scale information network embedding.
+\newblock In {\em Proceedings of the 24th International Conference on World
+  Wide Web}, pages 1067--1077. ACM, 2015.
+
+\bibitem{platenoid}
+Z.~Yang, W.~W. Cohen, and R.~Salakhutdinov.
+\newblock Revisiting semi-supervised learning with graph embeddings.
+\newblock In {\em Proceedings of the 33rd International Conference on Machine
+  Learning}. ICML, 2016.
 
 \end{thebibliography}
