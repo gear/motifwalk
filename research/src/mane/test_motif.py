@@ -28,7 +28,7 @@ import matplotlib.pyplot as plt
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.linear_model import LogisticRegression
 
-dataset_name = "polblogs"
+dataset_name = "egonets"
 index_cols = False
 epoch = 1
 emb_dim = 10
@@ -44,12 +44,15 @@ is_label = True
 rand_train = True
 motif_train = True
 
-
-correct_labels = util.read_correct_labels("data/raw/{}_labels.txt"
-                                    .format(dataset_name), index_cols)
-
-
 fb = g.graph_from_pickle('data/{}.graph'.format(dataset_name))
+
+try:
+    correct_labels = util.read_correct_labels("data/raw/{}_labels.txt"
+                                        .format(dataset_name), index_cols)
+except:
+    correct_labels = [0] * len(fb.nodes())
+
+
 
 exp_name = "nce_{}_e{}_ed{}_ne{}_ns{}_nw{}_wl{}_ws{}_it{}_nb{}_adam".format(
     dataset_name, epoch, emb_dim, neg_samp, num_skip, num_walk,

@@ -200,8 +200,8 @@ class Graph(dict):
         while len(walk_path) < length:
             cur = walk_path[-1]
             if len(self[cur]) > 0:
-                if rand.random() >= reset:
-                    walk_path.append(rand.choice(self[cur]))
+                if random.random() >= reset:
+                    walk_path.append(random.choice(self[cur]))
                 else:
                     walk_path.append(walk_path[0])
             else:
@@ -254,7 +254,7 @@ class Graph(dict):
         # Start random walk
         while len(walk_path) < length:
             # Uniformly choose adj candidate node at random
-            cand = rand.choice(self[cur])
+            cand = random.choice(self[cur])
             # If candidate is in previous adj node, select with prob=walk_bias
             if prev:
                 while True:
@@ -338,7 +338,7 @@ class Graph(dict):
     def gen_walk(self, walk_func_name, num_batches=100, walk_length=10,
                  num_walk=5, num_true=1, neg_samp=15,
                  num_skip=2, shuffle=True, window_size=3,
-                 neg_samp_distort=0.75):
+                 neg_samp_distort=0.75, gamma=0.8):
         """
         Infinite loop generating data as a simple skipgram model
         with negative sampling.
@@ -359,6 +359,7 @@ class Graph(dict):
                             sampling and value of 1.0 means normal unigram 
                             sampling. This scheme is the same as in word2vec
                             model implementation.
+          gamma: Exponential decay for sampling distance
 
         Yields
         ------
@@ -405,7 +406,7 @@ class Graph(dict):
                         lower = max(0, j - window_size)
                         upper = min(walk_length, j + window_size + 1)
                         for _ in xrange(num_skip):
-                            rand_index = random.randint(lower, upper)
+                            rand_index = random.randint(lower, upper-1)
                             distance = abs(j - rand_index)
                             rand_node = walk[rand_index]
                             targets.append(target)
@@ -423,6 +424,7 @@ class Graph(dict):
                         targets = np.array(targets, dtype=np.int32)
                         classes = np.array(classes, dtype=np.int32)
                         labels = np.array(labels, dtype=np.float32)
+                        weights = np.array(weights, dtype=np.float32)
                         yield ({'target': targets, 'class': classes},
                                 {'label': labels},
                                 weights)
@@ -430,6 +432,7 @@ class Graph(dict):
                         targets = []
                         classes = []
                         labels = []
+                        weights = []
                     else:
                         count_batch -= 1
 
@@ -437,7 +440,8 @@ class Graph(dict):
     def gen_contrast(self, possitive_name='motif_walk',
                      negative_name='random_walk', num_batches=100, reset=0.0,
                      walk_length=10, num_walk=5, num_true=1, neg_samp=15,
-                     contrast_iter=10, num_skip=2, shuffle=True, window_size=3):
+                     contrast_iter=10, num_skip=2, shuffle=True, window_size=3,
+                     gamma=0.8):
         """
         Create training dataset using possitive samples from motif walk
         and the negative samples from random walk.
@@ -453,6 +457,7 @@ class Graph(dict):
           num_skip: Number of positive sampling for each target.
           shuffle: If node list is shuffled before generating random walk.
           window_size: Window for getting sample from the random walk list.
+          gamma: Exponential decay for sampling distance
 
         Yields
         ------
@@ -500,7 +505,7 @@ class Graph(dict):
                         lower = max(0, j - window_size)
                         upper = min(walk_length, j + window_size + 1)
                         for _ in xrange(num_skip):
-                            rand_index = random.randint(lower, upper)
+                            rand_index = random.randint(lower, upper-1)
                             rand_node = pos_walk[rand_index]
                             distance = abs(rand_index - j)
                             targets.append(target)
@@ -518,6 +523,7 @@ class Graph(dict):
                         targets = np.array(targets, dtype=np.int32)
                         classes = np.array(classes, dtype=np.int32)
                         labels = np.array(labels, dtype=np.float32)
+                        weights = np.array(weights, dtype=np.float32)
                         yield ({'target': targets, 'class': classes},
                                 {'label': labels},
                                 weights)
@@ -533,7 +539,8 @@ class Graph(dict):
     def gen_contrast2(self, possitive_name='motif_walk',
                       negative_name='random_walk', num_batches=100, reset=0.0,
                       walk_length=10, num_walk=5, num_true=1, neg_samp=15,
-                      contrast_iter=10, num_skip=2, shuffle=True, window_size=3):
+                      contrast_iter=10, num_skip=2, shuffle=True, window_size=3,
+                      gamma=0.8):
         """
         Create training dataset using possitive samples from motif walk
         and the negative samples from random walk.
@@ -549,6 +556,7 @@ class Graph(dict):
           num_skip: Number of positive sampling for each target.
           shuffle: If node list is shuffled before generating random walk.
           window_size: Window for getting sample from the random walk list.
+          gamma: Exponential decay for sampling distance
 
         Yields
         ------
@@ -574,6 +582,7 @@ class Graph(dict):
                 targets = []
                 classes = []
                 labels = []
+                weights = []
                 eol = id_list[-1]
                 for i in (id_list):
                     # Perform walk if the node is connected
@@ -588,10 +597,13 @@ class Graph(dict):
                     for _ in xrange(contrast_iter):
                         walk = pos_func(start_node=i, length=walk_length)
                         pos_walk.extend(walk)
-                        pos_samples.extend(walk[1:window_size + 1])
+                        # add positive samples with its distance
+                        pos_samples.extend([(j, d) for d, j
+                                        in enumerate(walk[1:window_size + 1])
+                                        if j != i])
                     pos_walk = set(pos_walk)
                     # Remove possible target node i in positive candidate list
-                    pos_samples = [x for x in pos_samples if x != i]
+                    #pos_samples = [x for x in pos_samples if x != i]
                     if not len(pos_samples) > 0:
                         print('WARNING: Empty possitive set. Skipping...')
                         continue
@@ -600,13 +612,14 @@ class Graph(dict):
                     for _ in xrange(contrast_iter):
                         neg_walk = neg_func(start_node=i, length=walk_length)
                         neg_samples.extend(
-                            [x for x in neg_walk if x not in pos_walk])
+                            [x for x in neg_walk
+                               if x not in pos_walk and x != i])
                     # Remove possible target node i in negative candidate list
-                    neg_samples = [x for x in neg_samples if x != i]
+                    #neg_samples = [x for x in neg_samples if x != i]
                     if len(neg_samples) < neg_samp:
                         print('WARNING: Short negative samples. %d' %
                               len(neg_samples))
-                        neg_samples.extend([r.choice(id_list)
+                        neg_samples.extend([random.choice(id_list)
                                             for _ in range(neg_samp - len(neg_samples))])
                     if not len(neg_samples) > 0:
                         print('WARNING: Empty negative samples list. Skipping...')
@@ -614,22 +627,29 @@ class Graph(dict):
                     # Append possitive samples by frequency
                     for _ in xrange(num_skip):
                         targets.append(i)
-                        classes.append(r.choice(pos_samples))
+                        c, d = random.choice(pos_samples)
+                        classes.append(c)
                         labels.append(1.0)
+                        weights.append(pow(gamma, d))
                     # Append negative samples by frequency
                     for _ in xrange(neg_samp):
                         targets.append(i)
-                        classes.append(r.choice(neg_samples))
+                        classes.append(random.choice(neg_samples))
                         labels.append(0.0)
+                        weights.append(1.0)
                     if count_batch <= 0 or i == eol:
                         targets = np.array(targets, dtype=np.int32)
                         classes = np.array(classes, dtype=np.int32)
                         labels = np.array(labels, dtype=np.float32)
-                        yield ({'target': targets, 'class': classes}, {'label': labels})
+                        weights = np.array(weights, dtype=np.float32)
+                        yield ({'target': targets, 'class': classes},
+                                {'label': labels},
+                                weights)
                         count_batch = num_batches - 1
                         targets = []
                         classes = []
                         labels = []
+                        weights = []
                     else:
                         count_batch -= 1
 # === END CLASS 'graph' ===
