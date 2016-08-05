@@ -289,9 +289,16 @@ of Jure's work here.
 
 \subsection{Problem definition}
 
-We defines 
+We define the graph embedding problem and the objective
+of our framework.
 
-
+\begin{definition}
+A graph is represented as $G = (V,E)$, where $V$ is the
+set of vertices and $E$ is the set of edges between vertices.
+Each edges $e \in E$ is an ordered pair $e = (u,v)$ where
+$u, v \in V$. A graph is called \emph{undirected} when
+$(u,v) \equiv (v,u)$, and \emph{directed} when $(u,v) \not\equiv (v,u)$.
+\end{definition}
 
 
 
@@ -535,7 +542,6 @@ an antiderivative for $f$ on $[a,b]$, then
 
 The other uses the \textbf{definition} environment, created
 by the \texttt{{\char'134}newdef} command:
-\newdef{definition}{Definition}
 \begin{definition}
 If $z$ is irrational, then by $e^z$ we mean the
 unique number which has
