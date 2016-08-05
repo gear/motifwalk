@@ -15,8 +15,9 @@ import graph as g
 import util
 
 import numpy as np
-import cPickle as p
 from matplotlib import colors
+
+import pickle
 
 import os
 import time
@@ -28,7 +29,7 @@ import matplotlib.pyplot as plt
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.linear_model import LogisticRegression
 
-dataset_name = "polblogs"
+dataset_name = "egonets"
 index_cols = False
 epoch = 1
 emb_dim = 10
@@ -44,12 +45,15 @@ is_label = True
 rand_train = True
 motif_train = True
 
-
-correct_labels = util.read_correct_labels("data/raw/{}_labels.txt"
-                                    .format(dataset_name), index_cols)
-
-
 fb = g.graph_from_pickle('data/{}.graph'.format(dataset_name))
+
+try:
+    correct_labels = util.read_correct_labels("data/raw/{}_labels.txt"
+                                        .format(dataset_name), index_cols)
+except:
+    correct_labels = [0] * len(fb.nodes())
+
+
 
 exp_name = "nce_{}_e{}_ed{}_ne{}_ns{}_nw{}_wl{}_ws{}_it{}_nb{}_adam".format(
     dataset_name, epoch, emb_dim, neg_samp, num_skip, num_walk,
@@ -61,7 +65,7 @@ name_motif = exp_name + '_motif'
 
 
 if not rand_train:
-    weight_r = p.load(open(name_rand+".weights", "rb"))
+    weight_r = pickle.load(open(name_rand+".weights", "rb"))
 else:
     model_r = e.EmbeddingNet(graph=fb, epoch=epoch, emb_dim=emb_dim,
                              neg_samp=neg_samp, num_skip=num_skip,
@@ -78,10 +82,10 @@ else:
     # Save or load data
     if not os.path.exists(name_rand + '.weights') and rand_train:
         with open(name_rand + '.weights', 'wb') as f:
-            p.dump(weight_r, f, p.HIGHEST_PROTOCOL)
+            pickle.dump(weight_r, f, p.HIGHEST_PROTOCOL)
 
 if not motif_train:
-    weight_m = p.load(open(name_motif+".weights", "rb"))
+    weight_m = pickle.load(open(name_motif+".weights", "rb"))
 else:
     model_m = e.EmbeddingNet(graph=fb, epoch=epoch, emb_dim=emb_dim,
                              neg_samp=neg_samp, num_skip=num_skip,
@@ -97,7 +101,7 @@ else:
 
     if not os.path.exists(name_motif + '.weights') and motif_train:
         with open(name_motif + '.weights', 'wb') as f:
-            p.dump(weight_m, f, p.HIGHEST_PROTOCOL)
+            pickle.dump(weight_m, f, p.HIGHEST_PROTOCOL)
 
 # Normalize
 weight_r_avg = normalize(weight_r[0])
