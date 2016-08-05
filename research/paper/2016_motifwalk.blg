@@ -2,55 +2,56 @@ This is BibTeX, Version 0.99d (TeX Live 2015/Debian)
 Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
 The top-level auxiliary file: 2016_motifwalk.aux
 The style file: abbrv.bst
-Illegal, another \bibdata command---line 62 of file 2016_motifwalk.aux
- : \bibdata
- :         {2016_motifwalk}
-I'm skipping whatever remains of this command
-Database file #1: sigproc.bib
-Warning--I didn't find a database entry for "word2vec"
-Warning--I didn't find a database entry for "deepwalk"
-Warning--I didn't find a database entry for "wordvec"
+Database file #1: 2016_motifwalk.bib
 Warning--I didn't find a database entry for "all_deep_learning_on_network"
+Warning--I didn't find a database entry for "w2c"
 Warning--I didn't find a database entry for "la"
+Warning--I didn't find a database entry for "Lamport:LaTeX"
+Warning--I didn't find a database entry for "bowman:reasoning"
+Warning--I didn't find a database entry for "clark:pct"
+Warning--I didn't find a database entry for "braams:babel"
+Warning--I didn't find a database entry for "herlihy:methodology"
+Warning--I didn't find a database entry for "salas:calculus"
+Warning--can't use both volume and number fields in nce
 You've used 6 entries,
             2118 wiz_defined-function locations,
-            542 strings with 4515 characters,
-and the built_in function-call counts, 1813 in all, are:
-= -- 176
-> -- 59
-< -- 1
-+ -- 25
-- -- 18
-* -- 122
-:= -- 303
-add.period$ -- 19
+            544 strings with 4914 characters,
+and the built_in function-call counts, 2504 in all, are:
+= -- 253
+> -- 108
+< -- 6
++ -- 42
+- -- 36
+* -- 157
+:= -- 384
+add.period$ -- 22
 call.type$ -- 6
-change.case$ -- 25
+change.case$ -- 36
 chr.to.int$ -- 0
-cite$ -- 6
-duplicate$ -- 78
-empty$ -- 164
-format.name$ -- 18
-if$ -- 391
+cite$ -- 7
+duplicate$ -- 112
+empty$ -- 202
+format.name$ -- 36
+if$ -- 561
 int.to.chr$ -- 0
 int.to.str$ -- 6
-missing$ -- 8
+missing$ -- 6
 newline$ -- 33
 num.names$ -- 12
-pop$ -- 30
+pop$ -- 50
 preamble$ -- 1
-purify$ -- 21
+purify$ -- 30
 quote$ -- 0
-skip$ -- 49
+skip$ -- 84
 stack$ -- 0
-substring$ -- 114
-swap$ -- 14
-text.length$ -- 1
+substring$ -- 136
+swap$ -- 46
+text.length$ -- 6
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 20
-warning$ -- 0
-while$ -- 17
+type$ -- 24
+warning$ -- 1
+while$ -- 22
 width$ -- 7
-write$ -- 69
-(There was 1 error message)
+write$ -- 72
+(There were 10 warnings)

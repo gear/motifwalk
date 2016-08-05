@@ -4,6 +4,7 @@
 \documentclass{sig-alternate-05-2015}
 
 \newdef{definition}{Definition}
+\usepackage{amsmath, amsfonts, amssymb}
 
 \begin{document}
 
@@ -296,9 +297,47 @@ samples, while negative samples are picked from a noise
 distribution $p_n(x)$. The second uses a pre-defined 
 \emph{motif walk} to generate positive samples, while
 negative samples is generated from a contrasting distribution:
-$$p_{mc}(x) = f(p^t_m(x) || p^t_r(x))$$,
-where $f(x)$ is chosen to be a distance function that
-renders how 
+
+\begin{equation}
+  p_{\scalebox{0.7}{mc}}(x) = 
+    \boldsymbol f\left(p^t_{\scalebox{0.7}{m}}(x) \ || \ p^t_{\scalebox{0.7}{r}}(x)\right),
+\end{equation}
+
+where $\boldsymbol f(.)$ is chosen to be a distance function that
+yields high probability for node $x$ when $x$ is more
+likely to appear in random walk starting from node $t$
+than in motif walk starting from node $t$. $p^t_m(x)$ and
+$p^t_r(x)$ are distribution of nodes count in motif walk
+and random walk starting from vertex $t$. 
+
+Our model is a variant of the skipgram model \cite{w2v}
+using the softmax function, in which we define the coocurence 
+conditional probability of a ``class'' vertex  given 
+the ``target'' vertex as:
+
+\begin{equation}
+  p\left(v_{\scalebox{0.7}{class}} \ | \ v_{\scalebox{0.7}{target}}\right) 
+    = \frac{\exp(\omega^\top_c \cdot \omega_t)}{\sum^{|V|}_{i=1} \exp(\omega^\top_i \cdot \omega_t)}
+\end{equation}
+
+Despite the efficiency and simplicity of this model,
+the task of computing the normalization factor requires
+summing all over the graph's vertices is intractable
+for large graph. To solve this normalization problem,
+estimation techiques such as hierachial softmax \cite{hsoftmax}, 
+noise contrastive estimation \cite{nce}, and negative
+sampling \cite{w2v} are employed in the recent graph
+embedding models \cite{deepwalk, line, platenoid}.
+We define the objective function with negative sampling
+for our model as follow:
+
+\begin{equation}
+  \begin{aligned}
+    \mathcal{L} & = \log p\left(v_{\scalebox{0.7}{class}} \ | \ v_{\scalebox{0.7}{target}}\right) \\
+      & = \log \sigma \left(\omega^\top_c \cdot \omega_t\right) + 
+        \sum^{k}_{i=1} \mathds{E}_{\omega_s \sim p_{\scalebox{0.7}{mc}}(\omega)} \left[\sigma (-\omega^\top_s \cdot \omega_t)\right]
+  \end{aligned}
+\end{equation}
 
 \subsection{Graph sampling process}
 
@@ -637,7 +676,7 @@ and the \textbf{.cls} and \textbf{.tex} files that it describes.
 % initial runs of your .tex file to
 % produce the bibliography for the citations in your paper.
 \bibliographystyle{abbrv}
-\bibliography{sigproc}  % sigproc.bib is the name of the Bibliography in this case
+\bibliography{2016_motifwalk}  % sigproc.bib is the name of the Bibliography in this case
 % You must have a proper ".bib" file
 %  and remember to run:
 % latex bibtex latex latex
@@ -680,7 +719,6 @@ You just add the names and information in the
 \texttt{{\char'134}additionalauthors} command at the start
 of the document.
 \subsection{References}
-\bibliography{2016_motifwalk}
 \section{More Help for the Hardy}
 The sig-alternate.cls file itself is chock-full of succinct
 and helpful comments.  If you consider yourself a moderately

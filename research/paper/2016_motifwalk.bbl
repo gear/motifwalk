@@ -1,35 +1,38 @@
 \begin{thebibliography}{1}
 
-\bibitem{bowman:reasoning}
-M.~Bowman, S.~K. Debray, and L.~L. Peterson.
-\newblock Reasoning about naming systems.
-\newblock {\em ACM Trans. Program. Lang. Syst.}, 15(5):795--825, November 1993.
+\bibitem{nce}
+M.~Gutmann and A.~Hyv{\"a}rinen.
+\newblock Noise-contrastive estimation: A new estimation principle for
+  unnormalized statistical models.
+\newblock In {\em AISTATS}, volume~1, page~6, 2010.
 
-\bibitem{braams:babel}
-J.~Braams.
-\newblock Babel, a multilingual style-option system for use with latex's
-  standard document styles.
-\newblock {\em TUGboat}, 12(2):291--301, June 1991.
+\bibitem{w2v}
+T.~Mikolov and J.~Dean.
+\newblock Distributed representations of words and phrases and their
+  compositionality.
+\newblock {\em Advances in neural information processing systems}, 2013.
 
-\bibitem{clark:pct}
-M.~Clark.
-\newblock Post congress tristesse.
-\newblock In {\em TeX90 Conference Proceedings}, pages 84--89. TeX Users Group,
-  March 1991.
+\bibitem{hsoftmax}
+F.~Morin and Y.~Bengio.
+\newblock Hierarchical probabilistic neural network language model.
+\newblock In {\em Aistats}, volume~5, pages 246--252. Citeseer, 2005.
 
-\bibitem{herlihy:methodology}
-M.~Herlihy.
-\newblock A methodology for implementing highly concurrent data objects.
-\newblock {\em ACM Trans. Program. Lang. Syst.}, 15(5):745--770, November 1993.
+\bibitem{deepwalk}
+B.~Perozzi, R.~Al-Rfou, and S.~Skiena.
+\newblock Deepwalk: Online learning of social representations.
+\newblock In {\em Proceedings of the 20th ACM SIGKDD international conference
+  on Knowledge discovery and data mining}, pages 701--710. ACM, 2014.
 
-\bibitem{Lamport:LaTeX}
-L.~Lamport.
-\newblock {\em LaTeX User's Guide and Document Reference Manual}.
-\newblock Addison-Wesley Publishing Company, Reading, Massachusetts, 1986.
+\bibitem{line}
+J.~Tang, M.~Qu, M.~Wang, M.~Zhang, J.~Yan, and Q.~Mei.
+\newblock Line: Large-scale information network embedding.
+\newblock In {\em Proceedings of the 24th International Conference on World
+  Wide Web}, pages 1067--1077. ACM, 2015.
 
-\bibitem{salas:calculus}
-S.~Salas and E.~Hille.
-\newblock {\em Calculus: One and Several Variable}.
-\newblock John Wiley and Sons, New York, 1978.
+\bibitem{platenoid}
+Z.~Yang, W.~W. Cohen, and R.~Salakhutdinov.
+\newblock Revisiting semi-supervised learning with graph embeddings.
+\newblock In {\em Proceedings of the 33rd International Conference on Machine
+  Learning}. ICML, 2016.
 
 \end{thebibliography}
