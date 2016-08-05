@@ -8,6 +8,11 @@
 \usepackage{dsfont}
 \usepackage[ruled,vlined]{algorithm2e}
 
+%\tolerance=1
+%\emergencystretch=\maxdimen
+%\hyphenpenalty=10000
+%\hbadness=10000
+
 \begin{document}
 
 % Copyright
@@ -359,16 +364,27 @@ The first data generation process is similar to that of
 the Deepwalk model. The difference in our model is negative
 sampling from the vertex degree distribution is used to
 estimate the valid distribution. Algorithm \ref{al:gen_rand}
-describe the positive and negative samples generating 
+describes the positive and negative samples generating 
 from random walk process.
 
-\begin{algorithm}[h]
-  \SetAlgoLined
-  \KwData{Graph $G = (V,E)$}
-  \KwIn{walk\_length, skip\_window, num\_neg, distort}
-  \KwOut{(targets, classes, labels)}
+\begin{algorithm}[h] \label{al:gen_rand}
+\KwData{Graph $G = (V,E)$}
+\KwIn{walk\_length, skip\_window, num\_skip, num\_neg, distort}
+\KwOut{(targets, classes, labels)}
+\Begin{
+  targets $\leftarrow$ [~]; classes $\leftarrow$ [~];
+  labels $\leftarrow$ [~]; \\
+  id\_list $\leftarrow$ Shuffle($V$); \\
+  \For{i $\in$ id\_list}{
+    walk $\leftarrow$ \texttt{random\_walk}(start=i, length=walk\_length);
+    \For{j $\in$ walk}{
+      \For{j $\in$ \texttt{range}}{(
+      targets.\texttt{append}(j)
+    }
+  }
 
-  \caption{Algorithm}
+}
+\caption{\texttt{gen\_rand} yields data samples with random walk}
 \end{algorithm}
 
 
