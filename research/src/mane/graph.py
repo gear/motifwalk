@@ -351,7 +351,9 @@ class Graph(dict):
                       num_walk, num_true, neg_samp, num_skip, shuffle,
                       window_size, neg_samp_distort, gamma))
                    for _ in range(n_threads)]
-        for t in self._threads: t.start()
+        for t in self._threads:
+            t.setDaemon(True)
+            t.start()
         while True:
             if len(self._walk_pool) > 0:
                 yield self._walk_pool.pop()
@@ -371,12 +373,14 @@ class Graph(dict):
         """
         self._walk_pool = []
         self.max_pool = max_pool
-        threads = [Thread(target=self._gen_contrast2, name="gen_contrast",
+        self._threads = [Thread(target=self._gen_contrast2, name="gen_contrast",
                    args=(possitive_name, negative_name, num_batches, reset,
                        walk_length, num_walk, num_true, neg_samp, contrast_iter,
                        num_skip, shuffle, window_size, gamma))
                    for _ in range(n_threads)]
-        for t in threads: t.start()
+        for t in self._threads:
+            t.setDaemon(True)
+            t.start()
         while True:
             if len(self._walk_pool) > 0:
                 yield self._walk_pool.pop()
