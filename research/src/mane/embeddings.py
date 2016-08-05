@@ -184,7 +184,8 @@ class EmbeddingNet():
 
     # train
     def train(self, mode='random_walk', num_true=1,
-              shuffle=True, verbose=1, distort=0.75, num_batches=1000):
+              shuffle=True, verbose=1, distort=0.75, num_batches=1000,
+              gamma=0.8):
         """
         Load data and train the model.
 
@@ -215,7 +216,8 @@ class EmbeddingNet():
                                         self._num_skip,
                                         shuffle,
                                         self._window_size,
-                                        distort)
+                                        distort,
+                                        gamma=gamma)
         iterations = self._iters // num_batches
         for i in xrange(iterations):
             print('Iteration %d / %d:' % (i, iterations))
@@ -223,11 +225,12 @@ class EmbeddingNet():
             self._model.fit(x=x_data, y=y_data, batch_size=self._batch_size,
                             nb_epoch=self._epoch, verbose=verbose,
                             sample_weight=sample_weight)
+        self._graph.kill_threads()
 
     # train
     def train_mce(self, pos='motif_walk', neg='random_walk',
                   num_true=1, reset=0.0, shuffle=True, verbose=1,
-                  num_batches=1000):
+                  num_batches=1000, gamma=0.8):
         """
         Load data and train the model.
 
@@ -259,7 +262,8 @@ class EmbeddingNet():
                                              self._contrast_iter,
                                              self._num_skip,
                                              shuffle,
-                                             self._window_size)
+                                             self._window_size,
+                                             gamma=gamma)
         iterations = self._iters // num_batches
         for i in xrange(iterations):
             print('Iteration %d / %d:' % (i, iterations))
@@ -267,6 +271,7 @@ class EmbeddingNet():
             self._model.fit(x=x_data, y=y_data, batch_size=self._batch_size,
                             nb_epoch=self._epoch, verbose=verbose,
                             sample_weight=sample_weight)
+        self._graph.kill_threads()
 
     # init_normal
     def init_normal(self, shape, name=None):

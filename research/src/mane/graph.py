@@ -22,12 +22,12 @@ from __future__ import absolute_import
 import random
 import logging
 import os
+import time
 import itertools
-import multiprocessing
+from threading import Thread
 import cPickle as pickle
 import numpy as np
 from itertools import izip
-from time import time
 
 # My modules
 import motif
@@ -335,7 +335,56 @@ class Graph(dict):
         return set(walk_path)
     # gen_with_negative
 
+
     def gen_walk(self, walk_func_name, num_batches=100, walk_length=10,
+                 num_walk=5, num_true=1, neg_samp=15,
+                 num_skip=2, shuffle=True, window_size=3,
+                 neg_samp_distort=0.75, gamma=0.8, n_threads=8, max_pool=100):
+        """
+        Generate walk sample in parallel
+        """
+        self._walk_pool = []
+        self.max_pool = max_pool
+        self.stop_threads = False
+        self._threads = [Thread(target=self._gen_walk, name="gen_walk",
+                   args=(walk_func_name, num_batches, walk_length,
+                      num_walk, num_true, neg_samp, num_skip, shuffle,
+                      window_size, neg_samp_distort, gamma))
+                   for _ in range(n_threads)]
+        for t in self._threads: t.start()
+        while True:
+            if len(self._walk_pool) > 0:
+                yield self._walk_pool.pop()
+            else:
+                time.sleep(1)
+
+    def kill_threads(self):
+        self.stop_threads = True
+
+    def gen_contrast(self, possitive_name='motif_walk',
+                      negative_name='random_walk', num_batches=100, reset=0.0,
+                      walk_length=10, num_walk=5, num_true=1, neg_samp=15,
+                      contrast_iter=10, num_skip=2, shuffle=True, window_size=3,
+                      gamma=0.8, n_threads=8, max_pool=100):
+        """
+        Generate contrast walk in parallel
+        """
+        self._walk_pool = []
+        self.max_pool = max_pool
+        threads = [Thread(target=self._gen_contrast2, name="gen_contrast",
+                   args=(possitive_name, negative_name, num_batches, reset,
+                       walk_length, num_walk, num_true, neg_samp, contrast_iter,
+                       num_skip, shuffle, window_size, gamma))
+                   for _ in range(n_threads)]
+        for t in threads: t.start()
+        while True:
+            if len(self._walk_pool) > 0:
+                yield self._walk_pool.pop()
+            else:
+                time.sleep(1)
+
+
+    def _gen_walk(self, walk_func_name, num_batches=100, walk_length=10,
                  num_walk=5, num_true=1, neg_samp=15,
                  num_skip=2, shuffle=True, window_size=3,
                  neg_samp_distort=0.75, gamma=0.8):
@@ -385,10 +434,11 @@ class Graph(dict):
         # Generator loops forever
         while True:
             for _ in xrange(num_walk):
+                if self.stop_threads: return
                 if shuffle:
-                    id_list = np.random.permutation(self.keys())
+                    id_list = np.random.permutation(self.nodes())
                 else:
-                    id_list = self.keys()
+                    id_list = self.nodes()
                 # Accumulator for each batch
                 count_batch = num_batches - 1
                 targets = []
@@ -425,9 +475,13 @@ class Graph(dict):
                         classes = np.array(classes, dtype=np.int32)
                         labels = np.array(labels, dtype=np.float32)
                         weights = np.array(weights, dtype=np.float32)
-                        yield ({'target': targets, 'class': classes},
+                        data = ({'target': targets, 'class': classes},
                                 {'label': labels},
                                 weights)
+                        # wait if walk_pool is enough
+                        while len(self._walk_pool) > self.max_pool:
+                            time.sleep(1)
+                        self._walk_pool.append(data)
                         count_batch = num_batches - 1
                         targets = []
                         classes = []
@@ -437,7 +491,7 @@ class Graph(dict):
                         count_batch -= 1
 
     # gen_contrast
-    def gen_contrast(self, possitive_name='motif_walk',
+    def _gen_contrast(self, possitive_name='motif_walk',
                      negative_name='random_walk', num_batches=100, reset=0.0,
                      walk_length=10, num_walk=5, num_true=1, neg_samp=15,
                      contrast_iter=10, num_skip=2, shuffle=True, window_size=3,
@@ -535,8 +589,9 @@ class Graph(dict):
                     else:
                         count_batch -= 1
 
+
     # gen_contrast2
-    def gen_contrast2(self, possitive_name='motif_walk',
+    def _gen_contrast2(self, possitive_name='motif_walk',
                       negative_name='random_walk', num_batches=100, reset=0.0,
                       walk_length=10, num_walk=5, num_true=1, neg_samp=15,
                       contrast_iter=10, num_skip=2, shuffle=True, window_size=3,
@@ -573,6 +628,7 @@ class Graph(dict):
         # Generator loops forever
         while True:
             for _ in xrange(num_walk):
+                if self.stop_threads: return
                 if shuffle:
                     id_list = np.random.permutation(self.keys())
                 else:
@@ -642,9 +698,11 @@ class Graph(dict):
                         classes = np.array(classes, dtype=np.int32)
                         labels = np.array(labels, dtype=np.float32)
                         weights = np.array(weights, dtype=np.float32)
-                        yield ({'target': targets, 'class': classes},
+                        while len(self._walk_pool) > self.max_pool:
+                            time.sleep(1)
+                        self._walk_pool.append(({'target': targets, 'class': classes},
                                 {'label': labels},
-                                weights)
+                                weights))
                         count_batch = num_batches - 1
                         targets = []
                         classes = []
