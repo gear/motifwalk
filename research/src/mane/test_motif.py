@@ -30,16 +30,16 @@ from sklearn.multiclass import OneVsRestClassifier
 from sklearn.linear_model import LogisticRegression
 
 dataset_name = "egonets"
-index_cols = False
+index_cols = True
 epoch = 1
-emb_dim = 10
-neg_samp = 2
-num_skip = 2
+emb_dim = 256
+neg_samp = 3
+num_skip = 3
 num_walk = 5
-walk_length = 3
-window_size = 2
+walk_length = 10
+window_size = 3
 iters = 1
-num_batches = 1000
+num_batches = 2000
 
 is_label = True
 rand_train = True
@@ -82,7 +82,7 @@ else:
     # Save or load data
     if not os.path.exists(name_rand + '.weights') and rand_train:
         with open(name_rand + '.weights', 'wb') as f:
-            pickle.dump(weight_r, f, p.HIGHEST_PROTOCOL)
+            pickle.dump(weight_r, f, pickle.HIGHEST_PROTOCOL)
 
 if not motif_train:
     weight_m = pickle.load(open(name_motif+".weights", "rb"))
@@ -101,7 +101,7 @@ else:
 
     if not os.path.exists(name_motif + '.weights') and motif_train:
         with open(name_motif + '.weights', 'wb') as f:
-            pickle.dump(weight_m, f, p.HIGHEST_PROTOCOL)
+            pickle.dump(weight_m, f, pickle.HIGHEST_PROTOCOL)
 
 # Normalize
 weight_r_avg = normalize(weight_r[0])

@@ -220,15 +220,16 @@ class EmbeddingNet():
                                         self._window_size,
                                         distort,
                                         gamma=gamma)
-        self._model.fit_generator(data_gen, samples_per_epoch=100000,
-                                 nb_epoch=3, verbose=verbose)
-        #iterations = self._iters // num_batches
-        #for i in range(iterations):
-        #    print('Iteration %d / %d:' % (i, iterations))
-        #    targets, classes, labels, sample_weight = next(data_gen)
-        #    self._model.fit([targets, classes], [labels],
-        #                    batch_size=self._batch_size,
-        #                    nb_epoch=self._epoch, verbose=verbose)
+        #self._model.fit_generator(data_gen, samples_per_epoch=num_batches,
+        #                         nb_epoch=3, verbose=verbose)
+        iterations = self._iters // num_batches
+        for i in range(iterations):
+            print('Iteration %d / %d:' % (i, iterations))
+            (targets, classes), labels, sample_weight = next(data_gen)
+            self._model.fit([targets, classes], [labels],
+                            batch_size=self._batch_size,
+                            sample_weight=sample_weight,
+                            nb_epoch=self._epoch, verbose=verbose)
         self._graph.kill_threads()
 
     # train
