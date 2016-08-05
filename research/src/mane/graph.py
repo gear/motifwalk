@@ -18,16 +18,23 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+# Import cython gen_walk module
+import pyximport; pyximport.install()
+from genwalk.gen_walk import gen_walk_fast
+
 # External modules
 import random
 import logging
 import os
 import time
 import itertools
+from itertools import chain
 from threading import Thread
-import cPickle as pickle
+try:
+    import cPickle as pickle
+except:
+    import pickle
 import numpy as np
-from itertools import izip
 
 # My modules
 import motif
@@ -299,7 +306,7 @@ class Graph(dict):
         if not start_node:
             self.getLogger().warn('Creating random walk set with random start node.')
         walk_path = []
-        for _ in xrange(num_walk):
+        for _ in range(num_walk):
             rwp = self.random_walk(length=length, start_node=start_node,
                                    rand_seed=rand_seed, reset=reset)
             walk_path.extend(rwp)
@@ -328,7 +335,7 @@ class Graph(dict):
         if not start_node:
             self.getLogger().warn('Creating random walk set with random start node.')
         walk_path = []
-        for _ in xrange(num_walk):
+        for _ in range(num_walk):
             mwp = self.motif_walk(length=length, start_node=start_node,
                                   rand_seed=rand_seed, reset=reset)
             walk_path.extend(mwp)
@@ -339,7 +346,7 @@ class Graph(dict):
     def gen_walk(self, walk_func_name, num_batches=100, walk_length=10,
                  num_walk=5, num_true=1, neg_samp=15,
                  num_skip=2, shuffle=True, window_size=3,
-                 neg_samp_distort=0.75, gamma=0.8, n_threads=8, max_pool=100):
+                 neg_samp_distort=0.75, gamma=0.8, n_threads=1, max_pool=100):
         """
         Generate walk sample in parallel
         """
@@ -349,14 +356,14 @@ class Graph(dict):
         self._threads = [Thread(target=self._gen_walk, name="gen_walk",
                    args=(walk_func_name, num_batches, walk_length,
                       num_walk, num_true, neg_samp, num_skip, shuffle,
-                      window_size, neg_samp_distort, gamma))
+                      window_size, gamma))
                    for _ in range(n_threads)]
         for t in self._threads:
             t.setDaemon(True)
             t.start()
         while True:
             if len(self._walk_pool) > 0:
-                yield self._walk_pool.pop()
+                yield(self._walk_pool.pop())
             else:
                 time.sleep(1)
 
@@ -389,9 +396,31 @@ class Graph(dict):
 
 
     def _gen_walk(self, walk_func_name, num_batches=100, walk_length=10,
+                  num_walk=5, num_true=1, neg_samp=15,
+                  num_skip=2, shuffle=True, window_size=3,
+                  gamma=0.8):
+        # Make sure generated dataset has correct count.
+        assert window_size >= num_skip, 'Window size is too small.'
+        neighbors = {i: self[i] for i in range(len(self))}
+        freq_list = list(chain.from_iterable([[i] * f for i, f 
+                                        in self._freq.items()]))
+        while True:
+            data = gen_walk_fast(neighbors, freq_list, walk_func_name,
+                                num_batches, walk_length, num_walk,
+                                num_true, neg_samp, num_skip,
+                                shuffle, window_size, gamma)
+            targets = np.array(data.targets, dtype=np.int32)
+            classes = np.array(data.classes, dtype=np.int32)
+            labels = np.array(data.labels, dtype=np.float32)
+            weights = np.array(data.weights, dtype=np.float32)
+            while len(self._walk_pool) > self.max_pool: time.sleep(1)
+            self._walk_pool.append((targets, classes, labels, weights))
+
+
+    def _gen_walk_py(self, walk_func_name, num_batches=100, walk_length=10,
                  num_walk=5, num_true=1, neg_samp=15,
                  num_skip=2, shuffle=True, window_size=3,
-                 neg_samp_distort=0.75, gamma=0.8):
+                 gamma=0.8):
         """
         Infinite loop generating data as a simple skipgram model
         with negative sampling.
@@ -431,13 +460,13 @@ class Graph(dict):
         assert window_size >= num_skip, 'Window size is too small.'
         wfunc = getattr(self, walk_func_name)
         # Node degree distribution distorted by neg_samp_distort
-        node_list = self._freq.keys()
+        node_list = self._freq.nodes()
         freq_list = np.array(self._freq.values(), np.int32)**neg_samp_distort
         norm = sum(freq_list)
         freq_list = freq_list / norm
         # Generator loops forever
         while True:
-            for _ in xrange(num_walk):
+            for _ in range(num_walk):
                 if self.stop_threads: return
                 if shuffle:
                     id_list = np.random.permutation(self.nodes())
@@ -459,7 +488,7 @@ class Graph(dict):
                         # Window [lower:upper] for skipping
                         lower = max(0, j - window_size)
                         upper = min(walk_length, j + window_size + 1)
-                        for _ in xrange(num_skip):
+                        for _ in range(num_skip):
                             rand_index = random.randint(lower, upper-1)
                             distance = abs(j - rand_index)
                             rand_node = walk[rand_index]
@@ -467,7 +496,7 @@ class Graph(dict):
                             classes.append(rand_node)
                             labels.append(1.0)  # Possitive sample
                             weights.append(pow(gamma, distance))
-                        for _ in xrange(neg_samp):
+                        for _ in range(neg_samp):
                             rand_node = np.random.choice(
                                 node_list, p=freq_list)
                             targets.append(target)
@@ -526,7 +555,7 @@ class Graph(dict):
         neg_func = getattr(self, negative_name)
         # Generator loops forever
         while True:
-            for _ in xrange(num_walk):
+            for _ in range(num_walk):
                 if shuffle:
                     id_list = np.random.permutation(self.keys())
                 else:
@@ -545,7 +574,7 @@ class Graph(dict):
                     # Perform 2 walks and return set of nodes
                     pos_walk = []
                     neg_walk = []
-                    for _ in xrange(contrast_iter):
+                    for _ in range(contrast_iter):
                         pos_walk.extend(
                             pos_func(start_node=i, length=walk_length))
                         neg_walk.extend(
@@ -562,7 +591,7 @@ class Graph(dict):
                         # Window [lower:upper] for skipping
                         lower = max(0, j - window_size)
                         upper = min(walk_length, j + window_size + 1)
-                        for _ in xrange(num_skip):
+                        for _ in range(num_skip):
                             rand_index = random.randint(lower, upper-1)
                             rand_node = pos_walk[rand_index]
                             distance = abs(rand_index - j)
@@ -571,7 +600,7 @@ class Graph(dict):
                             labels.append(1.0)  # Possitive sample
                             # weight of positive sample
                             weights.append(pow(gamma, distance))
-                        for _ in xrange(neg_samp):
+                        for _ in range(neg_samp):
                             rand_node = random.choice(neg_samps)
                             targets.append(target)
                             classes.append(rand_node)
@@ -631,7 +660,7 @@ class Graph(dict):
         neg_func = getattr(self, negative_name)
         # Generator loops forever
         while True:
-            for _ in xrange(num_walk):
+            for _ in range(num_walk):
                 if self.stop_threads: return
                 if shuffle:
                     id_list = np.random.permutation(self.keys())
@@ -654,7 +683,7 @@ class Graph(dict):
                     neg_samples = []
                     # Get the 'positive set' of nodes and candidate for
                     # positive samples
-                    for _ in xrange(contrast_iter):
+                    for _ in range(contrast_iter):
                         walk = pos_func(start_node=i, length=walk_length)
                         pos_walk.extend(walk)
                         # add positive samples with its distance
@@ -669,7 +698,7 @@ class Graph(dict):
                         continue
                     # Get the 'negative set' of nodes and candidate for
                     # negative samples
-                    for _ in xrange(contrast_iter):
+                    for _ in range(contrast_iter):
                         neg_walk = neg_func(start_node=i, length=walk_length)
                         neg_samples.extend(
                             [x for x in neg_walk
@@ -685,14 +714,14 @@ class Graph(dict):
                         print('WARNING: Empty negative samples list. Skipping...')
                         continue
                     # Append possitive samples by frequency
-                    for _ in xrange(num_skip):
+                    for _ in range(num_skip):
                         targets.append(i)
                         c, d = random.choice(pos_samples)
                         classes.append(c)
                         labels.append(1.0)
                         weights.append(pow(gamma, d))
                     # Append negative samples by frequency
-                    for _ in xrange(neg_samp):
+                    for _ in range(neg_samp):
                         targets.append(i)
                         classes.append(random.choice(neg_samples))
                         labels.append(0.0)
@@ -747,10 +776,10 @@ def graph_from_pickle(pickle_filename, **graph_config):
     # Create graph with configuration
     graph = Graph()
     if len(graph_config):
-        for key, val in graph_config.iteritems():
+        for key, val in graph_config.items():
             setattr(graph, key, val)
     # Load data to the graph
-    for key, val in data.iteritems():
+    for key, val in data.items():
         graph[key] = val
         graph._freq[key] = len(val)
     # TODO: Log result of graph creation

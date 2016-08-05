@@ -1,14 +1,14 @@
-
 from libcpp.vector cimport vector
 from libcpp.map cimport map
+
 import random
 
 cdef class Data:
     """
     Data class (struct) to return vector sets for python
     """
-    cdef public vector[int] targets
-    cdef public vector[int] classes
+    cdef public vector[long] targets
+    cdef public vector[long] classes
     cdef public vector[int] labels
     cdef public vector[double] weights
 
@@ -19,30 +19,32 @@ cdef class Data:
         self.weights = weights
 
 
-cdef int contains_in_vector(vector[int] vec, int x):
+cdef int contains_in_vector(vector[long] vec, long x):
     """
     Check if x in vec
     """
-    cdef int i
+    cdef long i
     for i in vec:
         if i == x:
             return 1
     return 0
 
-cdef random_walk(map[int, vector[int]] neighbors, int length,
-                  rand_seed=None, start_node=None,
-                  double reset=0.0):
-    random.seed(rand_seed)
+cdef vector[long] random_walk(map[long, vector[long]] neighbors, long length,
+                            long rand_seed=-1, long start_node=-1,
+                            double reset=0.0):
+    if rand_seed > 0:
+        random.seed(rand_seed)
     cdef num_nodes = neighbors.size()
-    cdef int start
-    if start_node is None:
+    cdef long start
+    if start_node < 0:
         start = random.randint(0, num_nodes-1)
-    cdef vector[int] walk_path = [start]
-    cdef int cur
-    cdef int rnd
-    cdef vector[int] cur_neighbor
+    else:
+        start = start_node
+    cdef vector[long] walk_path = [start]
+    cdef long cur
+    cdef long rnd
+    cur = start
     while walk_path.size() < length:
-        cur = walk_path[-1]
         if neighbors[cur].size() > 0:
             if random.random() >= reset:
                 rnd = random.randint(0, neighbors[cur].size() - 1)
@@ -54,21 +56,22 @@ cdef random_walk(map[int, vector[int]] neighbors, int length,
     return walk_path
 
 
-cdef vector[int] motif_walk(map[int, vector[int]] neighbors, int length,
-                  int rand_seed=-1, int start_node=-1,
+cdef vector[long] motif_walk(map[long, vector[long]] neighbors, long length,
+                  long rand_seed=-1, long start_node=-1,
                   double reset=0.0, double walk_bias=0.9):
     if rand_seed > 0:
         random.seed(rand_seed)
     cdef num_nodes = neighbors.size()
-    cdef int start
+    cdef long start
     if start_node < 0:
         start = random.randint(0, num_nodes-1)
-    cdef vector[int] walk_path = [start]
-    cdef int cur
-    cdef int rnd
-    cdef vector[int] cur_neighbor
-    cdef int prev = -1
-    cdef int cand
+    else:
+        start = start_node
+    cdef vector[long] walk_path = [start]
+    cdef long cur
+    cdef long rnd
+    cdef long prev = -1
+    cdef long cand
     cdef double prob
     cur = start
     while walk_path.size() < length:
@@ -93,21 +96,21 @@ cdef vector[int] motif_walk(map[int, vector[int]] neighbors, int length,
         cur = cand
     return walk_path
 
-cpdef gen_walk_fast(map[int, vector[int]] neighbors, vector[int] freq_list,
-                    walk_func_name, int num_batches=100, int walk_length=10,
-                    int num_walk=5, int num_true=1, int neg_sample=15,
-                    int num_skip=2, int shuffle=1, window_size=3,
-                    double gamma=0.8, int rand_seed=-1):
-    cdef int num_nodes = neighbors.size()
-    cdef int num_freq = freq_list.size()
-    cdef int cnt = 0
-    cdef int j, lower, upper
-    cdef int target, cls_node
-    cdef int distance
-    cdef vector[int] targets, classes
+cpdef Data gen_walk_fast(map[long, vector[long]] neighbors, vector[long] freq_list,
+                        walk_func_name, long num_batches=100, long walk_length=10,
+                        long num_walk=5, long num_true=1, long neg_sample=15,
+                        long num_skip=2, long shuffle=1, window_size=3,
+                        double gamma=0.8, long rand_seed=-1):
+    cdef long num_nodes = neighbors.size()
+    cdef long num_freq = freq_list.size()
+    cdef long cnt = 0
+    cdef long j, lower, upper
+    cdef long target, cls_node
+    cdef long distance
+    cdef vector[long] targets, classes
     cdef vector[int] labels
     cdef vector[double] weights
-    cdef vector[int] walk
+    cdef vector[long] walk
     while True:
         start = random.randint(0, num_nodes - 1)
         if not neighbors[start].size() > 0:

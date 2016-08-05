@@ -156,18 +156,21 @@ class EmbeddingNet():
         # Embedding layers connect to target_in and class_in
         embeddings = Embedding(input_dim=len(self._graph),
                                output_dim=self._emb_dim,
-                               name='embeddings', input_length=1,
+                               name='node_embeddings', input_length=1,
                                init=self.init_uniform)(target_in)
-        embeddings = Reshape((self._emb_dim,))(embeddings)
+        print(embeddings.name)
+        embeddings = Reshape((self._emb_dim,), name="reshape_node")(embeddings)
         nce_weights = Embedding(input_dim=len(self._graph),
                                 output_dim=self._emb_dim,
-                                name='nce_weights', input_length=1,
+                                name='nce_weights_emb',
+                                input_length=1,
                                 init=self.init_normal)(class_in)
-        nce_weights = Reshape((self._emb_dim,))(nce_weights)
+        print(nce_weights.name)
+        nce_weights = Reshape((self._emb_dim,), name="reshape_weights")(nce_weights)
         nce_bias = Embedding(input_dim=len(self._graph),
-                             output_dim=1, name='nce_bias',
+                             output_dim=1, name='nce_bias_emb',
                              input_length=1, init='zero')(class_in)
-        nce_bias = Reshape(target_shape=(1,))(nce_bias)
+        nce_bias = Reshape(target_shape=(1,), name="reshape_bias")(nce_bias)
         # Elemen-wise multiplication for dot product
         dot_prod = Merge(mode=row_dot, output_shape=merge_shape,
                          name='row_wise_dot')([embeddings, nce_weights])
@@ -219,12 +222,13 @@ class EmbeddingNet():
                                         distort,
                                         gamma=gamma)
         iterations = self._iters // num_batches
-        for i in xrange(iterations):
+        for i in range(iterations):
             print('Iteration %d / %d:' % (i, iterations))
-            x_data, y_data, sample_weight = next(data_gen)
-            self._model.fit(x=x_data, y=y_data, batch_size=self._batch_size,
-                            nb_epoch=self._epoch, verbose=verbose,
-                            sample_weight=sample_weight)
+            targets, classes, labels, sample_weight = next(data_gen)
+            import pdb; pdb.set_trace()
+            self._model.fit([targets, classes], labels,
+                            batch_size=self._batch_size,
+                            nb_epoch=self._epoch, verbose=verbose)
         self._graph.kill_threads()
 
     # train
@@ -265,7 +269,7 @@ class EmbeddingNet():
                                              self._window_size,
                                              gamma=gamma)
         iterations = self._iters // num_batches
-        for i in xrange(iterations):
+        for i in range(iterations):
             print('Iteration %d / %d:' % (i, iterations))
             x_data, y_data, sample_weight = next(data_gen)
             self._model.fit(x=x_data, y=y_data, batch_size=self._batch_size,

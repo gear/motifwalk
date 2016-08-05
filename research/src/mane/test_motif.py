@@ -15,7 +15,6 @@ import graph as g
 import util
 
 import numpy as np
-import cPickle as p
 from matplotlib import colors
 
 import os
@@ -28,7 +27,7 @@ import matplotlib.pyplot as plt
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.linear_model import LogisticRegression
 
-dataset_name = "egonets"
+dataset_name = "polblogs"
 index_cols = False
 epoch = 1
 emb_dim = 10
