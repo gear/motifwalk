@@ -41,9 +41,9 @@ class EmbeddingNet():
   """
   ##################################################################### __init__
   def __init__(self, model=None, graph=None, epoch=10,
-               name='EmbeddingNet', emb_dim=200, 
-               learning_rate=0.01, neg_samp=5, 
-               num_skip=5, num_walk=5,
+               name='EmbeddingNet', emb_dim=200,
+               learning_rate=0.01, neg_samp=5,
+               num_skip=5, num_walk=5, contrast_iter=10,
                walk_length=5, window_size=5,
                iters=2.0, save_file='EmbeddingNet.keras'):
     """
@@ -80,6 +80,7 @@ class EmbeddingNet():
     self._num_walk = num_walk
     self._walk_length = walk_length
     self._window_size = window_size
+    self._contrast_iter = contrast_iter
 
     # Status flags
     self._built = False
@@ -250,6 +251,7 @@ class EmbeddingNet():
                                         self._num_walk,
                                         num_true,
                                         self._neg_samp,
+                                        self._contrast_iter,
                                         self._num_skip,
                                         shuffle,
                                         self._window_size)
