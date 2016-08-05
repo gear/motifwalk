@@ -19,7 +19,7 @@ import theano
 
 # Import keras modules
 from keras.models import Model
-from keras.layers import Input, Merge, Reshape, Activation
+from keras.layers import Input, Merge, Reshape, Activation, Lambda
 from keras.layers.embeddings import Embedding
 from keras.optimizers import SGD, Adam
 from keras import backend as K
@@ -158,24 +158,23 @@ class EmbeddingNet():
                                output_dim=self._emb_dim,
                                name='node_embeddings', input_length=1,
                                init=self.init_uniform)(target_in)
-        print(embeddings.name)
-        embeddings = Reshape((self._emb_dim,), name="reshape_node")(embeddings)
         nce_weights = Embedding(input_dim=len(self._graph),
                                 output_dim=self._emb_dim,
-                                name='nce_weights_emb',
                                 input_length=1,
-                                init=self.init_normal)(class_in)
-        print(nce_weights.name)
-        nce_weights = Reshape((self._emb_dim,), name="reshape_weights")(nce_weights)
+                                init=self.init_normal, name="nce_weights_embedding")(class_in)
         nce_bias = Embedding(input_dim=len(self._graph),
                              output_dim=1, name='nce_bias_emb',
                              input_length=1, init='zero')(class_in)
+        embeddings = Reshape((self._emb_dim,), name="reshape_node")(embeddings)
+        nce_weights = Reshape((self._emb_dim,), name="reshape_weights")(nce_weights)
         nce_bias = Reshape(target_shape=(1,), name="reshape_bias")(nce_bias)
         # Elemen-wise multiplication for dot product
         dot_prod = Merge(mode=row_dot, output_shape=merge_shape,
                          name='row_wise_dot')([embeddings, nce_weights])
-        logits = Merge(mode='sum', output_shape=(1,),
+        logits = Merge(mode='sum', output_shape=merge_shape,
                        name='logits')([dot_prod, nce_bias])
+        logits = Lambda(lambda x: K.sum(x), output_shape=(1,),
+                        name="reduce_sum")(logits)
         # Final output layer. name='label' for data input reason
         sigm = Activation('sigmoid', name='label')(logits)
         # Initialize model
@@ -225,8 +224,7 @@ class EmbeddingNet():
         for i in range(iterations):
             print('Iteration %d / %d:' % (i, iterations))
             targets, classes, labels, sample_weight = next(data_gen)
-            import pdb; pdb.set_trace()
-            self._model.fit([targets, classes], labels,
+            self._model.fit([targets, classes], [labels],
                             batch_size=self._batch_size,
                             nb_epoch=self._epoch, verbose=verbose)
         self._graph.kill_threads()
@@ -283,7 +281,7 @@ class EmbeddingNet():
         Custom normal initializer for nce
         embedding. Shrink stddev.
         """
-        return init.normal(shape=shape, scale=1 / np.sqrt(self._emb_dim))
+        return init.normal(shape=shape, scale=1 / np.sqrt(self._emb_dim), name=name)
     # init_uniform
 
     def init_uniform(self, shape, name=None):

@@ -346,7 +346,7 @@ class Graph(dict):
     def gen_walk(self, walk_func_name, num_batches=100, walk_length=10,
                  num_walk=5, num_true=1, neg_samp=15,
                  num_skip=2, shuffle=True, window_size=3,
-                 neg_samp_distort=0.75, gamma=0.8, n_threads=1, max_pool=100):
+                 neg_samp_distort=0.75, gamma=0.8, n_threads=6, max_pool=10):
         """
         Generate walk sample in parallel
         """
@@ -390,7 +390,8 @@ class Graph(dict):
             t.start()
         while True:
             if len(self._walk_pool) > 0:
-                yield self._walk_pool.pop()
+                data = self._walk_pool.pop()
+                yield data
             else:
                 time.sleep(1)
 
