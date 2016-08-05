@@ -19,7 +19,7 @@ from __future__ import division
 from __future__ import absolute_import
 
 # External modules
-import random as r
+import random
 import logging
 import os
 import itertools
@@ -94,7 +94,9 @@ class Graph(dict):
         """
         Return list of nodes in graph.
         """
-        return self.keys()
+        if not hasattr(self, "_nodes"):
+            self._nodes = self.keys()
+        return self._nodes
     # edges
     # TODO: Implement edges
 
@@ -185,15 +187,14 @@ class Graph(dict):
         """
         # TODO: Use log and exit instead of assert
         assert 0 <= reset <= 1, 'Restart probability should be in [0.0,1.0].'
-        rand = np.random
-        rand.seed(rand_seed)
+        random.seed(rand_seed)
         # Give warning if graph is directed. TODO: Detail warning.
         # TODO: Add walk info.
         if self._directed:
             self.getLogger().warn('Performing random walk on directed graph.')
         # Select starting node
         if not start_node:
-            start_node = rand.choice(self.keys())
+            start_node = random.choice(self.nodes())
         walk_path = [start_node]
         # Start random walk by appending nodes to walk_path
         while len(walk_path) < length:
@@ -240,14 +241,13 @@ class Graph(dict):
         # TODO: Implement Motif class and delegate the walk to Motif
         # Now - Default as triangle motif (undirected).
         assert 0 <= reset <= 1, 'Restart probability should be in [0.0, 1.0].'
-        rand = np.random
-        rand.seed(rand_seed)
+        random.seed(rand_seed)
         if self._directed:
             self.getLogger().warn('Performing motif walk on directed graph.')
         # Select starting node
         walk_path = []
         if not start_node:
-            start_node = rand.choice(self.keys())
+            start_node = random.choice(self.nodes())
         walk_path.append(start_node)
         cur = start_node
         prev = None
@@ -258,7 +258,7 @@ class Graph(dict):
             # If candidate is in previous adj node, select with prob=walk_bias
             if prev:
                 while True:
-                    prob = rand.random()
+                    prob = random.random()
                     if cand in self[prev]:
                         if prob < walk_bias:
                             walk_path.append(cand)
@@ -267,7 +267,7 @@ class Graph(dict):
                         if prob > walk_bias:
                             walk_path.append(cand)
                             break
-                    cand = rand.choice(self[cur])
+                    cand = random.choice(self[cur])
             else:
                 walk_path.append(cand)
             prev = cur
@@ -393,6 +393,7 @@ class Graph(dict):
                 targets = []
                 classes = []
                 labels = []
+                weights = []
                 eol = id_list[-1]
                 for i in (id_list):
                     # Perform walk if the node is connected
@@ -404,21 +405,27 @@ class Graph(dict):
                         lower = max(0, j - window_size)
                         upper = min(walk_length, j + window_size + 1)
                         for _ in xrange(num_skip):
-                            rand_node = r.choice(walk[lower:upper])
+                            rand_index = random.randint(lower, upper)
+                            distance = abs(j - rand_index)
+                            rand_node = walk[rand_index]
                             targets.append(target)
                             classes.append(rand_node)
                             labels.append(1.0)  # Possitive sample
+                            weights.append(pow(gamma, distance))
                         for _ in xrange(neg_samp):
                             rand_node = np.random.choice(
                                 node_list, p=freq_list)
                             targets.append(target)
                             classes.append(rand_node)
                             labels.append(0.0)  # Negative sample
+                            weights.append(1.0)
                     if count_batch <= 0 or i == eol:
                         targets = np.array(targets, dtype=np.int32)
                         classes = np.array(classes, dtype=np.int32)
                         labels = np.array(labels, dtype=np.float32)
-                        yield ({'target': targets, 'class': classes}, {'label': labels})
+                        yield ({'target': targets, 'class': classes},
+                                {'label': labels},
+                                weights)
                         count_batch = num_batches - 1
                         targets = []
                         classes = []
@@ -466,6 +473,7 @@ class Graph(dict):
                 targets = []
                 classes = []
                 labels = []
+                weights = []
                 eol = id_list[-1]
                 for i in (id_list):
                     # Perform walk if the node is connected
@@ -492,24 +500,32 @@ class Graph(dict):
                         lower = max(0, j - window_size)
                         upper = min(walk_length, j + window_size + 1)
                         for _ in xrange(num_skip):
-                            rand_node = np.random.choice(pos_walk[lower:upper])
+                            rand_index = random.randint(lower, upper)
+                            rand_node = pos_walk[rand_index]
+                            distance = abs(rand_index - j)
                             targets.append(target)
                             classes.append(rand_node)
                             labels.append(1.0)  # Possitive sample
+                            # weight of positive sample
+                            weights.append(pow(gamma, distance))
                         for _ in xrange(neg_samp):
-                            rand_node = np.random.choice(neg_samps)
+                            rand_node = random.choice(neg_samps)
                             targets.append(target)
                             classes.append(rand_node)
                             labels.append(0.0)  # Negative sample
+                            weights.append(1.0) # weight of neg. sample
                     if count_batch <= 0 or i == eol:
                         targets = np.array(targets, dtype=np.int32)
                         classes = np.array(classes, dtype=np.int32)
                         labels = np.array(labels, dtype=np.float32)
-                        yield ({'target': targets, 'class': classes}, {'label': labels})
+                        yield ({'target': targets, 'class': classes},
+                                {'label': labels},
+                                weights)
                         count_batch = num_batches - 1
                         targets = []
                         classes = []
                         labels = []
+                        weights = []
                     else:
                         count_batch -= 1
 

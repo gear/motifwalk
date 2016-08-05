@@ -219,9 +219,10 @@ class EmbeddingNet():
         iterations = self._iters // num_batches
         for i in xrange(iterations):
             print('Iteration %d / %d:' % (i, iterations))
-            data = next(data_gen)
-            self._model.fit(x=data[0], y=data[1], batch_size=self._batch_size,
-                            nb_epoch=self._epoch, verbose=verbose)
+            x_data, y_data, sample_weight = next(data_gen)
+            self._model.fit(x=x_data, y=y_data, batch_size=self._batch_size,
+                            nb_epoch=self._epoch, verbose=verbose,
+                            sample_weight=sample_weight)
 
     # train
     def train_mce(self, pos='motif_walk', neg='random_walk',
@@ -262,9 +263,10 @@ class EmbeddingNet():
         iterations = self._iters // num_batches
         for i in xrange(iterations):
             print('Iteration %d / %d:' % (i, iterations))
-            data = next(data_gen)
-            self._model.fit(x=data[0], y=data[1], batch_size=self._batch_size,
-                            nb_epoch=self._epoch, verbose=verbose)
+            x_data, y_data, sample_weight = next(data_gen)
+            self._model.fit(x=x_data, y=y_data, batch_size=self._batch_size,
+                            nb_epoch=self._epoch, verbose=verbose,
+                            sample_weight=sample_weight)
 
     # init_normal
     def init_normal(self, shape, name=None):
