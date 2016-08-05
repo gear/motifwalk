@@ -287,10 +287,20 @@ of Jure's work here.
 
 \section{Motif-aware graph embedding}
 
-\subsection{Problem definition}
+As mentioned in the previous sessions, our work aims
+to improve embedding quality by manipulating the graph
+sampling process. We have two sampling processes in 
+your framework. The first process uses conventional 
+random walk and a ``skip window'' to generate positive
+samples, while negative samples are picked from a noise
+distribution $p_n(x)$. The second uses a pre-defined 
+\emph{motif walk} to generate positive samples, while
+negative samples is generated from a contrasting distribution:
+$$p_{mc}(x) = f(p^t_m(x) || p^t_r(x))$$,
+where $f(x)$ is chosen to be a distance function that
+renders how 
 
-We define the graph embedding problem and the objective
-of our framework.
+\subsection{Graph sampling process}
 
 \begin{definition}
 A graph is represented as $G = (V,E)$, where $V$ is the
@@ -299,8 +309,6 @@ Each edges $e \in E$ is an ordered pair $e = (u,v)$ where
 $u, v \in V$. A graph is called \emph{undirected} when
 $(u,v) \equiv (v,u)$, and \emph{directed} when $(u,v) \not\equiv (v,u)$.
 \end{definition}
-
-
 
 Typically, the body of a paper is organized
 into a hierarchical structure, with numbered or unnumbered
@@ -324,6 +332,12 @@ Because the entire article is contained in
 the \textbf{document} environment, you can indicate the
 start of a new paragraph with a blank line in your
 input file; that is why this sentence forms a separate paragraph.
+
+\subsection{Neural network optimization}
+
+\subsection{Training procedure}
+
+\section{Experiments}
 
 \subsection{Type Changes and {\subsecit Special} Characters}
 We have already seen several typeface changes in this sample.  You
