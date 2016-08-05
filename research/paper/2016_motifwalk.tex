@@ -5,6 +5,8 @@
 
 \newdef{definition}{Definition}
 \usepackage{amsmath, amsfonts, amssymb}
+\usepackage{dsfont}
+\usepackage[ruled,vlined]{algorithm2e}
 
 \begin{document}
 
@@ -286,23 +288,29 @@ Motif is defined as a small subgraph that has
 some funny characteristic \cite{la}, maybe cite some
 of Jure's work here.
 
+\begin{definition}
+A graph is represented as $G = (V,E)$, where $V$ is the
+set of vertices and $E$ is the set of edges between vertices.
+Each edges $e \in E$ is an ordered pair $e = (u,v)$ where
+$u, v \in V$. A graph is called \emph{undirected} when
+$(u,v) \equiv (v,u)$, and \emph{directed} when $(u,v) \not\equiv (v,u)$.
+\end{definition}
+
 \section{Motif-aware graph embedding}
 
 As mentioned in the previous sessions, our work aims
 to improve embedding quality by manipulating the graph
-sampling process. We have two sampling processes in 
-your framework. The first process uses conventional 
+data generation process. We have two data generation processes in 
+our framework. The first process uses conventional 
 random walk and a ``skip window'' to generate positive
 samples, while negative samples are picked from a noise
 distribution $p_n(x)$. The second uses a pre-defined 
 \emph{motif walk} to generate positive samples, while
 negative samples is generated from a contrasting distribution:
-
-\begin{equation}
+\begin{equation} \label{eq:dist}
   p_{\scalebox{0.7}{mc}}(x) = 
     \boldsymbol f\left(p^t_{\scalebox{0.7}{m}}(x) \ || \ p^t_{\scalebox{0.7}{r}}(x)\right),
 \end{equation}
-
 where $\boldsymbol f(.)$ is chosen to be a distance function that
 yields high probability for node $x$ when $x$ is more
 likely to appear in random walk starting from node $t$
@@ -311,15 +319,13 @@ $p^t_r(x)$ are distribution of nodes count in motif walk
 and random walk starting from vertex $t$. 
 
 Our model is a variant of the skipgram model \cite{w2v}
-using the softmax function, in which we define the coocurence 
-conditional probability of a ``class'' vertex  given 
-the ``target'' vertex as:
-
-\begin{equation}
+using the softmax function, in which we have the  
+conditional probability of a ``class'' vertex (context) given 
+the ``target'' vertex (word) as follow:
+\begin{equation} \label{eq:softmax}
   p\left(v_{\scalebox{0.7}{class}} \ | \ v_{\scalebox{0.7}{target}}\right) 
     = \frac{\exp(\omega^\top_c \cdot \omega_t)}{\sum^{|V|}_{i=1} \exp(\omega^\top_i \cdot \omega_t)}
 \end{equation}
-
 Despite the efficiency and simplicity of this model,
 the task of computing the normalization factor requires
 summing all over the graph's vertices is intractable
@@ -328,25 +334,49 @@ estimation techiques such as hierachial softmax \cite{hsoftmax},
 noise contrastive estimation \cite{nce}, and negative
 sampling \cite{w2v} are employed in the recent graph
 embedding models \cite{deepwalk, line, platenoid}.
-We define the objective function with negative sampling
+We define the loss function with negative sampling
 for our model as follow:
 
-\begin{equation}
+\begin{equation} \label{eq:loss}
   \begin{aligned}
-    \mathcal{L} & = \log p\left(v_{\scalebox{0.7}{class}} \ | \ v_{\scalebox{0.7}{target}}\right) \\
-      & = \log \sigma \left(\omega^\top_c \cdot \omega_t\right) + 
-        \sum^{k}_{i=1} \mathds{E}_{\omega_s \sim p_{\scalebox{0.7}{mc}}(\omega)} \left[\sigma (-\omega^\top_s \cdot \omega_t)\right]
+    \mathcal{L} & = \log p\left(v_{\scalebox{0.7}{class}} \ | \ v_{\scalebox{0.7}{target}}\right)
+                  = \alpha \mathcal{L}_{\scalebox{0.7}{r}} + (1-\alpha) \mathcal{L}_{\scalebox{0.7}{mc}} \\
+  \end{aligned}
+\end{equation}
+
+\begin{equation} \label{eq:loss_each}
+  \begin{aligned}
+    \mathcal{L}_{\scalebox{0.7}{r}} & = \log \sigma \left(\omega^\top_c \cdot \omega_t\right) + 
+      \sum^{k}_{i=1} \mathds{E}_{\omega_s \sim p_{\scalebox{0.6}{n}}(\omega)} \left[\sigma (-\omega^\top_s \cdot \omega_t)\right] \\
+    \mathcal{L}_{\scalebox{0.7}{mc}} & = \log \sigma \left(\omega^\top_c \cdot \omega_t\right) + 
+      \sum^{k}_{i=1} \mathds{E}_{\omega_s \sim p_{\scalebox{0.6}{mc}}(\omega)} \left[\sigma (-\omega^\top_s \cdot \omega_t)\right] \\
   \end{aligned}
 \end{equation}
 
 \subsection{Graph sampling process}
 
+The first data generation process is similar to that of
+the Deepwalk model. The difference in our model is negative
+sampling from the vertex degree distribution is used to
+estimate the valid distribution. Algorithm \ref{al:gen_rand}
+describe the positive and negative samples generating 
+from random walk process.
+
+\begin{algorithm}[h]
+  \SetAlgoLined
+  \KwData{Graph $G = (V,E)$}
+  \KwIn{walk\_length, skip\_window, num\_neg, distort}
+  \KwOut{(targets, classes, labels)}
+
+  \caption{Algorithm}
+\end{algorithm}
+
+
+
+
+
 \begin{definition}
-A graph is represented as $G = (V,E)$, where $V$ is the
-set of vertices and $E$ is the set of edges between vertices.
-Each edges $e \in E$ is an ordered pair $e = (u,v)$ where
-$u, v \in V$. A graph is called \emph{undirected} when
-$(u,v) \equiv (v,u)$, and \emph{directed} when $(u,v) \not\equiv (v,u)$.
+
 \end{definition}
 
 Typically, the body of a paper is organized
