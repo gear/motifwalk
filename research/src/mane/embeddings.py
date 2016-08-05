@@ -171,10 +171,10 @@ class EmbeddingNet():
         # Elemen-wise multiplication for dot product
         dot_prod = Merge(mode=row_dot, output_shape=merge_shape,
                          name='row_wise_dot')([embeddings, nce_weights])
-        logits = Merge(mode='sum', output_shape=merge_shape,
+        logits = Merge(mode='sum', output_shape=(1,),
                        name='logits')([dot_prod, nce_bias])
-        logits = Lambda(lambda x: K.sum(x), output_shape=(1,),
-                        name="reduce_sum")(logits)
+        #logits = Lambda(lambda x: K.sum(x), output_shape=(1,),
+        #                name="reduce_sum")(logits)
         # Final output layer. name='label' for data input reason
         sigm = Activation('sigmoid', name='label')(logits)
         # Initialize model
@@ -220,13 +220,15 @@ class EmbeddingNet():
                                         self._window_size,
                                         distort,
                                         gamma=gamma)
-        iterations = self._iters // num_batches
-        for i in range(iterations):
-            print('Iteration %d / %d:' % (i, iterations))
-            targets, classes, labels, sample_weight = next(data_gen)
-            self._model.fit([targets, classes], [labels],
-                            batch_size=self._batch_size,
-                            nb_epoch=self._epoch, verbose=verbose)
+        self._model.fit_generator(data_gen, samples_per_epoch=100000,
+                                 nb_epoch=3, verbose=verbose)
+        #iterations = self._iters // num_batches
+        #for i in range(iterations):
+        #    print('Iteration %d / %d:' % (i, iterations))
+        #    targets, classes, labels, sample_weight = next(data_gen)
+        #    self._model.fit([targets, classes], [labels],
+        #                    batch_size=self._batch_size,
+        #                    nb_epoch=self._epoch, verbose=verbose)
         self._graph.kill_threads()
 
     # train
