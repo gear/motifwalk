@@ -29,7 +29,7 @@ import matplotlib.pyplot as plt
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.linear_model import LogisticRegression
 
-dataset_name = "egonets"
+dataset_name = "youtube"
 index_cols = True
 epoch = 1
 emb_dim = 256
@@ -39,7 +39,7 @@ num_walk = 5
 walk_length = 10
 window_size = 3
 iters = 1
-num_batches = 2000
+num_batches = 500
 
 is_label = True
 rand_train = True

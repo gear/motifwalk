@@ -30,6 +30,7 @@ import time
 import itertools
 from itertools import chain
 from threading import Thread
+from collections import defaultdict
 try:
     import cPickle as pickle
 except:
@@ -49,7 +50,7 @@ __email__ = "hoangnt@ai.cs.titech.ac.jp"
 # >>> BEGIN CLASS 'graph' <<<
 
 
-class Graph(dict):
+class Graph(defaultdict):
     """Graph is a dictionary contains nodes
     """
     # __init__
@@ -79,7 +80,7 @@ class Graph(dict):
           citeseer = Graph()
           citeseer[20] = [1,3,4]
         """
-        super(Graph, self).__init__()
+        super(Graph, self).__init__(list)
         self._name = name
         self._directed = directed
         self._edges = None
@@ -415,7 +416,7 @@ class Graph(dict):
             labels = np.array(data.labels, dtype=np.float32)
             weights = np.array(data.weights, dtype=np.float32)
             while len(self._walk_pool) > self.max_pool: time.sleep(1)
-            self._walk_pool.append((targets, classes, labels, weights))
+            self._walk_pool.append(((targets, classes), labels, weights))
 
 
     def _gen_walk_py(self, walk_func_name, num_batches=100, walk_length=10,
