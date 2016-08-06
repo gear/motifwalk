@@ -369,28 +369,28 @@ from random walk process.
 
 \begin{algorithm}[h] \label{al:gen_rand}
 \KwData{Graph $G = (V,E)$}
-\KwIn{walk\_length, skip\_window, num\_skip, num\_neg, distort, \texttt{random\_walk}}
+\KwIn{walkLength, skipWindow, numSkip, numNeg, distort, \texttt{random\_walk}}
 \KwOut{(targets, classes, labels)}
 \Begin{
   targets $\leftarrow$ [~]; classes $\leftarrow$ [~];
   labels $\leftarrow$ [~]; \\
   id\_list $\leftarrow$ Shuffle($V$); \\
-  \For{i $\in$ id\_list}{
-    walk $\leftarrow$ \texttt{random\_walk}(start=i, length=walk\_length);
+  \For{i $\in$ idList}{
+    walk $\leftarrow$ \texttt{randomWalk}(start=i, length=walkLength);
     \For{j $\in$ walk}{
-      \For{j $\in$ \texttt{range}(num\_skip)}{
-        targets.\texttt{append}(j) \\
-        classes.\texttt{append}(\texttt{random.choice}(walk[j-skip\_window:j+skip\_window])
-        labels.\texttt{append}(1.0)
+      \For{j $\in$ \texttt{range}(numSkip)}{
+        targets.\texttt{append}(j); \\
+        classes.\texttt{append}(\texttt{random.choice}(walk[j-skipWindow:j+skipWindow]); \\
+        labels.\texttt{append}(1.0); \\
       }
-      \For{j $\in$ \texttt{range}(num\_neg)}{
-        targets.\texttt{append}(j) \\
-        classes.\texttt{append}(\texttt{random.choice}($V$))
-        labels.\texttt{append}(0.0)
+      \For{j $\in$ \texttt{range}(numNeg)}{
+        targets.\texttt{append}(j); \\
+        classes.\texttt{append}(\texttt{random.choice}($V$, distort)); \\
+        labels.\texttt{append}(0.0); \\
       }
     }
   }
-\KwRet{(targets, classes, labels)}
+\KwRet{(targets, classes, labels);}
 }
 \caption{\texttt{gen\_rand}: sample by random walk}
 \end{algorithm}
@@ -413,21 +413,25 @@ to better learning result.
 
 \begin{algorithm}[h] \label{al:gen_m}
 \KwData{Graph $G = (V,E)$}
-\KwIn{walk\_length, skip\_window, num\_skip, num\_neg, contrast\_iter, \texttt{motif\_walk}}
+\KwIn{walkLength, skipWindow, numSkip, numNeg, contrastIter, \texttt{motif\_walk}}
 \KwOut{(targets, classes, labels)}
 \Begin{
   targets $\leftarrow$ [~]; classes $\leftarrow$ [~];
   labels $\leftarrow$ [~]; \\
-  id\_list $\leftarrow$ Shuffle($V$); \\
-  \For{i $\in$ id\_list}{
-    walk $\leftarrow$ \texttt{random\_walk}(start=i, length=walk\_length);
+  idList $\leftarrow$ Shuffle($V$); \\
+  \For{i $\in$ idList}{
+    posSet $\leftarrow$ \{~\}; \\
+    \For{j $\in$ \texttt{range}(contrastIter)}{
+    
+    }
+    walk $\leftarrow$ \texttt{motif\_walk}(start=i, length=walkLength);
     \For{j $\in$ walk}{
-      \For{k $\in$ \texttt{range}(num\_skip)}{
+      \For{k $\in$ \texttt{range}(numSkip)}{
         targets.\texttt{append}(j) \\
-        classes.\texttt{append}(\texttt{random.choice}(walk[j-skip\_window:j+skip\_window])
+        classes.\texttt{append}(\texttt{random.choice}(walk[j-skipWindow:j+skipWindow])
         labels.\texttt{append}(1.0)
       }
-      \For{k $\in$ \texttt{range}(num\_neg)}{
+      \For{k $\in$ \texttt{range}(numNeg)}{
         targets.\texttt{append}(j) \\
         classes.\texttt{append}(\texttt{random.choice}($V$))
         labels.\texttt{append}(0.0)
