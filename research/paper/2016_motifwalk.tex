@@ -374,7 +374,7 @@ from random walk process.
 \Begin{
   targets $\leftarrow$ [~]; classes $\leftarrow$ [~];
   labels $\leftarrow$ [~]; \\
-  id\_list $\leftarrow$ Shuffle($V$); \\
+  idList $\leftarrow$ Shuffle($V$); \\
   \For{i $\in$ idList}{
     walk $\leftarrow$ \texttt{randomWalk}(start=i, length=walkLength);
     \For{j $\in$ walk}{
@@ -413,41 +413,115 @@ to better learning result.
 
 \begin{algorithm}[h] \label{al:gen_m}
 \KwData{Graph $G = (V,E)$}
-\KwIn{walkLength, skipWindow, numSkip, numNeg, contrastIter, \texttt{motif\_walk}}
+\KwIn{mwalkLength, rwalkLength, numSkip, numNeg, contrastIter, \texttt{motif\_walk}}
 \KwOut{(targets, classes, labels)}
 \Begin{
   targets $\leftarrow$ [~]; classes $\leftarrow$ [~];
   labels $\leftarrow$ [~]; \\
   idList $\leftarrow$ Shuffle($V$); \\
   \For{i $\in$ idList}{
-    posSet $\leftarrow$ \{~\}; \\
+    posSet $\leftarrow$ \{~\}; 
+    negSet $\leftarrow$ \{~\}; \\
     \For{j $\in$ \texttt{range}(contrastIter)}{
-    
+      pwalk $\leftarrow$ \texttt{motif\_walk}(start=i, length=mwalkLength); \\
+      posSet.\texttt{add}(pwalk); \\
+      nwalk $\leftarrow$ \texttt{random\_walk}(start=i, length=rwalkLength); \\
+      negSet.\texttt{add}(nwalk); \\
     }
-    walk $\leftarrow$ \texttt{motif\_walk}(start=i, length=walkLength);
-    \For{j $\in$ walk}{
-      \For{k $\in$ \texttt{range}(numSkip)}{
-        targets.\texttt{append}(j) \\
-        classes.\texttt{append}(\texttt{random.choice}(walk[j-skipWindow:j+skipWindow])
-        labels.\texttt{append}(1.0)
-      }
-      \For{k $\in$ \texttt{range}(numNeg)}{
-        targets.\texttt{append}(j) \\
-        classes.\texttt{append}(\texttt{random.choice}($V$))
-        labels.\texttt{append}(0.0)
-      }
+    \For{k $\in$ \texttt{range}(numSkip)}{
+      targets.\texttt{append}(j) \\
+      classes.\texttt{append}(\texttt{random.choice}(posSet) \\
+      labels.\texttt{append}(1.0)
+    }
+    \For{k $\in$ \texttt{range}(numNeg)}{
+      targets.\texttt{append}(j) \\
+      classes.\texttt{append}(\texttt{random.choice}(negSet - posSet))
+      labels.\texttt{append}(0.0)
     }
   }
-\KwRet{(targets, classes, labels)}
 }
+\KwRet{(targets, classes, labels)}
 \caption{\texttt{gen\_motif}: sample by motif walk}
 \end{algorithm}
 
+Algorithm \ref{al:gen_m} generates positive samples
+without the need of skip window for choosing local
+vertices given the target vertex. For negative
+samples, the vertices that apprear in random walk but
+not in motif walk are chosen at random. In this algorithm
+we have two free parameters: function \texttt{motif\_walk}
+and the contrasting method $\boldsymbol f$. For simplicity,
+we implement undirected triangle (algorithm \ref{al:mwalk}) 
+and directed bipartite (algorithm \ref{al:mbiwalk})
+motif walk with simple set subtraction for contrastive 
+sampling. However, the extension is discussed in
+later sections.
 
+\begin{algorithm}[h] \label{al:mwalk}
+\KwData{Graph $G = (V,E)$}
+\KwIn{start, mwalkLength}
+\KwOut{walk}
+\Begin{
+  walk $\leftarrow$ [~]; \\
+  \For{i $\in$ idList}{
+    posSet $\leftarrow$ \{~\}; 
+    negSet $\leftarrow$ \{~\}; \\
+    \For{j $\in$ \texttt{range}(contrastIter)}{
+      pwalk $\leftarrow$ \texttt{motif\_walk}(start=i, length=mwalkLength); \\
+      posSet.\texttt{add}(pwalk); \\
+      nwalk $\leftarrow$ \texttt{random\_walk}(start=i, length=rwalkLength); \\
+      negSet.\texttt{add}(nwalk); \\
+    }
+    \For{k $\in$ \texttt{range}(numSkip)}{
+      targets.\texttt{append}(j) \\
+      classes.\texttt{append}(\texttt{random.choice}(posSet) \\
+      labels.\texttt{append}(1.0)
+    }
+    \For{k $\in$ \texttt{range}(numNeg)}{
+      targets.\texttt{append}(j) \\
+      classes.\texttt{append}(\texttt{random.choice}(negSet - posSet))
+      labels.\texttt{append}(0.0)
+    }
+  }
+}
+\KwRet{(targets, classes, labels)}
+\caption{\texttt{gen\_motif}: sample by motif walk}
+\end{algorithm}
 
-\begin{definition}
+\begin{algorithm}[h] \label{al:mbiwalk}
+\KwData{Graph $G = (V,E)$}
+\KwIn{mwalkLength, rwalkLength, numSkip, numNeg, contrastIter, \texttt{motif\_walk}}
+\KwOut{(targets, classes, labels)}
+\Begin{
+  targets $\leftarrow$ [~]; classes $\leftarrow$ [~];
+  labels $\leftarrow$ [~]; \\
+  idList $\leftarrow$ Shuffle($V$); \\
+  \For{i $\in$ idList}{
+    posSet $\leftarrow$ \{~\}; 
+    negSet $\leftarrow$ \{~\}; \\
+    \For{j $\in$ \texttt{range}(contrastIter)}{
+      pwalk $\leftarrow$ \texttt{motif\_walk}(start=i, length=mwalkLength); \\
+      posSet.\texttt{add}(pwalk); \\
+      nwalk $\leftarrow$ \texttt{random\_walk}(start=i, length=rwalkLength); \\
+      negSet.\texttt{add}(nwalk); \\
+    }
+    \For{k $\in$ \texttt{range}(numSkip)}{
+      targets.\texttt{append}(j) \\
+      classes.\texttt{append}(\texttt{random.choice}(posSet) \\
+      labels.\texttt{append}(1.0)
+    }
+    \For{k $\in$ \texttt{range}(numNeg)}{
+      targets.\texttt{append}(j) \\
+      classes.\texttt{append}(\texttt{random.choice}(negSet - posSet))
+      labels.\texttt{append}(0.0)
+    }
+  }
+}
+\KwRet{(targets, classes, labels)}
+\caption{\texttt{gen\_motif}: sample by motif walk}
+\end{algorithm}
 
-\end{definition}
+\subsection{Neural network learning}
 
 Typically, the body of a paper is organized
 into a hierarchical structure, with numbered or unnumbered
