@@ -13,6 +13,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import absolute_import
 
+import os
+
 import numpy as np
 import keras
 import theano
@@ -187,7 +189,7 @@ class EmbeddingNet():
     # train
     def train(self, mode='random_walk', num_true=1,
               shuffle=True, verbose=1, distort=0.75, num_batches=1000,
-              gamma=0.8):
+              gamma=0.8, save_dir="weights"):
         """
         Load data and train the model.
 
@@ -222,14 +224,20 @@ class EmbeddingNet():
                                         gamma=gamma)
         #self._model.fit_generator(data_gen, samples_per_epoch=num_batches,
         #                         nb_epoch=3, verbose=verbose)
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
         iterations = self._iters // num_batches
         for i in range(iterations):
             print('Iteration %d / %d:' % (i, iterations))
             (targets, classes), labels, sample_weight = next(data_gen)
+            print("Get next batch")
             self._model.fit([targets, classes], [labels],
                             batch_size=self._batch_size,
                             sample_weight=sample_weight,
                             nb_epoch=self._epoch, verbose=verbose)
+            file_name = "weights_iter{}.weights".format(i)
+            path = os.path.join(save_dir, file_name)
+            self._model.save_weights(path)
         self._graph.kill_threads()
 
     # train
@@ -276,7 +284,6 @@ class EmbeddingNet():
             self._model.fit(x=x_data, y=y_data, batch_size=self._batch_size,
                             nb_epoch=self._epoch, verbose=verbose,
                             sample_weight=sample_weight)
-        self._graph.kill_threads()
 
     # init_normal
     def init_normal(self, shape, name=None):

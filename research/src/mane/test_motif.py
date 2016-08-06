@@ -29,17 +29,17 @@ import matplotlib.pyplot as plt
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.linear_model import LogisticRegression
 
-dataset_name = "youtube"
+dataset_name = "egonets"
 index_cols = True
 epoch = 1
-emb_dim = 256
+emb_dim = 100
 neg_samp = 3
 num_skip = 3
-num_walk = 5
+num_walk = 2
 walk_length = 10
 window_size = 3
-iters = 1
-num_batches = 500
+iters = 10
+num_batches = 1000
 
 is_label = True
 rand_train = True
@@ -74,15 +74,17 @@ else:
     model_r.build(optimizer='adam')
     print("start training random walk")
     start = time.time()
-    model_r.train(mode='random_walk', num_batches=num_batches)
+    model_r.train(mode='random_walk', num_batches=num_batches,
+                  save_dir=os.path.join("weights", name_rand))
     time_r = time.time() - start
     print('finish training: Time: {}[s]'.format(time_r))
     weight_r = model_r._model.get_weights()
 
+    # weights saved during train()
     # Save or load data
-    if not os.path.exists(name_rand + '.weights') and rand_train:
-        with open(name_rand + '.weights', 'wb') as f:
-            pickle.dump(weight_r, f, pickle.HIGHEST_PROTOCOL)
+    #if not os.path.exists(name_rand + '.weights') and rand_train:
+    #    with open(name_rand + '.weights', 'wb') as f:
+    #        pickle.dump(weight_r, f, pickle.HIGHEST_PROTOCOL)
 
 if not motif_train:
     weight_m = pickle.load(open(name_motif+".weights", "rb"))
@@ -94,14 +96,15 @@ else:
     model_m.build(optimizer='adam')
     print("start training motif walk")
     start = time.time()
-    model_m.train(mode='motif_walk', num_batches=num_batches)
+    model_m.train(mode='motif_walk', num_batches=num_batches,
+                  save_dir=os.path.join("weights", name_motif))
     time_m = time.time() - start
     print("finish training: Time {}[s]".format(time_m))
     weight_m = model_m._model.get_weights()
 
-    if not os.path.exists(name_motif + '.weights') and motif_train:
-        with open(name_motif + '.weights', 'wb') as f:
-            pickle.dump(weight_m, f, pickle.HIGHEST_PROTOCOL)
+    #if not os.path.exists(name_motif + '.weights') and motif_train:
+    #    with open(name_motif + '.weights', 'wb') as f:
+    #        pickle.dump(weight_m, f, pickle.HIGHEST_PROTOCOL)
 
 # Normalize
 weight_r_avg = normalize(weight_r[0])
