@@ -369,7 +369,7 @@ from random walk process.
 
 \begin{algorithm}[h] \label{al:gen_rand}
 \KwData{Graph $G = (V,E)$}
-\KwIn{walk\_length, skip\_window, num\_skip, num\_neg, distort}
+\KwIn{walk\_length, skip\_window, num\_skip, num\_neg, distort, \texttt{random\_walk}}
 \KwOut{(targets, classes, labels)}
 \Begin{
   targets $\leftarrow$ [~]; classes $\leftarrow$ [~];
@@ -378,16 +378,66 @@ from random walk process.
   \For{i $\in$ id\_list}{
     walk $\leftarrow$ \texttt{random\_walk}(start=i, length=walk\_length);
     \For{j $\in$ walk}{
-      \For{j $\in$ \texttt{range}}{(
-      targets.\texttt{append}(j)
+      \For{j $\in$ \texttt{range}(num\_skip)}{
+        targets.\texttt{append}(j) \\
+        classes.\texttt{append}(\texttt{random.choice}(walk[j-skip\_window:j+skip\_window])
+        labels.\texttt{append}(1.0)
+      }
+      \For{j $\in$ \texttt{range}(num\_neg)}{
+        targets.\texttt{append}(j) \\
+        classes.\texttt{append}(\texttt{random.choice}($V$))
+        labels.\texttt{append}(0.0)
+      }
     }
   }
-
+\KwRet{(targets, classes, labels)}
 }
-\caption{\texttt{gen\_rand} yields data samples with random walk}
+\caption{\texttt{gen\_rand}: sample by random walk}
 \end{algorithm}
 
+The second data generation process is the core of
+our method. Positive data samples are generated
+using a biased random walk, which is called 
+\texttt{motif\_walk}. For the negative samples
+generation, we perform unbiased random walk and
+select vertices that appear frequenty in the
+random walk, but less frequenty in the postive
+motif walk. The intuition for this technique comes
+from our hypothesis that vertices in the same motif 
+cluster are more likely to be related than vertices
+in the random walk. As discussed by Gutmann and 
+Hyv{\"a}rinen in \cite{nce} for the choice of noise
+distribution in practice, the more similar the
+noise distribution to the true distribution leads
+to better learning result.
 
+\begin{algorithm}[h] \label{al:gen_m}
+\KwData{Graph $G = (V,E)$}
+\KwIn{walk\_length, skip\_window, num\_skip, num\_neg, contrast\_iter, \texttt{motif\_walk}}
+\KwOut{(targets, classes, labels)}
+\Begin{
+  targets $\leftarrow$ [~]; classes $\leftarrow$ [~];
+  labels $\leftarrow$ [~]; \\
+  id\_list $\leftarrow$ Shuffle($V$); \\
+  \For{i $\in$ id\_list}{
+    walk $\leftarrow$ \texttt{random\_walk}(start=i, length=walk\_length);
+    \For{j $\in$ walk}{
+      \For{k $\in$ \texttt{range}(num\_skip)}{
+        targets.\texttt{append}(j) \\
+        classes.\texttt{append}(\texttt{random.choice}(walk[j-skip\_window:j+skip\_window])
+        labels.\texttt{append}(1.0)
+      }
+      \For{k $\in$ \texttt{range}(num\_neg)}{
+        targets.\texttt{append}(j) \\
+        classes.\texttt{append}(\texttt{random.choice}($V$))
+        labels.\texttt{append}(0.0)
+      }
+    }
+  }
+\KwRet{(targets, classes, labels)}
+}
+\caption{\texttt{gen\_motif}: sample by motif walk}
+\end{algorithm}
 
 
 
