@@ -229,21 +229,20 @@ class EmbeddingNet():
         iterations = self._iters // num_batches
         for i in range(iterations):
             print('Iteration %d / %d:' % (i, iterations))
-            (targets, classes), labels, sample_weight = next(data_gen)
+            (targets, classes), labels = next(data_gen)
             print("Get next batch")
             self._model.fit([targets, classes], [labels],
                             batch_size=self._batch_size,
-                            sample_weight=sample_weight,
                             nb_epoch=self._epoch, verbose=verbose)
             file_name = "weights_iter{}.weights".format(i)
             path = os.path.join(save_dir, file_name)
             self._model.save_weights(path)
-        self._graph.kill_threads()
 
     # train
     def train_mce(self, pos='motif_walk', neg='random_walk',
                   num_true=1, reset=0.0, shuffle=True, verbose=1,
-                  num_batches=1000, gamma=0.8):
+                  num_batches=1000, n_threads=6, max_pool=10,
+                  save_dir="save"):
         """
         Load data and train the model.
 
@@ -266,24 +265,29 @@ class EmbeddingNet():
         """
         self._trained = True
         # Graph data generator with negative sampling
-        data_gen = self._graph.gen_contrast2(pos, neg,
-                                             num_batches, reset,
-                                             self._walk_length,
-                                             self._num_walk,
-                                             num_true,
-                                             self._neg_samp,
-                                             self._contrast_iter,
-                                             self._num_skip,
-                                             shuffle,
-                                             self._window_size,
-                                             gamma=gamma)
+        data_gen = self._graph.gen_contrast(num_batches, reset,
+                                            self._walk_length,
+                                            self._num_walk,
+                                            self._neg_samp,
+                                            self._num_skip,
+                                            shuffle,
+                                            self._window_size,
+                                            self._contrast_iter,
+                                            n_threads,
+                                            max_pool)
         iterations = self._iters // num_batches
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
         for i in range(iterations):
             print('Iteration %d / %d:' % (i, iterations))
-            x_data, y_data, sample_weight = next(data_gen)
-            self._model.fit(x=x_data, y=y_data, batch_size=self._batch_size,
-                            nb_epoch=self._epoch, verbose=verbose,
-                            sample_weight=sample_weight)
+            (targets, classes), labels = next(data_gen)
+            print("Get next batch")
+            self._model.fit([targets, classes], [labels],
+                            batch_size=self._batch_size,
+                            nb_epoch=self._epoch, verbose=verbose)
+            file_name = "weights_iter{}.weights".format(i)
+            path = os.path.join(save_dir, file_name)
+            self._model.save_weights(path)
 
     # init_normal
     def init_normal(self, shape, name=None):

@@ -32,14 +32,14 @@ from sklearn.linear_model import LogisticRegression
 dataset_name = "egonets"
 index_cols = True
 epoch = 1
-emb_dim = 100
+emb_dim = 10
 neg_samp = 3
 num_skip = 3
 num_walk = 2
-walk_length = 10
+walk_length = 4
 window_size = 3
-iters = 10
-num_batches = 1000
+iters = 1
+num_batches = 100
 
 is_label = True
 rand_train = True
@@ -64,47 +64,33 @@ name_rand = exp_name + '_rand'
 name_motif = exp_name + '_motif'
 
 
-if not rand_train:
-    weight_r = pickle.load(open(name_rand+".weights", "rb"))
-else:
-    model_r = e.EmbeddingNet(graph=fb, epoch=epoch, emb_dim=emb_dim,
-                             neg_samp=neg_samp, num_skip=num_skip,
-                             num_walk=num_walk, walk_length=walk_length,
-                             window_size=window_size, iters=iters)
-    model_r.build(optimizer='adam')
-    print("start training random walk")
-    start = time.time()
-    model_r.train(mode='random_walk', num_batches=num_batches,
-                  save_dir=os.path.join("weights", name_rand))
-    time_r = time.time() - start
-    print('finish training: Time: {}[s]'.format(time_r))
-    weight_r = model_r._model.get_weights()
+model_r = e.EmbeddingNet(graph=fb, epoch=epoch, emb_dim=emb_dim,
+                            neg_samp=neg_samp, num_skip=num_skip,
+                            num_walk=num_walk, walk_length=walk_length,
+                            window_size=window_size, iters=iters)
+model_r.build(optimizer='adam')
+print("start training random walk")
+start = time.time()
+model_r.train(mode='random_walk', num_batches=num_batches,
+                save_dir=os.path.join("weights", name_rand))
+time_r = time.time() - start
+print('finish training: Time: {}[s]'.format(time_r))
+weight_r = model_r._model.get_weights()
 
-    # weights saved during train()
-    # Save or load data
-    #if not os.path.exists(name_rand + '.weights') and rand_train:
-    #    with open(name_rand + '.weights', 'wb') as f:
-    #        pickle.dump(weight_r, f, pickle.HIGHEST_PROTOCOL)
 
-if not motif_train:
-    weight_m = pickle.load(open(name_motif+".weights", "rb"))
-else:
-    model_m = e.EmbeddingNet(graph=fb, epoch=epoch, emb_dim=emb_dim,
-                             neg_samp=neg_samp, num_skip=num_skip,
-                             num_walk=num_walk, walk_length=walk_length,
-                             window_size=window_size, iters=iters)
-    model_m.build(optimizer='adam')
-    print("start training motif walk")
-    start = time.time()
-    model_m.train(mode='motif_walk', num_batches=num_batches,
-                  save_dir=os.path.join("weights", name_motif))
-    time_m = time.time() - start
-    print("finish training: Time {}[s]".format(time_m))
-    weight_m = model_m._model.get_weights()
+model_m = e.EmbeddingNet(graph=fb, epoch=epoch, emb_dim=emb_dim,
+                            neg_samp=neg_samp, num_skip=num_skip,
+                            num_walk=num_walk, walk_length=walk_length,
+                            window_size=window_size, iters=iters)
+model_m.build(optimizer='adam')
+print("start training motif walk")
+start = time.time()
+model_m.train(mode='motif_walk', num_batches=num_batches,
+                save_dir=os.path.join("weights", name_motif))
+time_m = time.time() - start
+print("finish training: Time {}[s]".format(time_m))
+weight_m = model_m._model.get_weights()
 
-    #if not os.path.exists(name_motif + '.weights') and motif_train:
-    #    with open(name_motif + '.weights', 'wb') as f:
-    #        pickle.dump(weight_m, f, pickle.HIGHEST_PROTOCOL)
 
 # Normalize
 weight_r_avg = normalize(weight_r[0])

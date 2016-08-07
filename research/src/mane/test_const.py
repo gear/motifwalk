@@ -15,7 +15,7 @@ import graph as g
 import util
 
 import numpy as np
-import cPickle as p
+import pickle
 from matplotlib import colors
 
 import os
@@ -29,29 +29,28 @@ from sklearn.multiclass import OneVsRestClassifier
 from sklearn.linear_model import LogisticRegression
 
 
-dataset_name = "polblogs"
+dataset_name = "egonets"
 index_col = False
 epoch = 1
 emb_dim = 50
 neg_samp = 10
 num_skip = 2
-num_walk = 5
+num_walk = 1
 walk_length = 5
-window_size = 5
+window_size = 3
 iters = 50
-num_batches = 10000
+num_batches = 500
 
 is_label = True
-rand_train = True
-motif_train = True
-
-
-correct_labels = util.read_correct_labels("data/raw/{}_labels.txt"
-                                        .format(dataset_name),
-                                        index_col)
-
 
 fb = g.graph_from_pickle('data/{}.graph'.format(dataset_name))
+
+try:
+    correct_labels = util.read_correct_labels("data/raw/{}_labels.txt"
+                                        .format(dataset_name), index_cols)
+except:
+    correct_labels = [0] * len(fb.nodes())
+
 
 exp_name = "nce_{}_e{}_ed{}_ne{}_ns{}_nw{}_wl{}_ws{}_it{}_nb{}_adam".format(
     dataset_name, epoch, emb_dim, neg_samp, num_skip, num_walk,
@@ -62,20 +61,18 @@ name_contrast = exp_name + '_contrast'
 
 
 model_c = e.EmbeddingNet(graph=fb, epoch=epoch, emb_dim=emb_dim,
-                            neg_samp=neg_samp, num_skip=num_skip,
-                            num_walk=num_walk, walk_length=walk_length,
-                            window_size=window_size, iters=iters)
+                          neg_samp=neg_samp, num_skip=num_skip,
+                          num_walk=num_walk, walk_length=walk_length,
+                          window_size=window_size, iters=iters)
 model_c.build(optimizer='adam')
 print("start training contrast walk")
 start = time.time()
-model_c.train_mce(pos='motif_walk', neg="random_walk", num_batches=num_batches)
+model_c.train_mce(pos='motif_walk', neg="random_walk", num_batches=num_batches,
+                  save_dir=os.path.join("weights", name_contrast))
 time_c = time.time() - start
 print("finish training: Time {}[s]".format(time_c))
 weight_c = model_c._model.get_weights()
 
-if not os.path.exists(name_contrast + '.weights'):
-    with open(name_contrast + '.weights', 'wb') as f:
-        p.dump(weight_c, f, p.HIGHEST_PROTOCOL)
 
 # Normalize
 weight_c_avg = normalize(weight_c[0])
