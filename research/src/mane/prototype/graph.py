@@ -41,8 +41,6 @@ __author__ = "Hoang Nguyen"
 __email__ = "hoangnt@ai.cs.titech.ac.jp"
 
 # >>> BEGIN CLASS 'graph' <<<
-
-
 class Graph(defaultdict):
     """Graph is a dictionary contains nodes
     """
@@ -80,6 +78,9 @@ class Graph(defaultdict):
         self._logger = None
         self._volume = None
         self._freq = dict()
+
+        global ids_list 
+        global cur_idx
     # getLogger
 
     def getLogger(self):
@@ -360,6 +361,10 @@ class Graph(defaultdict):
                 yield(self._walk_pool.pop())
             else:
                 time.sleep(1)
+
+    def _gen_walk(self, walk_func_name, num_batches, walk_length,
+                  num_walk, num_true, neg_samp, num_skip, shuffle,
+                  window_size, gamma, n_threads=6, max_pool=10):
 
     def kill_threads(self):
         self.stop_threads = True
