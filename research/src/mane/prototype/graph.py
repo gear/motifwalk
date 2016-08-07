@@ -41,8 +41,6 @@ __author__ = "Hoang Nguyen"
 __email__ = "hoangnt@ai.cs.titech.ac.jp"
 
 # >>> BEGIN CLASS 'graph' <<<
-
-
 class Graph(defaultdict):
     """Graph is a dictionary contains nodes
     """
@@ -80,6 +78,9 @@ class Graph(defaultdict):
         self._logger = None
         self._volume = None
         self._freq = dict()
+
+        global ids_list 
+        global cur_idx
     # getLogger
 
     def getLogger(self):
@@ -334,9 +335,8 @@ class Graph(defaultdict):
                                   rand_seed=rand_seed, reset=reset)
             walk_path.extend(mwp)
         return set(walk_path)
-    # gen_with_negative
 
-
+    ################################################################### gen_walk
     def gen_walk(self, walk_func_name, num_batches=100, walk_length=10,
                  num_walk=5, num_true=1, neg_samp=15,
                  num_skip=2, shuffle=True, window_size=3,
@@ -360,6 +360,15 @@ class Graph(defaultdict):
                 yield(self._walk_pool.pop())
             else:
                 time.sleep(1)
+
+    ################################################################## _gen_walk
+    def _gen_walk(self, walk_func_name, num_batches, walk_length,
+                  num_walk, num_true, neg_samp, num_skip, shuffle,
+                  window_size, gamma):
+    """
+    Logic for gen_walk
+    """
+
 
     def kill_threads(self):
         self.stop_threads = True
@@ -389,73 +398,6 @@ class Graph(defaultdict):
             else:
                 time.sleep(1)
 
-
-        # Make sure generated dataset has correct count.
-        assert window_size >= num_skip, 'Window size is too small.'
-        wfunc = getattr(self, walk_func_name)
-        # Node degree distribution distorted by neg_samp_distort
-        node_list = self._freq.nodes()
-        freq_list = np.array(self._freq.values(), np.int32)**neg_samp_distort
-        norm = sum(freq_list)
-        freq_list = freq_list / norm
-        # Generator loops forever
-        while True:
-            for _ in range(num_walk):
-                if self.stop_threads: return
-                if shuffle:
-                    id_list = np.random.permutation(self.nodes())
-                else:
-                    id_list = self.nodes()
-                # Accumulator for each batch
-                count_batch = num_batches - 1
-                targets = []
-                classes = []
-                labels = []
-                weights = []
-                eol = id_list[-1]
-                for i in (id_list):
-                    # Perform walk if the node is connected
-                    if not len(self[i]) > 0:
-                        continue
-                    walk = wfunc(length=walk_length, start_node=i)
-                    for j, target in enumerate(walk):
-                        # Window [lower:upper] for skipping
-                        lower = max(0, j - window_size)
-                        upper = min(walk_length, j + window_size + 1)
-                        for _ in range(num_skip):
-                            rand_index = random.randint(lower, upper-1)
-                            distance = abs(j - rand_index)
-                            rand_node = walk[rand_index]
-                            targets.append(target)
-                            classes.append(rand_node)
-                            labels.append(1.0)  # Possitive sample
-                            weights.append(pow(gamma, distance))
-                        for _ in range(neg_samp):
-                            rand_node = np.random.choice(
-                                node_list, p=freq_list)
-                            targets.append(target)
-                            classes.append(rand_node)
-                            labels.append(0.0)  # Negative sample
-                            weights.append(1.0)
-                    if count_batch <= 0 or i == eol:
-                        targets = np.array(targets, dtype=np.int32)
-                        classes = np.array(classes, dtype=np.int32)
-                        labels = np.array(labels, dtype=np.float32)
-                        weights = np.array(weights, dtype=np.float32)
-                        data = ({'target': targets, 'class': classes},
-                                {'label': labels},
-                                weights)
-                        # wait if walk_pool is enough
-                        while len(self._walk_pool) > self.max_pool:
-                            time.sleep(1)
-                        self._walk_pool.append(data)
-                        count_batch = num_batches - 1
-                        targets = []
-                        classes = []
-                        labels = []
-                        weights = []
-                    else:
-                        count_batch -= 1
 
     # gen_contrast
     def _gen_contrast(self, possitive_name='motif_walk',
