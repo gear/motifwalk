@@ -87,8 +87,12 @@ class Graph(defaultdict):
         self._logger = None
         self._volume = None
         self._freq = dict()
-    # getLogger
+        self.coms = None
 
+    def set_community(self, coms):
+        self.coms = coms
+
+    # getLogger
     def getLogger(self):
         """ 
         Create logger for the graph on demand.
@@ -229,7 +233,7 @@ class Graph(defaultdict):
                       node will be generated for starting the walk. (Optional)
           rand_seed: Random seed for random module. None means random
                      will use system time. (Optional)
-          reset: Walk reset back to start node probability. 
+          reset: Walk reset back to start node probability.
           walk_bias: How strickly the walk will follow motif pattern.
                      Default value is 1.0 means the walk will always follow
                      the motif. This is value is how likely the walk is biased
@@ -431,6 +435,27 @@ class Graph(defaultdict):
             labels = np.array(data.labels, dtype=np.float32)
             while len(self._walk_pool) > self.max_pool: time.sleep(1)
             self._walk_pool.append(((targets, classes), labels))
+
+
+def graph_from_txt(dataset_name, edgelist_file, community_file=None,
+                   com_transposed=False, remove_unlabeled=False):
+    adj_list = util.txt_edgelist_to_adjlist(edgelist_file, "data/adjlist.pkl")
+    if community_file:
+        if com_transposed:
+            com_dict = util.txt_community_to_dict_transposed(community_file,
+                                                            "data/com.pkl")
+        else:
+            com_dict = util.txt_community_to_dict(community_file, "data/com.pkl")
+    else:
+        com_dict = {}
+    if remove_unlabeled:
+        adj_list = {k: adj for k, adj in adj_list.items()
+                      if k in com_dict}
+    adj_list, com_dict = util.reindex_edges_and_community(adj_list, com_dict)
+    g = graph_from_pickle("data/adjlist.pkl")
+    g.set_community(com_dict)
+    pickle.dump(g, open("data/{}.graph".format(dataset_name), "wb"))
+    return g
 
 
 def graph_from_pickle(pickle_filename, **graph_config):

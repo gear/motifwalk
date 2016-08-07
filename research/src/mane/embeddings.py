@@ -14,6 +14,8 @@ from __future__ import print_function
 from __future__ import absolute_import
 
 import os
+import logging
+import pickle
 
 import numpy as np
 import keras
@@ -147,7 +149,7 @@ class EmbeddingNet():
           Total params: 1619639
         """
         if self._built:
-            print('WARNING: Model was built.'
+            logging.warn('WARNING: Model was built.'
                   ' Performing more than one build...')
 
         # Input tensors: batch_shape includes batch_size
@@ -228,15 +230,16 @@ class EmbeddingNet():
             os.makedirs(save_dir)
         iterations = self._iters // num_batches
         for i in range(iterations):
-            print('Iteration %d / %d:' % (i, iterations))
+            logging.info('Iteration %d / %d:' % (i, iterations))
             (targets, classes), labels = next(data_gen)
-            print("Get next batch")
+            logging.info("Get next batch")
             self._model.fit([targets, classes], [labels],
                             batch_size=self._batch_size,
                             nb_epoch=self._epoch, verbose=verbose)
+            weights = self._model.get_weights()
             file_name = "weights_iter{}.weights".format(i)
             path = os.path.join(save_dir, file_name)
-            self._model.save_weights(path)
+            pickle.dump(weights, open(path, "wb"))
 
     # train
     def train_mce(self, pos='motif_walk', neg='random_walk',
@@ -279,15 +282,28 @@ class EmbeddingNet():
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
         for i in range(iterations):
-            print('Iteration %d / %d:' % (i, iterations))
+            logging.info('Iteration %d / %d:' % (i, iterations))
             (targets, classes), labels = next(data_gen)
-            print("Get next batch")
+            logging.info("Get next batch")
             self._model.fit([targets, classes], [labels],
                             batch_size=self._batch_size,
                             nb_epoch=self._epoch, verbose=verbose)
             file_name = "weights_iter{}.weights".format(i)
             path = os.path.join(save_dir, file_name)
             self._model.save_weights(path)
+
+    def set_weights(self, weight_path):
+        """
+        Set weights to model by h5py
+        """
+        weights = pickle.load(open(weight_path, "rb"))
+        self._model.set_weights(weights)
+
+    def get_weights(self):
+        """
+        Get weights of this model
+        """
+        return self._model.get_weights()
 
     # init_normal
     def init_normal(self, shape, name=None):
