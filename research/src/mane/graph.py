@@ -437,21 +437,36 @@ class Graph(defaultdict):
             self._walk_pool.append(((targets, classes), labels))
 
 
-def graph_from_txt(dataset_name, edgelist_file, community_file=None,
-                   com_transposed=False, remove_unlabeled=False):
+
+def create_graph(dataset_name, adj_list, com_dict={}, remove_unlabeled=False):
+    """
+    Create graph object from adjlist (and com_dict)
+
+    adjlist: dictionary of list of {node_id: adj_node_list}
+    com_dict: dictionary of {node_id: com_id}
+    remove_unlabeled(optional): remove nodes having no ground true if True
+
+    How to create adj_list
+    --------------------------
     adj_list = util.txt_edgelist_to_adjlist(edgelist_file, "data/adjlist.pkl")
-    if community_file:
-        if com_transposed:
-            com_dict = util.txt_community_to_dict_transposed(community_file,
-                                                            "data/com.pkl")
-        else:
-            com_dict = util.txt_community_to_dict(community_file, "data/com.pkl")
-    else:
-        com_dict = {}
+
+
+    How to create com_dict
+    -------------------------
+    # [node_id, com_id] format
+    com_dict = util.txt_community_to_dict(community_file, "data/com.pkl")
+
+    # [node_id, node_id, ....] format (ex. com-youtube.top5000.community.txt)
+    com_dict = util.txt_community_to_dict_transposed(community_file,
+                                                    "data/com.pkl")
+    """
     if remove_unlabeled:
         adj_list = {k: adj for k, adj in adj_list.items()
                       if k in com_dict}
+        adj_list = {k: [a for a in adj if a in com_dict]
+                            for k, adj in adj_list.items()}
     adj_list, com_dict = util.reindex_edges_and_community(adj_list, com_dict)
+    pickle.dump(adj_list, open("data/adjlist.pkl", "wb"))
     g = graph_from_pickle("data/adjlist.pkl")
     g.set_community(com_dict)
     pickle.dump(g, open("data/{}.graph".format(dataset_name), "wb"))
