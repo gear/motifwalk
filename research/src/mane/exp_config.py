@@ -5,7 +5,7 @@ training = True
 visualize = True
 
 methods = ["rand", "motif", "contrast"]
-dataset_name = "karate"
+dataset_name = "egonets"
 index_cols = True
 epoch = 1
 emb_dim = 100
@@ -15,8 +15,11 @@ num_walk = 2
 walk_length = 10
 window_size = 3
 iters = 1
-num_batches = 5000
+num_batches = 1000
+learning_rate = 0.1
+contrast_iter = 15
 
 # setting for visualization
 normalize_embed = True
 tsne_learning_rate = 200
+topk_labels = 3
