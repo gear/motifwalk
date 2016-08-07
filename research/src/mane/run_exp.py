@@ -37,11 +37,11 @@ g = graph.graph_from_pickle('data/{}.graph'.format(dataset_name))
 
 
 # read ground truth if exists
-try:
-    correct_labels = util.read_correct_labels("data/raw/{}_labels.txt"
-                                        .format(dataset_name), index_cols)
-except:
-    correct_labels = [0] * len(g.nodes())
+#try:
+    # {id: com} dictionary
+#    correct_labels = pickle.load(open("data/{}.community", "rb"))
+#except:
+#    correct_labels = {i: 0 for i in range(len(g.nodes()))}
 
 
 if not os.path.exists("logs"):
@@ -50,9 +50,10 @@ if not os.path.exists("logs"):
 if not os.path.exists("save"):
     os.makedirs("save")
 
-exp_name = "nce_{}_e{}_ed{}_ne{}_ns{}_nw{}_wl{}_ws{}_it{}_nb{}_adam".format(
+exp_name = "nce_{}_e{}_ed{}_ne{}_ns{}_nw{}_wl{}_ws{}_it{}_nb{}_lr{}_ci{}_adam".format(
     dataset_name, epoch, emb_dim, neg_samp, num_skip, num_walk,
-    walk_length, window_size, iters, num_batches)
+    walk_length, window_size, iters, num_batches, learning_rate,
+    contrast_iter)
 
 logging.basicConfig(filename=os.path.join("logs", exp_name+".log"),
                     level=logging.INFO,
@@ -68,7 +69,9 @@ if training:
         model = embeddings.EmbeddingNet(graph=g, epoch=epoch, emb_dim=emb_dim,
                                         neg_samp=neg_samp, num_skip=num_skip,
                                         num_walk=num_walk, walk_length=walk_length,
-                                        window_size=window_size, iters=iters)
+                                        window_size=window_size, iters=iters,
+                                        contrast_iter=contrast_iter,
+                                        learning_rate=learning_rate)
         model.build(optimizer='adam')
         logging.info("start training {}".format(method))
         start = time.time()
@@ -94,20 +97,23 @@ if training:
 
 
 if visualize:
+    topk = [c for c, _ in Counter(g.coms).most_common(topk_labels)]
+    vis_nodes = [i for i, c in g.coms.items() if c in topk]
+    vis_labels = [g.coms[i] for i in vis_nodes]
+    color_map = ["red", "blue", "green", "gold", "purple", "oragnge", "cyan"]
+    label_colors = [color_map[c%len(color_map)] for c in vis_labels]
     fig = plt.figure(figsize=(15, 45))
     fig.suptitle(exp_name, fontsize=16)
     for i, method in enumerate(methods):
         method_name = method + "_" + exp_name
         weight_path = os.path.join("save", method_name + ".weight")
         weights = pickle.load(open(weight_path, "rb"))
-        embed = weights[0]
+        embed = weights[0][vis_nodes, :]
         # Normalize
         if normalize_embed:
             embed = normalize(embed)
         embed_tsne = TSNE(learning_rate=tsne_learning_rate).fit_transform(embed)
         color_map = list(colors.cnames.keys())
-        label_colors = [color_map[c%len(color_map)] for c in correct_labels]
-
         a = plt.subplot(311 + i)
         a.set_title("{} walk embedding".format(method))
         a.scatter(embed_tsne[:, 0], embed_tsne[:, 1],
