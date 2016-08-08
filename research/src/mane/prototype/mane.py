@@ -22,4 +22,6 @@ def parse_args():
   parser.add_argument('--emb_dim', nargs='?', type=int,
                       default='128', help='Embedding dimension')
   parser.add_argument('--walk_length', nargs='?', type=int,
-                      default=10, 
+                      default=10, help='Length of each walk')
+  parser.add_argument('--window_size', nargs='?', type=int,
+                      default=10, help='
