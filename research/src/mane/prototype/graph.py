@@ -13,6 +13,7 @@
 # v0.4: Create a batch generator.
 # v0.5: Create contrast walk generator.
 # v0.6: Fix batch generator for new model (label={0,1}).
+# v1.0: Change graph architecture (include back-pointer)
 
 from __future__ import print_function
 from __future__ import division
