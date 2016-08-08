@@ -28,7 +28,6 @@ import time
 import itertools
 from itertools import chain
 from threading import Thread
-from collections import defaultdict
 try:
     import cPickle as pickle
 except:
@@ -41,12 +40,13 @@ LOGFORMAT = "%(asctime)s %(levelname)s %(filename)s: %(lineno)s %(message)s"
 __author__ = "Hoang Nguyen"
 __email__ = "hoangnt@ai.cs.titech.ac.jp"
 
+ids_list = []
+cur_idx = []
+
 # >>> BEGIN CLASS 'graph' <<<
 class Graph(defaultdict):
     """Graph is a dictionary contains nodes
     """
-    # __init__
-
     def __init__(self, directed=False, name='graph'):
         """
         Create a graph as default_dict with default
@@ -72,17 +72,13 @@ class Graph(defaultdict):
           citeseer = Graph()
           citeseer[20] = [1,3,4]
         """
-        super(Graph, self).__init__(list)
+        super(Graph, self).__init__()
         self._name = name
         self._directed = directed
-        self._edges = None
         self._logger = None
-        self._volume = None
         self._freq = dict()
-
-        global ids_list 
-        global cur_idx
-    # getLogger
+        if directed:
+          self._backward = dict()
 
     def getLogger(self):
         """ 
@@ -92,7 +88,6 @@ class Graph(defaultdict):
             self._logger = logging.getLogger(self._name)
         return self._logger
 
-    # nodes
     def nodes(self):
         """
         Return list of nodes in graph.
@@ -100,15 +95,6 @@ class Graph(defaultdict):
         if not hasattr(self, "_nodes"):
             self._nodes = self.keys()
         return self._nodes
-    # edges
-    # TODO: Implement edges
-
-    def edges(self):
-        """
-        Return sets of edges tuples in graph.
-        """
-        return None
-    # subgraph
 
     def subgraph(self, node_list=[]):
         """
@@ -131,7 +117,6 @@ class Graph(defaultdict):
                 subgraph[node_id] = [
                     n for n in self[node_id] if n in node_list]
         return subgraph
-    # volume
 
     def volume(self, node_list=None):
         """
@@ -162,7 +147,6 @@ class Graph(defaultdict):
                 return count // 2
         else:
             return subgraph._volume
-    # random_walk
 
     def random_walk(self, length, start_node=None,
                     rand_seed=None, reset=0.0):
