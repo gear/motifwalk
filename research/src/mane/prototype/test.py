@@ -7,5 +7,5 @@ model=e.EmbeddingNet(graph=bc)
 model.build()
 model.train(num_nodes_per_batch=200)
 weights = model.get_weights()
-with open('default_random_bs400.weights', 'wb') as f:
+with open('random_bs400_ns10.weights', 'wb') as f:
     p.dump(weights, f, p.HIGHEST_PROTOCOL)
