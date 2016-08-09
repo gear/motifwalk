@@ -136,7 +136,7 @@ class EmbeddingNet():
         if self._built:
             print('WARNING: Model was built.'
                   ' Performing more than one build...')
-        input_dim = max(self._graph.keys())
+        input_dim = max(self._graph.keys())+1
         target_in = Input(batch_shape=(None, 1),
                           dtype='int32', name='target')
         class_in = Input(batch_shape=(None, 1),
