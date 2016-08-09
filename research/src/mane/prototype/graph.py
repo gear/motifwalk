@@ -13,7 +13,7 @@
 # v0.4: Create a batch generator.
 # v0.5: Create contrast walk generator.
 # v0.6: Fix batch generator for new model (label={0,1}).
-# v1.0: Change graph architecture (include back-pointer) - Python 3
+# v1.0: Change graph architecture (include back-pointer) - Python 3 
 
 # External modules
 import random
@@ -21,7 +21,6 @@ import logging
 import os
 import time
 import itertools
-import networkx as nx
 from itertools import chain
 from threading import Thread
 from collections import defaultdict
@@ -34,8 +33,8 @@ import numpy as np
 
 LOGFORMAT = "%(asctime)s %(levelname)s %(filename)s: %(lineno)s %(message)s"
 
-__author__ = "Hoang Nguyen"
-__email__ = "hoangnt@ai.cs.titech.ac.jp"
+__author__ = "Hoang Nguyen - Nukui Shun"
+__email__ = "{hoangnt,nukui.s}@net.c.titech.ac.jp"
 
 ids_list = []
 cur_idx = []
@@ -73,9 +72,11 @@ class Graph(defaultdict):
         self._name = name
         self._directed = directed
         self._logger = None
-        self._freq = dict()
+        self._ids_list = None
+        self._cur_idx = 0
         if directed:
-          self._backward = dict()
+          self._backward = list()
+
 
     def getLogger(self):
         """ 
@@ -169,11 +170,8 @@ class Graph(defaultdict):
         -------
           walk_path: A list contains node ids of the walk.
         """
-        # TODO: Use log and exit instead of assert
         assert 0 <= reset <= 1, 'Restart probability should be in [0.0,1.0].'
         random.seed(rand_seed)
-        # Give warning if graph is directed. TODO: Detail warning.
-        # TODO: Add walk info.
         if self._directed:
             self.getLogger().warn('Performing random walk on directed graph.')
         # Select starting node
@@ -191,10 +189,10 @@ class Graph(defaultdict):
             else:
                 break
         return walk_path
-    # motif_walk
 
+    # TODO: Generalize motif walk
     def motif_walk(self, length, start_node=None, rand_seed=None,
-                   reset=0.0, walk_bias=0.9, motif=None):
+                   reset=0.0, walk_bias=0.9):
         """
         Walk follow the motif pattern. 
 
@@ -222,7 +220,6 @@ class Graph(defaultdict):
                      simple motif walk uses list. The future version will use
                      set as data structure for the walk. 
         """
-        # TODO: Implement Motif class and delegate the walk to Motif
         # Now - Default as triangle motif (undirected).
         assert 0 <= reset <= 1, 'Restart probability should be in [0.0, 1.0].'
         random.seed(rand_seed)
@@ -257,66 +254,6 @@ class Graph(defaultdict):
             prev = cur
             cur = cand
         return walk_path
-    # build_random_walk
-
-    def build_random_walk(self, num_walk=20, length=128,
-                          start_node=None, rand_seed=None, reset=0.0):
-        """
-        Perform random walk num_walk times to create a list and set of 
-        random walk nodes. This method is usually used with fixed start node.
-
-        Parameters
-        ----------
-          num_walk: Number of random walk. Default to be 20. (Optional)
-          length: Length of each random walk. Default to be 128. (Optional)
-          start_node: Start location for the random walk. None means a random
-                      node will be selected. (Optional)
-          rand_seed: Seed for random module. None means system time is used. (Optional)
-          reset: Reset back to the start node probability for each random walk. 
-                 Default 0.0. (Optional)
-
-        Returns
-        -------
-          walk_path: List of visited nodes.
-          set(walk_path): Set of unique nodes in the path.
-        """
-        if not start_node:
-            self.getLogger().warn('Creating random walk set with random start node.')
-        walk_path = []
-        for _ in range(num_walk):
-            rwp = self.random_walk(length=length, start_node=start_node,
-                                   rand_seed=rand_seed, reset=reset)
-            walk_path.extend(rwp)
-        # TODO: Log the walk
-        return set(walk_path)
-
-    # build_motif_walk
-    def build_motif_walk(self, num_walk=20, length=128,
-                         start_node=None, rand_seed=None,
-                         reset=0.0, walk_bias=0.9):
-        """
-        Perform motif walk num_walk times to create a list and set of 
-        motif walk nodes. This method is usually used fixed start node.
-
-        Parameters
-        ----------
-          num_walk: Number of motif walk. Default to be 20. (Optional)
-          length: Length of each motif wal. Default to be 128. (Optional)
-          start_node: Start location for the random walk. None means 
-                      a random node will be selected. (Optional)
-          rand_seed: Seed for random module. None means system time 
-                     is used. (Optional)
-          reset: Reset back to the start node probability for each 
-                 motif walk. Default 0.0. (Optional)
-        """
-        if not start_node:
-            self.getLogger().warn('Creating random walk set with random start node.')
-        walk_path = []
-        for _ in range(num_walk):
-            mwp = self.motif_walk(length=length, start_node=start_node,
-                                  rand_seed=rand_seed, reset=reset)
-            walk_path.extend(mwp)
-        return set(walk_path)
 
     ################################################################### gen_walk
     def gen_walk(self, walk_func_name, num_batches=100, walk_length=10,
@@ -343,39 +280,10 @@ class Graph(defaultdict):
             else:
                 time.sleep(1)
 
-    ################################################################## _gen_walk
-
     def kill_threads(self):
         self.stop_threads = True
 
     def gen_contrast(self, possitive_name='motif_walk',
-                      negative_name='random_walk', num_batches=100, reset=0.0,
-                      walk_length=10, num_walk=5, num_true=1, neg_samp=15,
-                      contrast_iter=10, num_skip=2, shuffle=True, window_size=3,
-                      gamma=0.8, n_threads=8, max_pool=100):
-        """
-        Generate contrast walk in parallel
-        """
-        self._walk_pool = []
-        self.max_pool = max_pool
-        self._threads = [Thread(target=self._gen_contrast2, name="gen_contrast",
-                   args=(possitive_name, negative_name, num_batches, reset,
-                       walk_length, num_walk, num_true, neg_samp, contrast_iter,
-                       num_skip, shuffle, window_size, gamma))
-                   for _ in range(n_threads)]
-        for t in self._threads:
-            t.setDaemon(True)
-            t.start()
-        while True:
-            if len(self._walk_pool) > 0:
-                data = self._walk_pool.pop()
-                yield data
-            else:
-                time.sleep(1)
-
-
-    # gen_contrast
-    def _gen_contrast(self, possitive_name='motif_walk',
                      negative_name='random_walk', num_batches=100, reset=0.0,
                      walk_length=10, num_walk=5, num_true=1, neg_samp=15,
                      contrast_iter=10, num_skip=2, shuffle=True, window_size=3,

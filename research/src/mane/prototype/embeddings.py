@@ -45,12 +45,11 @@ class EmbeddingNet():
     """
     # __init__
 
-    def __init__(self, model=None, graph=None, epoch=10,
-                 name='EmbeddingNet', emb_dim=200,
-                 learning_rate=0.01, neg_samp=5,
-                 num_skip=5, num_walk=5, contrast_iter=10,
+    def __init__(self, model=None, graph=None, epoch=1,
+                 name='EmbeddingNet', emb_dim=128,
+                 neg_samp=5, num_skip=5, num_walk=5,
                  walk_length=5, window_size=5,
-                 iters=2.0, save_file='EmbeddingNet.keras'):
+                 walk_per_batch=5):
         """
         Initialize a basic embedding neural network model with
         settings in kwargs.
@@ -62,14 +61,13 @@ class EmbeddingNet():
           epoch: Number of pass for each batch.
           name: Name of the model.
           emb_dim: Embedding size.
-          learning_rate: Learning rate (lr).
           neg_samp: Number of negative samples for each target.
           num_skip: Number of possitive samples for each target.
           num_walk: Number of walk performed.
           walk_length:
           window_size: Skipgram window for generating +data.
-          iters: #iterations = iters * (#batches per graph)
-          save_file: File location to save the model.
+          walk_per_batch: Number of walks per batch.
+          iters: Number of pass per graph.
 
         Behavior
         --------
@@ -77,15 +75,12 @@ class EmbeddingNet():
         """
         # General hyperparameters for embeddings
         self._emb_dim = emb_dim
-        self._learning_rate = learning_rate
         self._epoch = epoch
         self._neg_samp = neg_samp
-        self._save_file = save_file
         self._num_skip = num_skip
         self._num_walk = num_walk
         self._walk_length = walk_length
         self._window_size = window_size
-        self._contrast_iter = contrast_iter
 
         # Status flags
         self._built = False
@@ -93,11 +88,6 @@ class EmbeddingNet():
 
         # Data
         self._graph = graph
-
-        # Computed property
-        bs = walk_length * (num_skip + neg_samp)
-        self._batch_size = bs
-        self._iters = int(iters * num_walk * len(graph))
 
     # build
     def build(self, loss='binary_crossentropy', optimizer='adam'):
@@ -150,12 +140,10 @@ class EmbeddingNet():
             print('WARNING: Model was built.'
                   ' Performing more than one build...')
 
-        # Input tensors: batch_shape includes batch_size
-        target_in = Input(batch_shape=(self._batch_size, 1),
+        target_in = Input(batch_shape=(None, 1),
                           dtype='int32', name='target')
-        class_in = Input(batch_shape=(self._batch_size, 1),
+        class_in = Input(batch_shape=(None, 1),
                          dtype='int32', name='class')
-        # Embedding layers connect to target_in and class_in
         embeddings = Embedding(input_dim=len(self._graph),
                                output_dim=self._emb_dim,
                                name='node_embeddings', input_length=1,
@@ -170,37 +158,30 @@ class EmbeddingNet():
         embeddings = Reshape((self._emb_dim,), name="reshape_node")(embeddings)
         nce_weights = Reshape((self._emb_dim,), name="reshape_weights")(nce_weights)
         nce_bias = Reshape(target_shape=(1,), name="reshape_bias")(nce_bias)
-        # Elemen-wise multiplication for dot product
         dot_prod = Merge(mode=row_dot, output_shape=merge_shape,
                          name='row_wise_dot')([embeddings, nce_weights])
         logits = Merge(mode='sum', output_shape=(1,),
                        name='logits')([dot_prod, nce_bias])
-        #logits = Lambda(lambda x: K.sum(x), output_shape=(1,),
-        #                name="reduce_sum")(logits)
-        # Final output layer. name='label' for data input reason
         sigm = Activation('sigmoid', name='label')(logits)
-        # Initialize model
         self._model = Model(input=[target_in, class_in], output=sigm)
-        # Compile model
         self._model.compile(loss=loss, optimizer=optimizer,
                             name='EmbeddingNet')
         self._built = True
 
-    # train
-    def train(self, mode='random_walk', num_true=1,
-              shuffle=True, verbose=1, distort=0.75, num_batches=1000,
-              gamma=0.8, save_dir="weights"):
+    def train(self, mode='random_walk', shuffle=True, verbose=1, 
+              distort=0.75, num_batches=1000, gamma=0.8, save_dir="weights"):
         """
         Load data and train the model.
 
         Parameters
         ----------
           mode: Data generation mode: 'random_walk' or 'motif_walk'.
-          num_true: Number of true labels (not in use).
           shuffle: True if ids list is shuffed before walk.
           verbose: How much to print.
           distort: Power of the unigram distribution.
           num_batches: Number of batches to yield data.
+          gamma: Sample weight coefficient.
+          save_dir: Directory to save weights.
 
         Returns
         -------
@@ -212,78 +193,19 @@ class EmbeddingNet():
         """
         self._trained = True
         # Graph data generator with negative sampling
-        data_gen = self._graph.gen_walk(mode, num_batches,
-                                        self._walk_length,
-                                        self._num_walk,
-                                        num_true,
-                                        self._neg_samp,
-                                        self._num_skip,
-                                        shuffle,
-                                        self._window_size,
-                                        distort,
-                                        gamma=gamma)
-        #self._model.fit_generator(data_gen, samples_per_epoch=num_batches,
-        #                         nb_epoch=3, verbose=verbose)
-        if not os.path.exists(save_dir):
-            os.makedirs(save_dir)
-        iterations = self._iters // num_batches
-        for i in range(iterations):
-            print('Iteration %d / %d:' % (i, iterations))
-            (targets, classes), labels, sample_weight = next(data_gen)
-            print("Get next batch")
+        for _ in range(self._num_walk):
+            batch_data = self._graph.gen_walk(mode,
+                                              self._walk_length,
+                                              self._num_walk,
+                                              self._neg_samp,
+                                              self._num_skip,
+                                              shuffle,
+                                              self._window_size,
+                                              distort,
+                                              gamma=gamma)
+            (targets,classes), labels, _ = batch_data
             self._model.fit([targets, classes], [labels],
-                            batch_size=self._batch_size,
-                            sample_weight=sample_weight,
                             nb_epoch=self._epoch, verbose=verbose)
-            file_name = "weights_iter{}.weights".format(i)
-            path = os.path.join(save_dir, file_name)
-            self._model.save_weights(path)
-        self._graph.kill_threads()
-
-    # train
-    def train_mce(self, pos='motif_walk', neg='random_walk',
-                  num_true=1, reset=0.0, shuffle=True, verbose=1,
-                  num_batches=1000, gamma=0.8):
-        """
-        Load data and train the model.
-
-        Parameters
-        ----------
-          mode: Data generation mode: 'random_walk' or 'motif_walk'.
-          num_true: Number of true labels (not in use).
-          shuffle: True if ids list is shuffed before walk.
-          verbose: How much to print.
-          distort: Power of the unigram distribution.
-          num_batches: Number of batches to yield data.
-
-        Returns
-        -------
-          None. Maybe weights of the embeddings?
-
-        Behavior
-        --------
-          Load data in batches and train the model.
-        """
-        self._trained = True
-        # Graph data generator with negative sampling
-        data_gen = self._graph.gen_contrast2(pos, neg,
-                                             num_batches, reset,
-                                             self._walk_length,
-                                             self._num_walk,
-                                             num_true,
-                                             self._neg_samp,
-                                             self._contrast_iter,
-                                             self._num_skip,
-                                             shuffle,
-                                             self._window_size,
-                                             gamma=gamma)
-        iterations = self._iters // num_batches
-        for i in range(iterations):
-            print('Iteration %d / %d:' % (i, iterations))
-            x_data, y_data, sample_weight = next(data_gen)
-            self._model.fit(x=x_data, y=y_data, batch_size=self._batch_size,
-                            nb_epoch=self._epoch, verbose=verbose,
-                            sample_weight=sample_weight)
 
     # init_normal
     def init_normal(self, shape, name=None):
