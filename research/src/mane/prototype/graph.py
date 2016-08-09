@@ -93,7 +93,7 @@ class Graph(defaultdict):
         Return list of nodes in graph.
         """
         if not hasattr(self, "_nodes"):
-            self._nodes = self.keys()
+            self._nodes = list(self.keys())
         return self._nodes
 
     def subgraph(self, node_list=[]):
@@ -259,51 +259,54 @@ class Graph(defaultdict):
 
     def gen_walk(self, walk_func_name, walk_per_batch=500, 
                  walk_length=80, neg_samp=5, num_skip=5, shuffle=True, 
-                 window_size=10, neg_samp_distort=0.75, gamma=0.8, 
+                 skip_window=10, neg_samp_distort=0.75, gamma=0.8, 
                  n_threads=6, max_pool=10):
         """
         Generate walk. Not using neg_samp_distort now.
         """
         if shuffle:
-            self._ids_list = np.random.permutation(self.nodes())
+            self._ids_list = self.nodes()
+            random.shuffle(self._ids_list)
             self._cur_idx = 0
         walk_per_batch = min(walk_per_batch,(len(self._ids_list) - self._cur_idx))
-        data_shape = walk_per_batch * (walk_length - window_size + 1) * (num_skip+neg_samp)
+        data_shape = walk_per_batch * (walk_length - skip_window + 1) * (num_skip+neg_samp)
         targets = np.ndarray(shape=(data_shape), dtype=np.int32)
         classes = np.ndarray(shape=(data_shape), dtype=np.int32)
+        labels = np.ndarray(shape=(data_shape), dtype=np.float32)
         idx = self._cur_idx
         self._cur_idx += walk_per_batch
         walk_func = getattr(self, walk_func_name)
+        samples_per_node = num_skip + neg_samp
+        samples_per_walk = (walk_length-skip_window + 1) * samples_per_node
         for i in range(walk_per_batch):
             walk = walk_func(walk_length, start_node=self._ids_list[idx])
             idx += 1
             walk_index = 0
-            buff = deque(maxlen=window_size)
-            for _ in range(window_size):
+            buff = deque(maxlen=skip_window)
+            for _ in range(skip_window-1):
                 buff.append(walk[walk_index])
                 walk_index += 1
-            windows_per_walk = walk_length-window_size + 1
-            for j in range(windows_per_walk):
+            for j in range(walk_length-skip_window + 1):
+                buff.append(walk[walk_index+j])
                 classi = 0
                 class_avoid = [classi]
                 for k in range(num_skip):
-                    targets[i * walk_per_batch + j * (windows_per_walk) + k] = buff[0]
+                    targets[i * samples_per_walk + j * samples_per_node + k] = buff[0]
                     while classi in class_avoid:
-                        classi = random.randint(1, skip_window)
+                        classi = random.randint(1, skip_window-1)
                     class_avoid.append(classi)
-                    classes[i * walk_per_batch + j * (windows_per_walk) + k] = buff[classi]
-                    labels[i * walk_per_batch + j * (windows_per_walk) + k] = 1.0
+                    classes[i * samples_per_walk + j * samples_per_node + k] = buff[classi]
+                    labels[i * samples_per_walk + j * samples_per_node + k] = 1.0
                 for k in range(neg_samp):
-                    targets[i * walk_per_batch + j * (windows_per_walk) + num_skip + k] = buff[0]
-                    classes[i * walk_per_batch + j * (windows_per_walk) + num_skip + k] = random.choice(self._freq)
-                    labels[i * walk_per_batch + j * (windows_per_walk) + num_skip + k] = 0.0
-                buff.append(walk[walk_index+j])
+                    targets[i * samples_per_walk + j * samples_per_node + num_skip + k] = buff[0]
+                    classes[i * samples_per_walk + j * samples_per_node + num_skip + k] = random.choice(self._freq)
+                    labels[i * samples_per_walk + j * samples_per_node + num_skip + k] = 0.0
         return ({'target':targets, 'class':classes},{'label':labels}) 
 
     def gen_contrast(self, possitive_name='motif_walk',
                      negative_name='random_walk', num_batches=100, reset=0.0,
                      walk_length=10, num_walk=5, num_true=1, neg_samp=15,
-                     contrast_iter=10, num_skip=2, shuffle=True, window_size=3,
+                     contrast_iter=10, num_skip=2, shuffle=True, skip_window=3,
                      gamma=0.8):
         """
         Create training dataset using possitive samples from motif walk
@@ -319,14 +322,14 @@ class Graph(defaultdict):
           neg_samp: Number of negative sampling for each target.
           num_skip: Number of positive sampling for each target.
           shuffle: If node list is shuffled before generating random walk.
-          window_size: Window for getting sample from the random walk list.
+          skip_window: Window for getting sample from the random walk list.
           gamma: Exponential decay for sampling distance
 
         Yields
         ------
           Yields a single tuple as the gen_walk function.
         """
-        assert window_size >= num_skip, 'Window size is too small.'
+        assert skip_window >= num_skip, 'Window size is too small.'
         pos_func = getattr(self, possitive_name)
         neg_func = getattr(self, negative_name)
         # Generator loops forever
@@ -365,8 +368,8 @@ class Graph(defaultdict):
                     pos_walk = pos_func(start_node=i, length=walk_length)
                     for j, target in enumerate(pos_walk):
                         # Window [lower:upper] for skipping
-                        lower = max(0, j - window_size)
-                        upper = min(walk_length, j + window_size + 1)
+                        lower = max(0, j - skip_window)
+                        upper = min(walk_length, j + skip_window + 1)
                         for _ in range(num_skip):
                             rand_index = random.randint(lower, upper-1)
                             rand_node = pos_walk[rand_index]

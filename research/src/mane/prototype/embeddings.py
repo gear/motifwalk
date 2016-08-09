@@ -27,9 +27,6 @@ from keras.optimizers import SGD, Adam
 from keras import backend as K
 from keras import initializations as init
 
-# Import custom layers
-from custom_layers import RowDot
-
 __author__ = "Hoang Nguyen"
 __email__ = "hoangnt@ai.cs.titech.ac.jp"
 
@@ -168,15 +165,13 @@ class EmbeddingNet():
                             name='EmbeddingNet')
         self._built = True
 
-    def train(self, mode='random_walk', shuffle=True, verbose=1, 
-              distort=0.75, num_batches=1000, gamma=0.8, save_dir="weights"):
+    def train(self, mode='random_walk'):
         """
         Load data and train the model.
 
         Parameters
         ----------
           mode: Data generation mode: 'random_walk' or 'motif_walk'.
-          shuffle: True if ids list is shuffed before walk.
           verbose: How much to print.
           distort: Power of the unigram distribution.
           num_batches: Number of batches to yield data.
@@ -201,8 +196,7 @@ class EmbeddingNet():
                                               self._num_skip,
                                               shuffle,
                                               self._window_size,
-                                              distort,
-                                              gamma=gamma)
+                                                )
             (targets,classes), labels, _ = batch_data
             self._model.fit([targets, classes], [labels],
                             nb_epoch=self._epoch, verbose=verbose)
