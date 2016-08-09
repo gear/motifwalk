@@ -165,6 +165,9 @@ class EmbeddingNet():
                             name='EmbeddingNet')
         self._built = True
 
+    def get_weights(self):
+        return self._model.get_weights()
+
     def train(self, mode='random_walk', batch_size=500, verbose=1):
         """
         Load data and train the model.
@@ -183,8 +186,10 @@ class EmbeddingNet():
         self._trained = True
         # Graph data generator with negative sampling
         shuffle = True
-        for _ in range(self._num_walk):
-            for _ in range(math.ceil(len(self._graph)/batch_size)):
+        for i in range(self._num_walk):
+            print('Graph pass:', i+1 ,'/', self._num_walk)
+            for j in range(math.ceil(len(self._graph)/batch_size)):
+                print('Mini batch:', j+1, '/', math.ceil(len(self._graph)/batch_size))
                 batch_data = self._graph.gen_walk(mode, batch_size,
                                               self._walk_length,
                                               self._neg_samp,

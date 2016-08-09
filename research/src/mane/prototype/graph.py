@@ -268,7 +268,7 @@ class Graph(defaultdict):
             self._ids_list = self.nodes()
             random.shuffle(self._ids_list)
             self._cur_idx = 0
-        walk_per_batch = min(walk_per_batch,(len(self._ids_list) - self._cur_idx))
+        walk_per_batch = min(walk_per_batch, (len(self._ids_list) - self._cur_idx))
         data_shape = walk_per_batch * (walk_length - skip_window + 1) * (num_skip+neg_samp)
         targets = np.ndarray(shape=(data_shape), dtype=np.int32)
         classes = np.ndarray(shape=(data_shape), dtype=np.int32)
