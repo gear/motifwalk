@@ -168,7 +168,7 @@ class EmbeddingNet():
     def get_weights(self):
         return self._model.get_weights()
 
-    def train(self, mode='random_walk', batch_size=500, verbose=1):
+    def train(self, mode='random_walk', num_nodes_per_batch=500, batch_size=128, verbose=1):
         """
         Load data and train the model.
 
@@ -188,21 +188,21 @@ class EmbeddingNet():
         shuffle = True
         for i in range(self._num_walk):
             print('Graph pass:', i+1 ,'/', self._num_walk)
-            for j in range(math.ceil(len(self._graph)/batch_size)):
-                print('Mini batch:', j+1, '/', math.ceil(len(self._graph)/batch_size))
-                batch_data = self._graph.gen_walk(mode, batch_size,
+            for j in range(math.ceil(len(self._graph)/num_nodes_per_batch)):
+                print('Mini batch:', j+1, '/', math.ceil(len(self._graph)/num_nodes_per_batch))
+                batch_data = self._graph.gen_walk(mode, num_nodes_per_batch,
                                               self._walk_length,
                                               self._neg_samp,
                                               self._num_skip,
                                               shuffle,
                                               self._window_size)
                 (targets,classes), labels, wpb = batch_data
-                if wpb == batch_size:
+                if wpb == num_nodes_per_batch:
                     shuffle = False
                 else:
                     print('Reset')
                     shuffle = True
-                self._model.fit([targets, classes], [labels],
+                self._model.fit([targets, classes], [labels], batch_size=batch_size,
                                 nb_epoch=self._epoch, verbose=verbose)
 
     # init_normal
