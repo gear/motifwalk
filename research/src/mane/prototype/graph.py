@@ -75,7 +75,7 @@ class Graph(defaultdict):
         self._logger = None
         self._ids_list = None
         self._cur_idx = 0
-        self._freq = defaultdict()
+        self._freq = None
         if directed:
           self._backward = list()
 
@@ -262,7 +262,7 @@ class Graph(defaultdict):
                  window_size=10, neg_samp_distort=0.75, gamma=0.8, 
                  n_threads=6, max_pool=10):
         """
-        Generate walk 
+        Generate walk. Not using neg_samp_distort now.
         """
         if shuffle:
             self._ids_list = np.random.permutation(self.nodes())
@@ -282,24 +282,23 @@ class Graph(defaultdict):
             for _ in range(window_size):
                 buff.append(walk[walk_index])
                 walk_index += 1
-            target_to_avoid = [target_index]
-            classi = 0
-            for j in range(walk_length-window_size+1):
-                for _ in range(num_skip):
-                    targets[i * walk_per_batch + j] = buff[0]
-                    while classi == 0:
+            windows_per_walk = walk_length-window_size + 1
+            for j in range(windows_per_walk):
+                classi = 0
+                class_avoid = [classi]
+                for k in range(num_skip):
+                    targets[i * walk_per_batch + j * (windows_per_walk) + k] = buff[0]
+                    while classi in class_avoid:
                         classi = random.randint(1, skip_window)
-                    classes[i * walk_per_batch + j] = buff[classi]
-                    labels[i * walk_per_batch + j] = 1.0
-                for _ in range(neg_samp):
-                    targets[i * walk_per_batch + j] = buff[0]
-
-                
-                
-
-                
-            
-
+                    class_avoid.append(classi)
+                    classes[i * walk_per_batch + j * (windows_per_walk) + k] = buff[classi]
+                    labels[i * walk_per_batch + j * (windows_per_walk) + k] = 1.0
+                for k in range(neg_samp):
+                    targets[i * walk_per_batch + j * (windows_per_walk) + num_skip + k] = buff[0]
+                    classes[i * walk_per_batch + j * (windows_per_walk) + num_skip + k] = random.choice(self._freq)
+                    labels[i * walk_per_batch + j * (windows_per_walk) + num_skip + k] = 0.0
+                buff.append(walk[walk_index+j])
+        return ({'target':targets, 'class':classes},{'label':labels}) 
 
     def gen_contrast(self, possitive_name='motif_walk',
                      negative_name='random_walk', num_batches=100, reset=0.0,
@@ -434,11 +433,17 @@ def graph_from_pickle(pickle_filename, **graph_config):
     if len(graph_config):
         for key, val in graph_config.items():
             setattr(graph, key, val)
-    # Load data to the graph
+    # Compute total frequency
+    num_edges = 0
     for key, val in data.items():
         graph[key] = val
-        graph._freq[key] = len(val)
-    # TODO: Log result of graph creation
+        num_edges += len(val)
+    graph._freq = np.ndarray(shape=(num_edges))
+    i = 0
+    for key, val in data.items():
+        for _ in range(len(val)):
+            graph._freq[i] = key
+            i += 1
     return graph
 
 # === END HELPER FUNCTIONS ===
