@@ -165,18 +165,12 @@ class EmbeddingNet():
                             name='EmbeddingNet')
         self._built = True
 
-    def train(self, mode='random_walk'):
+    def train(self, mode='random_walk', batch_size=500, verbose=1):
         """
         Load data and train the model.
 
         Parameters
         ----------
-          mode: Data generation mode: 'random_walk' or 'motif_walk'.
-          verbose: How much to print.
-          distort: Power of the unigram distribution.
-          num_batches: Number of batches to yield data.
-          gamma: Sample weight coefficient.
-          save_dir: Directory to save weights.
 
         Returns
         -------
@@ -188,16 +182,20 @@ class EmbeddingNet():
         """
         self._trained = True
         # Graph data generator with negative sampling
+        num_batch = len(self._graph) // batch_size
+        shuffle = True
         for _ in range(self._num_walk):
-            batch_data = self._graph.gen_walk(mode,
+            batch_data = self._graph.gen_walk(mode, batch_size,
                                               self._walk_length,
-                                              self._num_walk,
                                               self._neg_samp,
                                               self._num_skip,
                                               shuffle,
-                                              self._window_size,
-                                                )
-            (targets,classes), labels, _ = batch_data
+                                              self._window_size)
+            (targets,classes), labels, wpb = batch_data
+            if wpb == batch_size:
+                shuffle = False
+            else:
+                shuffle = True
             self._model.fit([targets, classes], [labels],
                             nb_epoch=self._epoch, verbose=verbose)
 

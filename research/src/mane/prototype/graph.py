@@ -301,7 +301,7 @@ class Graph(defaultdict):
                     targets[i * samples_per_walk + j * samples_per_node + num_skip + k] = buff[0]
                     classes[i * samples_per_walk + j * samples_per_node + num_skip + k] = random.choice(self._freq)
                     labels[i * samples_per_walk + j * samples_per_node + num_skip + k] = 0.0
-        return ({'target':targets, 'class':classes},{'label':labels}) 
+        return ((targets, classes),labels, walk_per_batch) 
 
     def gen_contrast(self, possitive_name='motif_walk',
                      negative_name='random_walk', num_batches=100, reset=0.0,
