@@ -48,7 +48,7 @@ class EmbeddingNet():
     def __init__(self, model=None, graph=None, epoch=1,
                  name='EmbeddingNet', emb_dim=128,
                  neg_samp=5, num_skip=5, num_walk=5,
-                 walk_length=5, window_size=5,
+                 walk_length=80, window_size=10,
                  walk_per_batch=5):
         """
         Initialize a basic embedding neural network model with
@@ -67,7 +67,6 @@ class EmbeddingNet():
           walk_length:
           window_size: Skipgram window for generating +data.
           walk_per_batch: Number of walks per batch.
-          iters: Number of pass per graph.
 
         Behavior
         --------
@@ -81,6 +80,7 @@ class EmbeddingNet():
         self._num_walk = num_walk
         self._walk_length = walk_length
         self._window_size = window_size
+        self._walk_per_batch = walk_per_batch
 
         # Status flags
         self._built = False

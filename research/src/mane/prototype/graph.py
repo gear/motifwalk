@@ -13,6 +13,7 @@
 # v0.4: Create a batch generator.
 # v0.5: Create contrast walk generator.
 # v0.6: Fix batch generator for new model (label={0,1}).
+# v0.7: Switch back to simple generator.
 # v1.0: Change graph architecture (include back-pointer) - Python 3 
 
 # External modules
@@ -255,33 +256,15 @@ class Graph(defaultdict):
             cur = cand
         return walk_path
 
-    ################################################################### gen_walk
-    def gen_walk(self, walk_func_name, num_batches=100, walk_length=10,
-                 num_walk=5, num_true=1, neg_samp=15,
-                 num_skip=2, shuffle=True, window_size=3,
-                 neg_samp_distort=0.75, gamma=0.8, n_threads=6, max_pool=10):
+    def gen_walk(self, walk_func_name, walk_per_batch=1000, 
+                 walk_length=80, neg_samp=5, num_skip=5, shuffle=True, 
+                 window_size=10, neg_samp_distort=0.75, gamma=0.8, 
+                 n_threads=6, max_pool=10):
         """
-        Generate walk sample in parallel
+        Generate walk 
         """
-        self._walk_pool = []
-        self.max_pool = max_pool
-        self.stop_threads = False
-        self._threads = [Thread(target=self._gen_walk, name="gen_walk",
-                   args=(walk_func_name, num_batches, walk_length,
-                      num_walk, num_true, neg_samp, num_skip, shuffle,
-                      window_size, gamma))
-                   for _ in range(n_threads)]
-        for t in self._threads:
-            t.setDaemon(True)
-            t.start()
-        while True:
-            if len(self._walk_pool) > 0:
-                yield(self._walk_pool.pop())
-            else:
-                time.sleep(1)
 
-    def kill_threads(self):
-        self.stop_threads = True
+
 
     def gen_contrast(self, possitive_name='motif_walk',
                      negative_name='random_walk', num_batches=100, reset=0.0,
