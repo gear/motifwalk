@@ -24,7 +24,7 @@ import time
 import itertools
 from itertools import chain
 from threading import Thread
-from collections import defaultdict
+from collections import defaultdict, deque
 try:
     import cPickle as pickle
 except:
@@ -263,7 +263,26 @@ class Graph(defaultdict):
         """
         Generate walk 
         """
+        if shuffle:
+            self._ids_list = np.random.permutation(self.nodes())
+            self._cur_idx = 0
+        targets = []
+        classes = []
+        labels = []
+        walk_per_batch = min(walk_per_batch,(len(self._ids_list) - self._cur_idx))
+        idx = self._cur_idx
+        self._cur_idx += walk_per_batch
+        walk_func = getattr(self, walk_func_name)
+        for _ in range(walk_per_batch):
+            walk = walk_func(walk_length, start_node=self._ids_list[idx])
+            idx += 1
+            buff = deque(maxlen=window_size)
+            for i in range(window_size):
+                buff.append(walk[i])
+            for _ in range(
 
+                
+            
 
 
     def gen_contrast(self, possitive_name='motif_walk',
