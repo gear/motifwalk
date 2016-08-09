@@ -299,7 +299,7 @@ class Graph(defaultdict):
                     labels[i * samples_per_walk + j * samples_per_node + k] = 1.0
                 for k in range(neg_samp):
                     targets[i * samples_per_walk + j * samples_per_node + num_skip + k] = buff[0]
-                    classes[i * samples_per_walk + j * samples_per_node + num_skip + k] = random.choice(self._freq)
+                    classes[i * samples_per_walk + j * samples_per_node + num_skip + k] = random.choice(self.nodes())
                     labels[i * samples_per_walk + j * samples_per_node + num_skip + k] = 0.0
         return ((targets, classes),labels, walk_per_batch) 
 
