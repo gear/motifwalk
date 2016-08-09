@@ -18,6 +18,7 @@ import os
 import numpy as np
 import keras
 import theano
+import math
 
 # Import keras modules
 from keras.models import Model
@@ -86,7 +87,6 @@ class EmbeddingNet():
         # Data
         self._graph = graph
 
-    # build
     def build(self, loss='binary_crossentropy', optimizer='adam'):
         """
         Build and compile neural net with functional API.
@@ -182,22 +182,23 @@ class EmbeddingNet():
         """
         self._trained = True
         # Graph data generator with negative sampling
-        num_batch = len(self._graph) // batch_size
         shuffle = True
         for _ in range(self._num_walk):
-            batch_data = self._graph.gen_walk(mode, batch_size,
+            for _ in range(math.ceil(len(self._graph)/batch_size)):
+                batch_data = self._graph.gen_walk(mode, batch_size,
                                               self._walk_length,
                                               self._neg_samp,
                                               self._num_skip,
                                               shuffle,
                                               self._window_size)
-            (targets,classes), labels, wpb = batch_data
-            if wpb == batch_size:
-                shuffle = False
-            else:
-                shuffle = True
-            self._model.fit([targets, classes], [labels],
-                            nb_epoch=self._epoch, verbose=verbose)
+                (targets,classes), labels, wpb = batch_data
+                if wpb == batch_size:
+                    shuffle = False
+                else:
+                    print('Reset')
+                    shuffle = True
+                self._model.fit([targets, classes], [labels],
+                                nb_epoch=self._epoch, verbose=verbose)
 
     # init_normal
     def init_normal(self, shape, name=None):
