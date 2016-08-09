@@ -17,3 +17,11 @@ This folder contains pickled graph data. __raw__ folder contains raw data file f
   3. Nodes: 334,863. Edges: 925,872. Triangles: 667,129. Fraction of closed traiangles: 0.07925. Diameter: 44.
   4. File name: amazon\_copurchase.graph (cPickle -> dict). amazon\_copurchase\_communities.labels (cPickle -> dict).
   5. NODE: Undirected graph with unique edge list.
+
+### Blogger friend network: BlogCatalog3
+  1. Source: [Arizona State University - BlogCatalog dataset](http://socialcomputing.asu.edu/datasets/BlogCatalog3).
+  2. Format: Raw: text edge list. Pickle: Dictionary of adjacency list.
+  3. Nodes: 10,312 (bloggers). Edges: 333,983 (friendship).
+  4. File name: blogcatalog3.graph (cPickle -> dict). blogcatalog3.community (cPickle -> dict).
+  5. NODE: Undirected graph with unique edge list.
+

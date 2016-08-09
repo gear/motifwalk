@@ -13,12 +13,7 @@
 # v0.4: Create a batch generator.
 # v0.5: Create contrast walk generator.
 # v0.6: Fix batch generator for new model (label={0,1}).
-# v1.0: Change graph architecture (include back-pointer)
-
-from __future__ import print_function
-from __future__ import division
-from __future__ import absolute_import
-
+# v1.0: Change graph architecture (include back-pointer) - Python 3
 
 # External modules
 import random
@@ -26,8 +21,10 @@ import logging
 import os
 import time
 import itertools
+import networkx as nx
 from itertools import chain
 from threading import Thread
+from collections import defaultdict
 try:
     import cPickle as pickle
 except:
@@ -72,7 +69,7 @@ class Graph(defaultdict):
           citeseer = Graph()
           citeseer[20] = [1,3,4]
         """
-        super(Graph, self).__init__()
+        super(Graph, self).__init__(list)
         self._name = name
         self._directed = directed
         self._logger = None
@@ -347,13 +344,6 @@ class Graph(defaultdict):
                 time.sleep(1)
 
     ################################################################## _gen_walk
-    def _gen_walk(self, walk_func_name, num_batches, walk_length,
-                  num_walk, num_true, neg_samp, num_skip, shuffle,
-                  window_size, gamma):
-    """
-    Logic for gen_walk
-    """
-
 
     def kill_threads(self):
         self.stop_threads = True

@@ -21,7 +21,7 @@ import pandas as pd
 import csv
 
 
-def txt_edgelist_to_adjlist(filename, pickle_name=None):
+def txt_edgelist_to_adjlist(filename, pickle_name=None, split=None):
     """ 
     Sparse text file for edgelist and store 
     them as dictionary pickle file. 
@@ -40,13 +40,15 @@ def txt_edgelist_to_adjlist(filename, pickle_name=None):
     assert os.path.exists(
         filename), 'File not found. Please check: %s' % (filename)
     # Read lines and create graph dict
-    with open(filename, 'rb') as datatext:
+    with open(filename, 'r') as datatext:
         graph = dict()
         for textline in datatext.readlines():
             # Skip comments
             if textline[0] == '#':
                 continue
-            edge = textline.split()  # no arg -> white spaces
+            if split is not None:
+              textline = textline.strip()
+            edge = textline.split(split)  # no arg -> white spaces
             assert len(edge) == 2, 'Invalid data line: %s' % textline
             try:
                 t_edge = (int(edge[0]), int(edge[1]))
@@ -66,7 +68,6 @@ def txt_edgelist_to_adjlist(filename, pickle_name=None):
         # Save as a pickle file
         with open(pickle_name, 'wb') as pfile:
             pickle.dump(graph, pfile, pickle.HIGHEST_PROTOCOL)
-    return graph
 
 
 def walk_length_stat_test(build_walk_func, num_walk,

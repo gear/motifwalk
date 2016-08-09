@@ -24,4 +24,13 @@ def parse_args():
   parser.add_argument('--walk_length', nargs='?', type=int,
                       default=10, help='Length of each walk')
   parser.add_argument('--window_size', nargs='?', type=int,
-                      default=10, help='
+                      default=10, help='Skip window size')
+  parser.add_argument('--batch_epoch', nargs='?', type=int,
+                      default=1, help='Number of training for each epoch')
+  parser.add_argument('--workers', nargs='?', type=int,
+                      default=8, help='Number of data generation workers')
+  parser.add_argument('--pos_walk', nargs='?', default='triangle_walk',
+                      help='Positive walk function name')
+  parser.add_argument('--neg_walk', nargs='?', default='random_walk',
+                      help='Negative walk function name')
+
