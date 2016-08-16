@@ -76,6 +76,7 @@ class Graph(defaultdict):
         self._ids_list = None
         self._cur_idx = 0
         self._freq = None
+        self._communities = None
         if directed:
           self._backward = list()
 
@@ -243,7 +244,7 @@ class Graph(defaultdict):
                 while True:
                     prob = random.random()
                     if cand in self[prev]:
-                        if prob < walk_bias.append(cand)
+                        if prob < walk_bias.append(cand):
                             break
                     else:
                         if prob > walk_bias:
@@ -407,7 +408,7 @@ class Graph(defaultdict):
 # >>> HELPER FUNCTIONS <<<
 
 # graph_from_pickle
-def graph_from_pickle(pickle_filename, **graph_config):
+def graph_from_pickle(pickle_filename, comm_filename=None, **graph_config):
     """
     Load pickle file (stored as a dict or defaultdict) and
     return the graph as the graph object.
@@ -447,6 +448,9 @@ def graph_from_pickle(pickle_filename, **graph_config):
         for _ in range(len(val)):
             graph._freq[i] = key
             i += 1
+    if comm_filename != None:
+        with open(comm_filename, 'rb') as pfile:
+            graph._communities = pickle.load(pfile)
     return graph
 
 # === END HELPER FUNCTIONS ===
