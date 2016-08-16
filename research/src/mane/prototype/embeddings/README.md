@@ -64,18 +64,18 @@ NOTE: batch\_size is the number of samples per loss update in keras.
 11. Negative sampling: Unifromly random (distort = 0);
 
 
-### Id: BC3001
+### Id: BC3005
 
 1. epoch = 1; 
 2. emb\_dim = 128; 
 3. neg\_samp = 5; 
 4. num\_skip = 15; 
-5. num\_walk = 10;
-6. walk\_length = 80;
+5. num\_walk = 1;
+6. walk\_length = 40;
 7. nodes\_per\_epoch = 200;
-8. batch\_size = 512;
+8. batch\_size = 1024;
 9. skip\_window = 10;
-10. Method: Random walk;
+10. Method: Motif walk (old implementation);
 11. Negative sampling: Unigram by degree;
 
 
