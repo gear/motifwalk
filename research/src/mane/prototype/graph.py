@@ -14,7 +14,7 @@
 # v0.5: Create contrast walk generator.
 # v0.6: Fix batch generator for new model (label={0,1}).
 # v0.7: Switch back to simple generator.
-# v1.0: Change graph architecture (include back-pointer) - Python 3 
+# v0.8: Add community variable and label generator.
 
 # External modules
 import random
@@ -76,6 +76,7 @@ class Graph(defaultdict):
         self._ids_list = None
         self._cur_idx = 0
         self._freq = None
+        self._communities = None
         if directed:
           self._backward = list()
 
@@ -243,8 +244,7 @@ class Graph(defaultdict):
                 while True:
                     prob = random.random()
                     if cand in self[prev]:
-                        if prob < walk_bias:
-                            walk_path.append(cand)
+                        if prob < walk_bias.append(cand):
                             break
                     else:
                         if prob > walk_bias:
@@ -257,6 +257,7 @@ class Graph(defaultdict):
             cur = cand
         return walk_path
 
+    # TODO: Fix unigram sampling process
     def gen_walk(self, walk_func_name, walk_per_batch=500, 
                  walk_length=80, neg_samp=5, num_skip=5, shuffle=True, 
                  skip_window=10, neg_samp_distort=0.75, gamma=0.8, 
@@ -302,6 +303,17 @@ class Graph(defaultdict):
                     classes[i * samples_per_walk + j * samples_per_node + num_skip + k] = random.choice(self.nodes())
                     labels[i * samples_per_walk + j * samples_per_node + num_skip + k] = 0.0
         return ((targets, classes),labels, walk_per_batch) 
+
+    def gen_community(self, portion=0.1):
+        """
+        Generate list of data labels and corresponding node id.
+        """
+        if self._communities is None:
+            print("ERROR. Community not found.")
+        num_true = int(portion * len(self))
+        ids = list(np.random.choice(self.nodes(), num_true))
+        labels = [self._communities[x] for x in ids] 
+        return ids, labels
 
     def gen_contrast(self, possitive_name='motif_walk',
                      negative_name='random_walk', num_batches=100, reset=0.0,
@@ -407,7 +419,7 @@ class Graph(defaultdict):
 # >>> HELPER FUNCTIONS <<<
 
 # graph_from_pickle
-def graph_from_pickle(pickle_filename, **graph_config):
+def graph_from_pickle(pickle_filename, comm_filename=None, **graph_config):
     """
     Load pickle file (stored as a dict or defaultdict) and
     return the graph as the graph object.
@@ -447,6 +459,9 @@ def graph_from_pickle(pickle_filename, **graph_config):
         for _ in range(len(val)):
             graph._freq[i] = key
             i += 1
+    if comm_filename != None:
+        with open(comm_filename, 'rb') as pfile:
+            graph._communities = pickle.load(pfile)
     return graph
 
 # === END HELPER FUNCTIONS ===
