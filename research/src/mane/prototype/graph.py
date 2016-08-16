@@ -257,6 +257,7 @@ class Graph(defaultdict):
             cur = cand
         return walk_path
 
+    # TODO: Fix unigram sampling process
     def gen_walk(self, walk_func_name, walk_per_batch=500, 
                  walk_length=80, neg_samp=5, num_skip=5, shuffle=True, 
                  skip_window=10, neg_samp_distort=0.75, gamma=0.8, 
