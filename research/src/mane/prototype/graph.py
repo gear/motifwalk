@@ -312,7 +312,7 @@ class Graph(defaultdict):
             print("ERROR. Community not found.")
         num_true = int(portion * len(self))
         ids = list(np.random.choice(self.nodes(), num_true))
-        labels = [self._communites[x] for x in ids] 
+        labels = [self._communities[x] for x in ids] 
         return ids, labels
 
     def gen_contrast(self, possitive_name='motif_walk',
