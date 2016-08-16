@@ -243,8 +243,7 @@ class Graph(defaultdict):
                 while True:
                     prob = random.random()
                     if cand in self[prev]:
-                        if prob < walk_bias:
-                            walk_path.append(cand)
+                        if prob < walk_bias.append(cand)
                             break
                     else:
                         if prob > walk_bias:
