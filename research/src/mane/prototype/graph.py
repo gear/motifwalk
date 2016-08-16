@@ -14,7 +14,7 @@
 # v0.5: Create contrast walk generator.
 # v0.6: Fix batch generator for new model (label={0,1}).
 # v0.7: Switch back to simple generator.
-# v1.0: Change graph architecture (include back-pointer) - Python 3 
+# v0.8: Add community variable and label generator.
 
 # External modules
 import random
@@ -303,6 +303,17 @@ class Graph(defaultdict):
                     classes[i * samples_per_walk + j * samples_per_node + num_skip + k] = random.choice(self.nodes())
                     labels[i * samples_per_walk + j * samples_per_node + num_skip + k] = 0.0
         return ((targets, classes),labels, walk_per_batch) 
+
+    def gen_community(self, portion=0.1):
+        """
+        Generate list of data labels and corresponding node id.
+        """
+        if self._communities is None:
+            print("ERROR. Community not found.")
+        num_true = int(portion * len(self))
+        ids = list(np.random.choice(self.nodes(), num_true))
+        labels = [self._communites[x] for x in ids] 
+        return ids, labels
 
     def gen_contrast(self, possitive_name='motif_walk',
                      negative_name='random_walk', num_batches=100, reset=0.0,
