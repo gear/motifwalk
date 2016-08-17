@@ -324,7 +324,9 @@ class Graph(defaultdict):
                     cand = random.choice(reverse_comm[comm_id])
                 ids.append(cand)
         labels = [self._communities[x] for x in ids] 
-        return ids, labels
+        combined = list(zip(ids,labels))
+        random.shuffle(combined)
+        return zip(*combined)
 
     def gen_contrast(self, possitive_name='motif_walk',
                      negative_name='random_walk', num_batches=100, reset=0.0,
