@@ -173,18 +173,18 @@ NOTE: Run on GTX
 10. Method: Motif walk - triangle bias 0.8;
 11. Negative sampling: Uniformly random (distort = 0);
 
-### Id: BC3001
+### Id: BC3012
 
 1. epoch = 1; 
 2. emb\_dim = 128; 
 3. neg\_samp = 15; 
 4. num\_skip = 5; 
-5. num\_walk = 10;
+5. num\_walk = 20;
 6. walk\_length = 80;
-7. nodes\_per\_epoch = 200;
-8. batch\_size = 512;
+7. nodes\_per\_epoch = 100;
+8. batch\_size = 128;
 9. skip\_window = 10;
-10. Method: Random walk;
+10. Method: Motif walk;
 11. Negative sampling: Unifromly random (distort = 0);
 
 ### Id: BC3001
