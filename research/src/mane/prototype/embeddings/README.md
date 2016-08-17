@@ -38,8 +38,8 @@ NOTE: batch\_size is the number of samples per loss update in keras.
 
 1. epoch = 1; 
 2. emb\_dim = 128; 
-3. neg\_samp = 5; 
-4. num\_skip = 15; 
+3. neg\_samp = 15; 
+4. num\_skip = 5; 
 5. num\_walk = 10;
 6. walk\_length = 80;
 7. nodes\_per\_epoch = 200;
@@ -53,8 +53,8 @@ NOTE: batch\_size is the number of samples per loss update in keras.
 
 1. epoch = 1; 
 2. emb\_dim = 128; 
-3. neg\_samp = 5; 
-4. num\_skip = 15; 
+3. neg\_samp = 15; 
+4. num\_skip = 5; 
 5. num\_walk = 10;
 6. walk\_length = 80;
 7. nodes\_per\_epoch = 200;
@@ -68,8 +68,8 @@ NOTE: batch\_size is the number of samples per loss update in keras.
 
 1. epoch = 1; 
 2. emb\_dim = 128; 
-3. neg\_samp = 5; 
-4. num\_skip = 15; 
+3. neg\_samp = 15; 
+4. num\_skip = 5; 
 5. num\_walk = 1;
 6. walk\_length = 40;
 7. nodes\_per\_epoch = 200;
@@ -83,8 +83,8 @@ NOTE: batch\_size is the number of samples per loss update in keras.
 
 1. epoch = 1; 
 2. emb\_dim = 128; 
-3. neg\_samp = 5; 
-4. num\_skip = 10; 
+3. neg\_samp = 10; 
+4. num\_skip = 5; 
 5. num\_walk = 5;
 6. walk\_length = 80;
 7. nodes\_per\_epoch = 400;
@@ -101,26 +101,71 @@ NOTE: Run on GTX580
 2. emb\_dim = 128; 
 3. neg\_samp = 10; 
 4. num\_skip = 5; 
-5. num\_walk = 10;
+5. num\_walk = 5;
 6. walk\_length = 80;
 7. nodes\_per\_epoch = 400;
 8. batch\_size = 1024;
 9. skip\_window = 10;
-10. Method: Motif walk - triangle (old implementation);
+10. Method: Motif walk - triangle (old implementation;
 11. Negative sampling: Uniformly random;
 
 NOTE: Run on GTX580
+
+### Id: BC3008
+
+1. epoch = 1; 
+2. emb\_dim = 128; 
+3. neg\_samp = 15; 
+4. num\_skip = 5; 
+5. num\_walk = 5;
+6. walk\_length = 80;
+7. nodes\_per\_epoch = 400;
+8. batch\_size = 512;
+9. skip\_window = 10;
+10. Method: Motif walk - triangle bias 0.6;
+11. Negative sampling: Uniformly random;
+
+NOTE: Run on GTX580
+
+### Id: BC3009
+
+1. epoch = 1; 
+2. emb\_dim = 128; 
+3. neg\_samp = 15; 
+4. num\_skip = 5; 
+5. num\_walk = 10;
+6. walk\_length = 60;
+7. nodes\_per\_epoch = 400;
+8. batch\_size = 1024;
+9. skip\_window = 10;
+10. Method: Motif walk - triangle bias 0.6;
+11. Negative sampling: Unifromly random;
 
 ### Id: BC3001
 
 1. epoch = 1; 
 2. emb\_dim = 128; 
-3. neg\_samp = 5; 
-4. num\_skip = 15; 
+3. neg\_samp = 15; 
+4. num\_skip = 5; 
 5. num\_walk = 10;
 6. walk\_length = 80;
 7. nodes\_per\_epoch = 200;
 8. batch\_size = 512;
 9. skip\_window = 10;
 10. Method: Random walk;
-11. Negative sampling: Unigram by degree;
+11. Negative sampling: Unifromly random (distort = 0);
+
+### Id: BC3001
+
+1. epoch = 1; 
+2. emb\_dim = 128; 
+3. neg\_samp = 15; 
+4. num\_skip = 5; 
+5. num\_walk = 10;
+6. walk\_length = 80;
+7. nodes\_per\_epoch = 200;
+8. batch\_size = 512;
+9. skip\_window = 10;
+10. Method: Random walk;
+11. Negative sampling: Unifromly random (distort = 0);
+
