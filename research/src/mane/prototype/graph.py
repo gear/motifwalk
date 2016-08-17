@@ -308,11 +308,21 @@ class Graph(defaultdict):
     def gen_community(self, portion=0.1):
         """
         Generate list of data labels and corresponding node id.
+        Guarantees to yeild all communities. Non-overlapping only.
         """
         if self._communities is None:
             print("ERROR. Community not found.")
-        num_true = int(portion * len(self))
-        ids = list(np.random.choice(self.nodes(), num_true))
+        reverse_comm = defaultdict(list)
+        ids = list()
+        for key, val in self._communities.items():
+            reverse_comm[val].append(key)
+        for comm_id in reverse_comm.keys():
+            num_true = int(portion*len(reverse_comm[comm_id]))
+            cand = random.choice(reverse_comm[comm_id])
+            for _ in range(num_true):
+                while cand in ids:
+                    cand = random.choice(reverse_comm[comm_id])
+                ids.append(cand)
         labels = [self._communities[x] for x in ids] 
         return ids, labels
 
