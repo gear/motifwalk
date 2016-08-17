@@ -195,7 +195,7 @@ class Graph(defaultdict):
 
     # TODO: Generalize motif walk
     def motif_walk(self, length, start_node=None, rand_seed=None,
-                   reset=0.0, walk_bias=0.9):
+                   reset=0.0, walk_bias=0.6):
         """
         Walk follow the motif pattern. 
 
