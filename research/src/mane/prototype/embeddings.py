@@ -158,7 +158,7 @@ class EmbeddingNet():
         nce_weights = Reshape((self._emb_dim,), name="reshape_weights")(nce_weights)
         nce_bias = Reshape(target_shape=(1,), name="reshape_bias")(nce_bias)
         dot_prod = Merge(mode=row_dot, output_shape=merge_shape,
-                         name='row_wise_dot')([embeddings, nce_weights])
+                         name='row_wise_dot')([embeddings, nce_weights, label_in])
         logits = Merge(mode='sum', output_shape=(1,),
                        name='logits')([dot_prod, nce_bias])
         #sigm = Activation('sigmoid', name='label')(logits)
@@ -233,18 +233,19 @@ def row_dot(inputs):
     """
     Compute row-element-wise dot
     for input 2D matrices
+    with sign for label
     """
-    return K.batch_dot(inputs[0], inputs[1], axes=1)
+    return inputs[2] * K.batch_dot(inputs[0], inputs[1], axes=1)
 
 def nlog_sigmoid(inputs):
     """ 
     inputs[1]: label 1 and -1
     inputs[0]: logit
     """
-    return -K.log(inputs[1] * K.sigmoid(inputs[0]))
+    return K.log(K.sigmoid(inputs))
 
 def loss_ns(inputs):
-    return K.sum(nlog_sigmoid(inputs))
+    return -K.sum(nlog_sigmoid(inputs))
 
 def merge_shape(inputs):
     return (inputs[0][0], 1)
