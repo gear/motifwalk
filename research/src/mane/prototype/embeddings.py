@@ -141,8 +141,6 @@ class EmbeddingNet():
                           dtype='int32', name='target')
         class_in = Input(batch_shape=(None, 1),
                          dtype='int32', name='class')
-        label_in = Input(batch_shape=(None, 1),
-                         dtype='float32', name='ns_label')
         embeddings = Embedding(input_dim=input_dim,
                                output_dim=self._emb_dim,
                                name='node_embeddings', input_length=1,
@@ -158,11 +156,11 @@ class EmbeddingNet():
         nce_weights = Reshape((self._emb_dim,), name="reshape_weights")(nce_weights)
         nce_bias = Reshape(target_shape=(1,), name="reshape_bias")(nce_bias)
         dot_prod = Merge(mode=row_dot, output_shape=merge_shape,
-                         name='row_wise_dot')([embeddings, nce_weights, label_in])
+                         name='row_wise_dot')([embeddings, nce_weights])
         logits = Merge(mode='sum', output_shape=(1,),
                        name='logits')([dot_prod, nce_bias])
         #sigm = Activation('sigmoid', name='label')(logits)
-        self._model = Model(input=[target_in, class_in, label_in], output=logits)
+        self._model = Model(input=[target_in, class_in], output=logits)
         self._model.compile(loss=loss_ns, optimizer=optimizer,
                             name='EmbeddingNet')
         self._built = True
@@ -235,17 +233,10 @@ def row_dot(inputs):
     for input 2D matrices
     with sign for label
     """
-    return inputs[2] * K.batch_dot(inputs[0], inputs[1], axes=1)
+    return K.batch_dot(inputs[0], inputs[1], axes=1)
 
-def nlog_sigmoid(inputs):
-    """ 
-    inputs[1]: label 1 and -1
-    inputs[0]: logit
-    """
-    return K.log(K.sigmoid(inputs))
-
-def loss_ns(inputs):
-    return -K.sum(nlog_sigmoid(inputs))
+def loss_ns(inputs, labels):
+    return -K.sum(K.log(K.sigmoid(labels*inputs)))
 
 def merge_shape(inputs):
     return (inputs[0][0], 1)
