@@ -187,6 +187,7 @@ class EmbeddingNet():
         # Graph data generator with negative sampling
         shuffle = True
         for i in range(self._num_walk):
+            print('===========')
             print('Graph pass:', i+1 ,'/', self._num_walk)
             for j in range(math.ceil(len(self._graph)/num_nodes_per_batch)):
                 print('Mini batch:', j+1, '/', math.ceil(len(self._graph)/num_nodes_per_batch))
@@ -200,7 +201,6 @@ class EmbeddingNet():
                 if wpb == num_nodes_per_batch:
                     shuffle = False
                 else:
-                    print('Reset')
                     shuffle = True
                 self._model.fit([targets, classes], [labels], batch_size=batch_size,
                                 nb_epoch=self._epoch, verbose=verbose)
