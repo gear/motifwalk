@@ -141,6 +141,8 @@ class EmbeddingNet():
                           dtype='int32', name='target')
         class_in = Input(batch_shape=(None, 1),
                          dtype='int32', name='class')
+        label_in = Input(batch_shape=(None, 1),
+                         dtype='float32', name='ns_label')
         embeddings = Embedding(input_dim=input_dim,
                                output_dim=self._emb_dim,
                                name='node_embeddings', input_length=1,
@@ -159,9 +161,9 @@ class EmbeddingNet():
                          name='row_wise_dot')([embeddings, nce_weights])
         logits = Merge(mode='sum', output_shape=(1,),
                        name='logits')([dot_prod, nce_bias])
-        sigm = Activation('sigmoid', name='label')(logits)
-        self._model = Model(input=[target_in, class_in], output=sigm)
-        self._model.compile(loss=loss, optimizer=optimizer,
+        #sigm = Activation('sigmoid', name='label')(logits)
+        self._model = Model(input=[target_in, class_in, label_in], output=logits)
+        self._model.compile(loss=loss_ns, optimizer=optimizer,
                             name='EmbeddingNet')
         self._built = True
 
@@ -234,6 +236,15 @@ def row_dot(inputs):
     """
     return K.batch_dot(inputs[0], inputs[1], axes=1)
 
+def nlog_sigmoid(inputs):
+    """ 
+    inputs[1]: label 1 and -1
+    inputs[0]: logit
+    """
+    return -K.log(inputs[1] * K.sigmoid(inputs[0]))
+
+def loss_ns(inputs):
+    return K.sum(nlog_sigmoid(inputs))
 
 def merge_shape(inputs):
     return (inputs[0][0], 1)
