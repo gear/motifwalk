@@ -187,9 +187,9 @@ NOTE: Run on GTX
 10. Method: Motif walk;
 11. Negative sampling: Unifromly random (distort = 0);
 
-### Id: BC3013
+### Id: BC3013 lala
 
-1. epoch = 1; 124 
+1. epoch = 1; 
 2. emb\_dim = 128; 
 3. neg\_samp = 15; 
 4. num\_skip = 5; 
