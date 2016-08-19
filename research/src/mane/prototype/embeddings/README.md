@@ -282,10 +282,12 @@ NOTE: Employ straight forward loss function
 5. num\_walk = 10;
 6. walk\_length = 80;
 7. nodes\_per\_epoch = 200;
-8. batch\_size = 200;
+8. batch\_size = 1000;
 9. skip\_window = 10;
 10. Method: Random walk;
 11. Negative sampling: Uniformly random (distort = 0);
+
+NOTE: Emply straight forward loss function
 
 ### Id: BC3020
 
@@ -295,11 +297,13 @@ NOTE: Employ straight forward loss function
 4. num\_skip = 5; 
 5. num\_walk = 10;
 6. walk\_length = 80;
-7. nodes\_per\_epoch = 400;
-8. batch\_size = 200;
+7. nodes\_per\_epoch = 200;
+8. batch\_size = 100;
 9. skip\_window = 10;
-10. Method: Motif walk 0.8;
+10. Method: Random walk;
 11. Negative sampling: Uniformly random (distort = 0);
+
+NOTE: Add 'l2' regularizer to BC2019
 
 ### Id: BC3018
 

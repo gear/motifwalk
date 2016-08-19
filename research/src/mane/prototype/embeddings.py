@@ -142,12 +142,12 @@ class EmbeddingNet():
         class_in = Input(batch_shape=(None, 1),
                          dtype='int32', name='class')
         embeddings = Embedding(input_dim=input_dim,
-                               output_dim=self._emb_dim, W_regularizer='l2',
+                               output_dim=self._emb_dim,
                                name='node_embeddings', input_length=1,
                                init=self.init_uniform)(target_in)
         nce_weights = Embedding(input_dim=input_dim,
                                 output_dim=self._emb_dim,
-                                input_length=1, W_regularizer='l2',
+                                input_length=1, 
                                 init=self.init_normal, name="nce_weights_embedding")(class_in)
         nce_bias = Embedding(input_dim=input_dim,
                              output_dim=1, name='nce_bias_emb',
