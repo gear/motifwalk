@@ -27,6 +27,7 @@ from keras.layers.embeddings import Embedding
 from keras.optimizers import SGD, Adam
 from keras import backend as K
 from keras import initializations as init
+from keras.constraints import unitnorm
 
 __author__ = "Hoang Nguyen"
 __email__ = "hoangnt@ai.cs.titech.ac.jp"
