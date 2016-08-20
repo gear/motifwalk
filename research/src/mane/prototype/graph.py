@@ -302,7 +302,7 @@ class Graph(defaultdict):
                 for k in range(neg_samp):
                     targets[i * samples_per_walk + j * samples_per_node + num_skip + k] = buff[0]
                     classes[i * samples_per_walk + j * samples_per_node + num_skip + k] = random.choice(self.nodes())
-                    labels[i * samples_per_walk + j * samples_per_node + num_skip + k] = -1.0
+                    labels[i * samples_per_walk + j * samples_per_node + num_skip + k] = 0.0
         return ((targets, classes),labels, walk_per_batch) 
 
     def gen_community(self, portion=0.1):

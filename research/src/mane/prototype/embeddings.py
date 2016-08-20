@@ -147,7 +147,7 @@ class EmbeddingNet():
                                init=self.init_uniform)(target_in)
         nce_weights = Embedding(input_dim=input_dim,
                                 output_dim=self._emb_dim,
-                                input_length=1, 
+                                input_length=1,
                                 init=self.init_normal, name="nce_weights_embedding")(class_in)
         nce_bias = Embedding(input_dim=input_dim,
                              output_dim=1, name='nce_bias_emb',
@@ -159,9 +159,9 @@ class EmbeddingNet():
                          name='row_wise_dot')([embeddings, nce_weights])
         logits = Merge(mode='sum', output_shape=(1,),
                        name='logits')([dot_prod, nce_bias])
-        #sigm = Activation('sigmoid', name='label')(logits)
-        self._model = Model(input=[target_in, class_in], output=logits)
-        self._model.compile(loss=loss_ns, optimizer=optimizer,
+        sigm = Activation('sigmoid', name='label')(logits)
+        self._model = Model(input=[target_in, class_in], output=sigm)
+        self._model.compile(loss=loss, optimizer=optimizer,
                             name='EmbeddingNet')
         self._built = True
 
@@ -187,7 +187,6 @@ class EmbeddingNet():
         # Graph data generator with negative sampling
         shuffle = True
         for i in range(self._num_walk):
-            print('===========')
             print('Graph pass:', i+1 ,'/', self._num_walk)
             for j in range(math.ceil(len(self._graph)/num_nodes_per_batch)):
                 print('Mini batch:', j+1, '/', math.ceil(len(self._graph)/num_nodes_per_batch))
@@ -201,6 +200,7 @@ class EmbeddingNet():
                 if wpb == num_nodes_per_batch:
                     shuffle = False
                 else:
+                    print('Reset')
                     shuffle = True
                 self._model.fit([targets, classes], [labels], batch_size=batch_size,
                                 nb_epoch=self._epoch, verbose=verbose)
@@ -231,12 +231,9 @@ def row_dot(inputs):
     """
     Compute row-element-wise dot
     for input 2D matrices
-    with sign for label
     """
     return K.batch_dot(inputs[0], inputs[1], axes=1)
 
-def loss_ns(inputs, labels):
-    return -K.sum(K.log(K.sigmoid(labels*inputs)))
 
 def merge_shape(inputs):
     return (inputs[0][0], 1)
