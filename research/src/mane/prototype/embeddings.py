@@ -27,7 +27,6 @@ from keras.layers.embeddings import Embedding
 from keras.optimizers import SGD, Adam
 from keras import backend as K
 from keras import initializations as init
-from keras.constraints import unitnorm
 
 __author__ = "Hoang Nguyen"
 __email__ = "hoangnt@ai.cs.titech.ac.jp"
@@ -142,11 +141,11 @@ class EmbeddingNet():
                           dtype='int32', name='target')
         class_in = Input(batch_shape=(None, 1),
                          dtype='int32', name='class')
-        embeddings = Embedding(input_dim=input_dim, W_constraint=unitnorm(),
+        embeddings = Embedding(input_dim=input_dim,
                                output_dim=self._emb_dim,
                                name='node_embeddings', input_length=1,
                                init=self.init_uniform)(target_in)
-        nce_weights = Embedding(input_dim=input_dim, W_constraint=unitnorm(),
+        nce_weights = Embedding(input_dim=input_dim,
                                 output_dim=self._emb_dim,
                                 input_length=1,
                                 init=self.init_normal, name="nce_weights_embedding")(class_in)
