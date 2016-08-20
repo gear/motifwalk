@@ -305,7 +305,7 @@ NOTE: Emply straight forward loss function
 
 NOTE: Add 'l2' regularizer to BC2019
 
-### Id: BC3018
+### Id: BC3021
 
 1. epoch = 1; 
 2. emb\_dim = 128; 
@@ -314,12 +314,14 @@ NOTE: Add 'l2' regularizer to BC2019
 5. num\_walk = 10;
 6. walk\_length = 80;
 7. nodes\_per\_epoch = 400;
-8. batch\_size = 200;
+8. batch\_size = 400;
 9. skip\_window = 10;
-10. Method: Motif walk 0.8;
+10. Method: Random walk;
 11. Negative sampling: Uniformly random (distort = 0);
 
-### Id: BC3018
+NOTE: Remove 'l2' reguarizer, switch back to cross entropy loss, add unit constrain on embeddings
+
+### Id: BC3022
 
 1. epoch = 1; 
 2. emb\_dim = 128; 
@@ -327,11 +329,13 @@ NOTE: Add 'l2' regularizer to BC2019
 4. num\_skip = 5; 
 5. num\_walk = 10;
 6. walk\_length = 80;
-7. nodes\_per\_epoch = 400;
-8. batch\_size = 200;
+7. nodes\_per\_epoch = 200;
+8. batch\_size = 400;
 9. skip\_window = 10;
-10. Method: Motif walk 0.8;
+10. Method: Random walk;
 11. Negative sampling: Uniformly random (distort = 0);
+
+NOTE: Compare with BC3022 for nodes\_per\_epoch
 
 ### Id: BC3018
 
