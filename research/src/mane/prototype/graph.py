@@ -15,6 +15,7 @@
 # v0.6: Fix batch generator for new model (label={0,1}).
 # v0.7: Switch back to simple generator.
 # v0.8: Add community variable and label generator.
+# v0.9: Clean up code and prepare for parallel.
 
 # External modules
 import random
@@ -40,7 +41,6 @@ __email__ = "{hoangnt,nukui.s}@net.c.titech.ac.jp"
 ids_list = []
 cur_idx = []
 
-# >>> BEGIN CLASS 'graph' <<<
 class Graph(defaultdict):
     """Graph is a dictionary contains nodes
     """
@@ -258,13 +258,11 @@ class Graph(defaultdict):
             cur = cand
         return walk_path
 
-    # TODO: Fix unigram sampling process
-    def gen_walk(self, walk_func_name, walk_per_batch=500, 
-                 walk_length=80, neg_samp=5, num_skip=5, shuffle=True, 
-                 skip_window=10, neg_samp_distort=0.75, gamma=0.8, 
-                 n_threads=6, max_pool=10):
+    def gen_walk(self, pos_func, neg_func, pos_args, neg_args,
+                 walk_per_batch, walk_length, neg_samp, num_skip, 
+                 shuffle=True, window_size):
         """
-        Generate walk. Not using neg_samp_distort now.
+        Generate data from positive and negative context generators.
         """
         if shuffle:
             self._ids_list = self.nodes()
@@ -277,7 +275,9 @@ class Graph(defaultdict):
         labels = np.ndarray(shape=(data_shape), dtype=np.float32)
         idx = self._cur_idx
         self._cur_idx += walk_per_batch
-        walk_func = getattr(self, walk_func_name)
+        _pos_func = getattr(self, pos_func)
+        _neg_func = getattr(self, neg_func)
+        # A little messy computation for having better running time
         samples_per_node = num_skip + neg_samp
         samples_per_walk = (walk_length-skip_window + 1) * samples_per_node
         for i in range(walk_per_batch):
@@ -293,19 +293,21 @@ class Graph(defaultdict):
                 classi = 0
                 class_avoid = [classi]
                 for k in range(num_skip):
-                    targets[i * samples_per_walk + j * samples_per_node + k] = buff[0]
+                    la = i * samples_per_walk + j * samples_per_node + k
+                    targets[la] = buff[0]
                     while classi in class_avoid:
                         classi = random.randint(1, skip_window-1)
                     class_avoid.append(classi)
-                    classes[i * samples_per_walk + j * samples_per_node + k] = buff[classi]
-                    labels[i * samples_per_walk + j * samples_per_node + k] = 1.0
+                    classes[la] = buff[classi]
+                    labels[la] = 1.0
                 for k in range(neg_samp):
-                    targets[i * samples_per_walk + j * samples_per_node + num_skip + k] = buff[0]
-                    classes[i * samples_per_walk + j * samples_per_node + num_skip + k] = random.choice(self.nodes())
-                    labels[i * samples_per_walk + j * samples_per_node + num_skip + k] = 0.0
+                    la = i * samples_per_walk + j * samples_per_node + num_skip + k
+                    targets[la] = buff[0]
+                    classes[la] = random.choice(self.nodes())
+                    labels[la] = 0.0
         return ((targets, classes),labels, walk_per_batch) 
 
-    def gen_community(self, portion=0.1):
+    def gen_training_community(self, portion=0.1):
         """
         Generate list of data labels and corresponding node id.
         Guarantees to yeild all communities. Non-overlapping only.
@@ -328,110 +330,6 @@ class Graph(defaultdict):
         random.shuffle(combined)
         return zip(*combined)
 
-    def gen_contrast(self, possitive_name='motif_walk',
-                     negative_name='random_walk', num_batches=100, reset=0.0,
-                     walk_length=10, num_walk=5, num_true=1, neg_samp=15,
-                     contrast_iter=10, num_skip=2, shuffle=True, skip_window=3,
-                     gamma=0.8):
-        """
-        Create training dataset using possitive samples from motif walk
-        and the negative samples from random walk.
-
-        Parameters
-        ----------
-          possitive_name: Positive sample function name (e.g. 'motif_walk')
-          negative_name: Negative sample function name (e.g. 'random_walk')
-          num_batches: Number of batches per yield
-          num_walk: Number of walk performed each starting node
-          num_true: Number of true class for each sample.
-          neg_samp: Number of negative sampling for each target.
-          num_skip: Number of positive sampling for each target.
-          shuffle: If node list is shuffled before generating random walk.
-          skip_window: Window for getting sample from the random walk list.
-          gamma: Exponential decay for sampling distance
-
-        Yields
-        ------
-          Yields a single tuple as the gen_walk function.
-        """
-        assert skip_window >= num_skip, 'Window size is too small.'
-        pos_func = getattr(self, possitive_name)
-        neg_func = getattr(self, negative_name)
-        # Generator loops forever
-        while True:
-            for _ in range(num_walk):
-                if shuffle:
-                    id_list = np.random.permutation(self.keys())
-                else:
-                    id_list = self.keys()
-                # Accumulator for each batch
-                count_batch = num_batches - 1
-                targets = []
-                classes = []
-                labels = []
-                weights = []
-                eol = id_list[-1]
-                for i in (id_list):
-                    # Perform walk if the node is connected
-                    if not len(self[i]) > 0:
-                        continue
-                    # Perform 2 walks and return set of nodes
-                    pos_walk = []
-                    neg_walk = []
-                    for _ in range(contrast_iter):
-                        pos_walk.extend(
-                            pos_func(start_node=i, length=walk_length))
-                        neg_walk.extend(
-                            neg_func(start_node=i, length=walk_length))
-                    # The set of negative samples is the contrast between 2
-                    # walks
-                    neg_samps_set = set(neg_walk) - set(pos_walk)
-                    neg_samps = list(neg_samps_set)
-                    if len(neg_samps) == 0:
-                        print('Skipping empty set')
-                        continue
-                    pos_walk = pos_func(start_node=i, length=walk_length)
-                    for j, target in enumerate(pos_walk):
-                        # Window [lower:upper] for skipping
-                        lower = max(0, j - skip_window)
-                        upper = min(walk_length, j + skip_window + 1)
-                        for _ in range(num_skip):
-                            rand_index = random.randint(lower, upper-1)
-                            rand_node = pos_walk[rand_index]
-                            distance = abs(rand_index - j)
-                            targets.append(target)
-                            classes.append(rand_node)
-                            labels.append(1.0)  # Possitive sample
-                            # weight of positive sample
-                            weights.append(pow(gamma, distance))
-                        for _ in range(neg_samp):
-                            rand_node = random.choice(neg_samps)
-                            targets.append(target)
-                            classes.append(rand_node)
-                            labels.append(0.0)  # Negative sample
-                            weights.append(1.0) # weight of neg. sample
-                    if count_batch <= 0 or i == eol:
-                        targets = np.array(targets, dtype=np.int32)
-                        classes = np.array(classes, dtype=np.int32)
-                        labels = np.array(labels, dtype=np.float32)
-                        weights = np.array(weights, dtype=np.float32)
-                        yield ({'target': targets, 'class': classes},
-                                {'label': labels},
-                                weights)
-                        count_batch = num_batches - 1
-                        targets = []
-                        classes = []
-                        labels = []
-                        weights = []
-                    else:
-                        count_batch -= 1
-
-# === END CLASS 'graph' ===
-
-
-# >>> HELPER FUNCTIONS <<<
-
-# graph_from_pickle
 def graph_from_pickle(pickle_filename, comm_filename=None, **graph_config):
     """
     Load pickle file (stored as a dict or defaultdict) and
@@ -476,5 +374,3 @@ def graph_from_pickle(pickle_filename, comm_filename=None, **graph_config):
         with open(comm_filename, 'rb') as pfile:
             graph._communities = pickle.load(pfile)
     return graph
-
-# === END HELPER FUNCTIONS ===
