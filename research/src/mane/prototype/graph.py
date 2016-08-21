@@ -269,7 +269,7 @@ class Graph(defaultdict):
             random.shuffle(self._ids_list)
             self._cur_idx = 0
         walk_per_batch = min(walk_per_batch, (len(self._ids_list) - self._cur_idx))
-        data_shape = walk_per_batch * (walk_length - skip_window + 1) * (num_skip+neg_samp)
+        data_shape = walk_per_batch * (walk_length - window_size + 1) * (num_skip+neg_samp)
         targets = np.ndarray(shape=(data_shape), dtype=np.int32)
         classes = np.ndarray(shape=(data_shape), dtype=np.int32)
         labels = np.ndarray(shape=(data_shape), dtype=np.float32)
@@ -277,19 +277,25 @@ class Graph(defaultdict):
         self._cur_idx += walk_per_batch
         _pos_func = getattr(self, pos_func)
         _neg_func = getattr(self, neg_func)
+        if pos_args is None:
+            pos_args = dict()
+        if neg_args is None:
+            neg_args = dict()
         # A little messy computation for having better running time
         samples_per_node = num_skip + neg_samp
-        samples_per_walk = (walk_length-skip_window + 1) * samples_per_node
+        samples_per_walk = (walk_length-window_size + 1) * samples_per_node
         for i in range(walk_per_batch):
-            walk = walk_func(walk_length, start_node=self._ids_list[idx])
+            pos_args['start_node'] = self._ids_list[idx]
+            pos_args['walk_length'] = walk_length
+            pos_walk = _pos_func(**pos_args)
             idx += 1
             walk_index = 0
-            buff = deque(maxlen=skip_window)
-            for _ in range(skip_window-1):
-                buff.append(walk[walk_index])
+            buff = deque(maxlen=window_size)
+            for _ in range(window_size-1):
+                buff.append(pos_walk[walk_index])
                 walk_index += 1
-            for j in range(walk_length-skip_window + 1):
-                buff.append(walk[walk_index+j])
+            for j in range(walk_length-window_size + 1):
+                buff.append(pos_walk[walk_index+j])
                 classi = 0
                 class_avoid = [classi]
                 for k in range(num_skip):
