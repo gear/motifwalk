@@ -8,6 +8,7 @@
 # v0.1: Change to functional API model.
 # v0.2: Test use fit_generator for basic model.
 # v1.0: Change architecture for xentropy and negative sampling.
+# v1.1: Move all training parameters to the training function.
 
 from __future__ import division
 from __future__ import print_function
@@ -24,7 +25,6 @@ import math
 from keras.models import Model
 from keras.layers import Input, Merge, Reshape, Activation, Lambda
 from keras.layers.embeddings import Embedding
-from keras.optimizers import SGD, Adam
 from keras import backend as K
 from keras import initializations as init
 
@@ -43,46 +43,41 @@ class EmbeddingNet():
     """
     # __init__
 
-    def __init__(self, model=None, graph=None, epoch=1,
-                 name='EmbeddingNet', emb_dim=128,
-                 neg_samp=5, num_skip=5, num_walk=5,
+    def __init__(self, graph=None, epoch=1,
+                 emb_dim=128, neg_samp=15, num_skip=5, num_walk=10,
                  walk_length=80, window_size=10,
-                 walk_per_batch=5):
+                 walk_per_batch=400):
         """
         Initialize a basic embedding neural network model with
         settings in kwargs.
 
         Parameters
         ----------
-          model: Keras Model instance.
-          graph: Graph instance contains graph adj list.
-          epoch: Number of pass for each batch.
-          name: Name of the model.
+          epoch: Number of training for each batch generated from
+                 the graph.
           emb_dim: Embedding size.
           neg_samp: Number of negative samples for each target.
           num_skip: Number of possitive samples for each target.
-          num_walk: Number of walk performed.
-          walk_length:
+          num_walk: Number of walk performed for each node. This
+                    can also be understood as number of graph pass.
+          walk_length: Length of each walk.
           window_size: Skipgram window for generating +data.
-          walk_per_batch: Number of walks per batch.
+          walk_per_batch: Number of starting node for each batch
+                          generated from the graph.
 
         Behavior
         --------
           Create basic object to store neural network parameters.
         """
         # General hyperparameters for embeddings
-        self._emb_dim = emb_dim
         self._epoch = epoch
+        self._emb_dim = emb_dim
         self._neg_samp = neg_samp
         self._num_skip = num_skip
         self._num_walk = num_walk
         self._walk_length = walk_length
         self._window_size = window_size
         self._walk_per_batch = walk_per_batch
-
-        # Status flags
-        self._built = False
-        self._trained = False
 
         # Data
         self._graph = graph
@@ -133,9 +128,7 @@ class EmbeddingNet():
           =====================================================================
           Total params: 1619639
         """
-        if self._built:
-            print('WARNING: Model was built.'
-                  ' Performing more than one build...')
+        # Avoid missing values
         input_dim = max(self._graph.keys())+1
         target_in = Input(batch_shape=(None, 1),
                           dtype='int32', name='target')
@@ -148,7 +141,8 @@ class EmbeddingNet():
         nce_weights = Embedding(input_dim=input_dim,
                                 output_dim=self._emb_dim,
                                 input_length=1,
-                                init=self.init_normal, name="nce_weights_embedding")(class_in)
+                                init=self.init_normal, 
+                                name="nce_weights_embedding")(class_in)
         nce_bias = Embedding(input_dim=input_dim,
                              output_dim=1, name='nce_bias_emb',
                              input_length=1, init='zero')(class_in)
@@ -163,21 +157,37 @@ class EmbeddingNet():
         self._model = Model(input=[target_in, class_in], output=sigm)
         self._model.compile(loss=loss, optimizer=optimizer,
                             name='EmbeddingNet')
-        self._built = True
 
     def get_weights(self):
         return self._model.get_weights()
 
-    def train(self, mode='random_walk', num_nodes_per_batch=500, batch_size=128, verbose=1):
+    def summary(self):
+        return self._model.summary()
+
+    def train(self, pos_samp='random_walk', neg_samp='unigram',
+              pos_args=None, neg_args=None,
+              epoch=1, neg_samp=15, num_skip=5,
+              num_walk=10, walk_length=80,
+              window_size=10, walk_per_batch=400,
+              batch_size=128, verbose=1):
+              num_nodes_per_batch=500, 
+              batch_size=128, verbose=1):
         """
-        Load data and train the model.
+        Generate data from the graph and train the computational
+        model.
 
         Parameters
         ----------
+            pos_samp: Name of the positive context generator.
+                      This name must match a context generator of
+                      the Graph class.
+            neg_samp: Name of the negative context generator.
+                      This name must match a context generator of
+                      the Graph class.
 
         Returns
         -------
-          None. Maybe weights of the embeddings?
+          None.
 
         Behavior
         --------
@@ -187,10 +197,11 @@ class EmbeddingNet():
         # Graph data generator with negative sampling
         shuffle = True
         for i in range(self._num_walk):
+            print('===========\n')
             print('Graph pass:', i+1 ,'/', self._num_walk)
             for j in range(math.ceil(len(self._graph)/num_nodes_per_batch)):
                 print('Mini batch:', j+1, '/', math.ceil(len(self._graph)/num_nodes_per_batch))
-                batch_data = self._graph.gen_walk(mode, num_nodes_per_batch,
+                batch_data = self._graph.gen_walk(pos_samp, num_nodes_per_batch,
                                               self._walk_length,
                                               self._neg_samp,
                                               self._num_skip,
@@ -200,7 +211,6 @@ class EmbeddingNet():
                 if wpb == num_nodes_per_batch:
                     shuffle = False
                 else:
-                    print('Reset')
                     shuffle = True
                 self._model.fit([targets, classes], [labels], batch_size=batch_size,
                                 nb_epoch=self._epoch, verbose=verbose)
