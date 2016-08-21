@@ -368,6 +368,7 @@ NOTE: Compare with BC3022
 11. Negative sampling: Uniformly random (distort = 0);
 
 NOTE: Remove weight norm constraint compare to BC3023
+NOTE: More walk is definitely better - don't look at loss!
 
 ### Id: BC3025
 
@@ -384,6 +385,7 @@ NOTE: Remove weight norm constraint compare to BC3023
 11. Negative sampling: Uniformly random (distort = 0);
 
 NOTE: Compare num\_walk = 10 vs. 3 with BC3024
+NOTE: More walk is better!
 
 ### Id: BC3018
 
