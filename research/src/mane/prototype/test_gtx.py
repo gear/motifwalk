@@ -29,5 +29,5 @@ model.train(pos_func=posFunc, neg_func=negFunc, epoch=ep,
             walk_per_batch=walkPerBatch, batch_size=batchSize, 
             verbose=vb)
 weights = model.get_weights()
-with open('embeddings/BC3028.weights', 'wb') as f:
+with open('embeddings/BC3029.weights', 'wb') as f:
   p.dump(weights, f, p.HIGHEST_PROTOCOL)
