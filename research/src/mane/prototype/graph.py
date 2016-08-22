@@ -39,30 +39,18 @@ ids_list = []
 cur_idx = []
 
 class Graph(defaultdict):
-  """Graph is a dictionary contains nodes
-  """
+
   def __init__(self, directed=False, name='graph'):
-  """
-  Parameters
-  ----------
-    name: Name string of the graph. (optional)
-    directed: Directed or undirected. (optional)
+    """
+    Parameters
+    ----------
+      name: Name string of the graph. (optional)
+      directed: Directed or undirected. (optional)
 
-  Returns
-  -------
-    none.
-
-  Effect
-  ------
-    Create a Graph object which is a default
-    dictionary with default factor generate
-    a dictionary mapping ids to node instances
-
-  Examples
-  --------
-    citeseer = Graph()
-    citeseer[20] = [1,3,4]
-  """
+    Returns
+    -------
+      none.
+    """
     super(Graph, self).__init__(list)
     self._name = name
     self._directed = directed
@@ -74,15 +62,6 @@ class Graph(defaultdict):
     if directed:
       self._backward = list()
 
-
-  def getLogger(self):
-    """ 
-    Create logger for the graph on demand.
-    """
-    if not self._logger:
-        self._logger = logging.getLogger(self._name)
-    return self._logger
-
   def nodes(self):
     """
     Return list of nodes in graph.
@@ -90,58 +69,6 @@ class Graph(defaultdict):
     if not hasattr(self, "_nodes"):
         self._nodes = list(self.keys())
     return self._nodes
-
-  def subgraph(self, node_list=[]):
-    """
-    Create and return a Graph instance as a subgraph
-    of this Graph object.
-
-    Parameters
-    ----------
-      node_list: list of nodes ids in the subgraph
-
-    Returns
-    -------
-      subgraph: A copy of Graph contains only nodes
-                in node_ids list.
-    """
-    subgraph_name = self._name + '_sub_' + str(len(node_list))
-    subgraph = Graph(directed=self._directed, name=subgraph_name)
-    for node_id in node_list:
-        if node_id in self:
-            subgraph[node_id] = [
-                n for n in self[node_id] if n in node_list]
-    return subgraph
-
-  def volume(self, node_list=None):
-    """
-    Return volume (inner edges count) of the subgraph
-    created by node_list.
-
-    Parameters
-    ----------
-      node_list: list of nodes ids in the subgraph
-
-    Returns
-    -------
-      volume: inner edges count of the subgraph
-    """
-    count = 0
-    if node_list:
-        subgraph = self.subgraph(node_list)
-    else:
-        subgraph = self
-    if not subgraph._volume:
-        for node in subgraph:
-            count += len(subgraph[node])
-        if subgraph._directed:
-            subgraph._volume = count
-            return count
-        else:
-            subgraph._volume = count // 2
-            return count // 2
-    else:
-        return subgraph._volume
 
   def random_walk(self, walk_length, start_node=None,
                   rand_seed=None, reset=0.0,
@@ -171,31 +98,30 @@ class Graph(defaultdict):
     assert 0 <= reset <= 1, 'Probability should be in [0.0,1.0].'
     random.seed(rand_seed)
     # Select starting node
-    if not start_node:
+    if start_node is None:
         start_node = random.choice(self.nodes())
-    walk_path = [start_node]
-    # Start random walk by appending nodes to walk_path
-    while len(walk_path) < length:
-        cur = walk_path[-1]
-        if len(self[cur]) > 0:
-            if random.random() >= reset:
-                walk_path.append(random.choice(self[cur]))
-            else:
-                walk_path.append(walk_path[0])
-        else:
-            break
+    walk_path = np.ndarray(shape=(walk_length), dtype=np.int32)
+    walk_path[0] = start_node
+    cur = start_node
+    for i in range(1, walk_length):
+      if random.random() >= reset:
+        walk_path[i] = random.choice(self[cur])
+        cur = walk_path[i]
+      else:
+        walk_path[i] = walk_path[0]
+        cur = walk_path[0]
     if isNeg:
-      random.choice(walk_path[(len(walk_path)//2):])
+      return random.choice(walk_path[(walk_length//2):])
     return walk_path
 
   def triangle_walk(self, walk_length, start_node=None, 
                     rand_seed=None, reset=0.0, 
                     walk_bias=0.99, isNeg=False):
-  """
-  Walk follow the undirected triangle pattern.
-
-  Parameters
-  ----------
+    """
+    Walk follow the undirected triangle pattern.
+  
+    Parameters
+    ----------
       walk_length: Length of the walk generated.
       start_node: Node to start the random walk. None means a random
                   node will be generated for starting the walk. (Optional)
@@ -211,18 +137,18 @@ class Graph(defaultdict):
            the walk will be in undirected triangle pattern for
            undirected graph and bipartite pattern for directed
            graph. (Optional)
-
-  Returns
-  -------
-    walk_path: A list contains node ids of motif walk. This version of
-               simple motif walk uses list. The future version will use
-               set as data structure for the walk. 
-  """
+  
+    Returns
+    -------
+      walk_path: A list contains node ids of motif walk. This version of
+                 simple motif walk uses list. The future version will use
+                 set as data structure for the walk. 
+    """
     assert 0 <= reset <= 1, 'Restart probability should be in [0.0, 1.0].'
     random.seed(rand_seed)
     # Select starting node
     walk_path = np.ndarray(shape=(walk_length), dtype=np.int32)
-    if start_node None:
+    if start_node is None:
         start_node = random.choice(self.nodes())
     walk_path[0] = start_node
     cur = start_node
@@ -246,42 +172,51 @@ class Graph(defaultdict):
       prev = cur
       cur = cand
     if isNeg:
-      return random.choice(walk_path[(len(walk_path)//2):])
+      return random.choice(walk_path[(walk_length//2):])
     return walk_path
+
+  def unigram(self, walk_length, start_node=None, 
+              rand_seed=None, reset=0.0, 
+              walk_bias=0.99, isNeg=True):
+    """
+    Get random node in the graph.
+    """
+
 
   def gen_walk(self, pos_func, neg_func, pos_args, neg_args,
                walk_per_batch, walk_length, neg_samp, num_skip, 
-               shuffle=True, window_size):
-  """
-  Generate data from positive and negative context generators.
+               shuffle, window_size):
+    """
+    Generate data from positive and negative context generators.
 
-  Parameters
-  ----------
-    pos_func: Name of positive sample generator
-    neg_func: Name of negative sample generator
-    pos_args: Dictionary contains parameters for pos_func
-    neg_args: Dictionary contains parameters for neg_func
-    walk_per_batch: Number of walk in this batch
-    walk_length: Length of positive walk and negative walk
-    neg_samp: Number of negative samples
-    num_skip: Number of postitive samples (traditional naming)
-    shuffle: Reset graph and shuffle node ids list.
-    window_size: Window size for skipgram model.
+    Parameters
+    ----------
+      pos_func: Name of positive sample generator
+      neg_func: Name of negative sample generator
+      pos_args: Dictionary contains parameters for pos_func
+      neg_args: Dictionary contains parameters for neg_func
+      walk_per_batch: Number of walk in this batch
+      walk_length: Length of positive walk and negative walk
+      neg_samp: Number of negative samples
+      num_skip: Number of postitive samples (traditional naming)
+      shuffle: Reset graph and shuffle node ids list.
+      window_size: Window size for skipgram model.
 
-  Returns
-  -------
-    A tuple of:
-        A tuple of:
-            targets: Target node id.
-            classes: Class of that node id.
-        labels: Labels (positive or negative sample)
-        walk_per_batch: Book keeping variable.
-  """
+    Returns
+    -------
+      A tuple of:
+          A tuple of:
+              targets: Target node id.
+              classes: Class of that node id.
+          labels: Labels (positive or negative sample)
+          walk_per_batch: Book keeping variable.
+    """
     if shuffle:
       self._ids_list = self.nodes()
       random.shuffle(self._ids_list)
       self._cur_idx = 0
-    walk_per_batch = min(walk_per_batch, (len(self._ids_list) - self._cur_idx))
+    walk_per_batch = min(walk_per_batch,
+                         (len(self._ids_list) - self._cur_idx))
     data_shape = walk_per_batch * (walk_length - window_size + 1) * (num_skip+neg_samp)
     targets = np.ndarray(shape=(data_shape), dtype=np.int32)
     classes = np.ndarray(shape=(data_shape), dtype=np.int32)
@@ -353,21 +288,21 @@ class Graph(defaultdict):
     return zip(*combined)
 
 def graph_from_pickle(pickle_filename, comm_filename=None, **graph_config):
-"""
-Load pickle file (stored as a dict or defaultdict) and
-return the graph as the graph object.
-
-Parameters
-----------
-  pickle_filename: File name in string of the desired picle file.
-  graph_config: (keyword argument) This kwarg store configuration
-                for the newly created Graph object. Empty list implies
-                default Graph.
-
-Returns
--------
-  graph: Graph object with data from pickle file.
-"""
+  """
+  Load pickle file (stored as a dict or defaultdict) and
+  return the graph as the graph object.
+  
+  Parameters
+  ----------
+    pickle_filename: File name in string of the desired picle file.
+    graph_config: (keyword argument) This kwarg store configuration
+                  for the newly created Graph object. Empty list implies
+                  default Graph.
+  
+  Returns
+  -------
+    graph: Graph object with data from pickle file.
+  """
   # Check if file exists. TODO: Use log and exit instead of assert.
   assert os.path.exists(
     pickle_filename), 'Pickle file not found. Please check.'
