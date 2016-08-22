@@ -387,7 +387,7 @@ NOTE: More walk is definitely better - don't look at loss!
 NOTE: Compare num\_walk = 10 vs. 3 with BC3024
 NOTE: More walk is better!
 
-### Id: BC3018
+### Id: BC3026
 
 1. epoch = 1; 
 2. emb\_dim = 128; 
@@ -395,8 +395,10 @@ NOTE: More walk is better!
 4. num\_skip = 5; 
 5. num\_walk = 10;
 6. walk\_length = 80;
-7. nodes\_per\_epoch = 400;
+7. nodes\_per\_epoch = 200;
 8. batch\_size = 200;
 9. skip\_window = 10;
-10. Method: Motif walk 0.8;
-11. Negative sampling: Uniformly random (distort = 0);
+10. Method: Random walk;
+11. Negative sampling: Unigram distorted by 0.75;
+
+NOTE: Test run new negative sampling scheme

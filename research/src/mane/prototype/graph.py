@@ -79,9 +79,9 @@ class Graph(defaultdict):
 
     Parameters
     ----------
-      length: Walk length is the number of random iteration
-              generated for each walk. The result doesn't
-              necessarily have all unique nodes.
+      walk_length: Walk length is the number of random iteration
+                   generated for each walk. The result doesn't
+                   necessarily have all unique nodes.
       start_node: Node to start the random walk. Default is
                   none, in this case, the algorithm will select
                   a random node to be a start node. (Optional)
@@ -89,6 +89,9 @@ class Graph(defaultdict):
                  use system time as seed. (Optional)
       reset: A float in [0.0,1.0] as reset to start node 
              probability.
+      walk_bias: <unused>
+      isNeg: Only return a single node if the function is
+             used as negative sample generator.
 
     Returns
     -------
@@ -126,7 +129,7 @@ class Graph(defaultdict):
                   node will be generated for starting the walk. (Optional)
       rand_seed: Random seed for random module. None means random
                  will use system time. (Optional)
-      reset: Walk reset back to start node probability. 
+      reset: <unused>
       walk_bias: How strickly the walk will follow motif pattern.
                  Default value is 1.0 means the walk will always follow
                  the motif. This is value is how likely the walk is biased
@@ -143,7 +146,6 @@ class Graph(defaultdict):
                  simple motif walk uses list. The future version will use
                  set as data structure for the walk. 
     """
-    assert 0 <= reset <= 1, 'Restart probability should be in [0.0, 1.0].'
     random.seed(rand_seed)
     # Select starting node
     walk_path = np.ndarray(shape=(walk_length), dtype=np.int32)
@@ -276,7 +278,7 @@ class Graph(defaultdict):
           la = i * samples_per_walk + j * samples_per_node + k
           targets[la] = buff[0]
           while classi in class_avoid:
-            classi = random.randint(1, skip_window-1)
+            classi = random.randint(1, window_size-1)
           class_avoid.append(classi)
           classes[la] = buff[classi]
           labels[la] = 1.0
