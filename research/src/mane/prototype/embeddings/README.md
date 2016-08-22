@@ -419,6 +419,22 @@ NOTE: Test run new negative sampling scheme
 
 NOTE: Test run new negative sampling scheme (GTX)
 
+### Id: BC3028
+
+1. epoch = 1; 
+2. emb\_dim = 128; 
+3. neg\_samp = 15; 
+4. num\_skip = 5; 
+5. num\_walk = 10;
+6. walk\_length = 80;
+7. nodes\_per\_epoch = 400;
+8. batch\_size = 1000;
+9. skip\_window = 10;
+10. Method: Random walk;
+11. Negative sampling: Unigram distorted by 0.75;
+
+NOTE: Test run new negative sampling scheme (GTX)
+
 ### Id: BC3026
 
 1. epoch = 1; 

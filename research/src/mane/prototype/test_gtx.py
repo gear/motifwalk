@@ -18,7 +18,7 @@ numWalk = 10
 walkLength = 80
 windowSize = 10
 walkPerBatch = 400
-batchSize = 400
+batchSize = 1000
 vb = 1
 
 model=e.EmbeddingNet(graph=bc, emb_dim=embDim)
@@ -29,5 +29,5 @@ model.train(pos_func=posFunc, neg_func=negFunc, epoch=ep,
             walk_per_batch=walkPerBatch, batch_size=batchSize, 
             verbose=vb)
 weights = model.get_weights()
-with open('embeddings/BC3027.weights', 'wb') as f:
+with open('embeddings/BC3028.weights', 'wb') as f:
   p.dump(weights, f, p.HIGHEST_PROTOCOL)
