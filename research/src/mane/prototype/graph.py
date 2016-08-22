@@ -42,30 +42,27 @@ class Graph(defaultdict):
   """Graph is a dictionary contains nodes
   """
   def __init__(self, directed=False, name='graph'):
-    """
-    Create a graph as default_dict with default
-    mapping to an empty list.
+  """
+  Parameters
+  ----------
+    name: Name string of the graph. (optional)
+    directed: Directed or undirected. (optional)
 
-    Parameters
-    ----------
-      name: Name string of the graph. (optional)
-      directed: Directed or undirected. (optional)
+  Returns
+  -------
+    none.
 
-    Returns
-    -------
-      none.
+  Effect
+  ------
+    Create a Graph object which is a default
+    dictionary with default factor generate
+    a dictionary mapping ids to node instances
 
-    Effect
-    ------
-      Create a Graph object which is a default
-      dictionary with default factor generate
-      a dictionary mapping ids to node instances
-
-    Examples
-    --------
-      citeseer = Graph()
-      citeseer[20] = [1,3,4]
-    """
+  Examples
+  --------
+    citeseer = Graph()
+    citeseer[20] = [1,3,4]
+  """
     super(Graph, self).__init__(list)
     self._name = name
     self._directed = directed
@@ -224,7 +221,7 @@ class Graph(defaultdict):
     assert 0 <= reset <= 1, 'Restart probability should be in [0.0, 1.0].'
     random.seed(rand_seed)
     # Select starting node
-    walk_path = np.ndarray(shape=(walk_length), dtype=np.int)
+    walk_path = np.ndarray(shape=(walk_length), dtype=np.int32)
     if start_node None:
         start_node = random.choice(self.nodes())
     walk_path[0] = start_node
