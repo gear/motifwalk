@@ -282,7 +282,7 @@ class Graph(defaultdict):
           class_avoid.append(classi)
           classes[la] = buff[classi]
           labels[la] = 1.0
-      for k in range(neg_samp):
+        for k in range(neg_samp):
           la = i * samples_per_walk + j * samples_per_node + num_skip + k
           neg_args['start_node'] = buff[0]
           neg_args['walk_length'] = walk_length

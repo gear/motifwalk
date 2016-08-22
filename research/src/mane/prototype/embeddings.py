@@ -164,24 +164,23 @@ class EmbeddingNet():
     --------
       Load data in batches and train the model.
     """
-      self._trained = True
-      # Graph data generator with negative sampling
-      shuffle = True
-      for i in range(self._num_walk):
-        print('===========\n')
-        print('Graph pass:', i+1 ,'/', num_walk)
-        for j in range(math.ceil(len(self._graph)/walk_per_batch)):
-          print('Mini batch:', j+1, '/', math.ceil(len(self._graph)/walk_per_batch))
-          batch_data = self._graph.gen_walk(pos_func, neg_func, pos_args, neg_args,
-                                            walk_per_batch, walk_length, neg_samp,
-                                            num_skip, shuffle, window_size)
-          # wpb = walks per batch - to check for end of graph
-          (targets,classes), labels, wpb = batch_data
-          if wpb == walk_per_batch:
-            shuffle = False
-          else:
-            shuffle = True
-          self._model.fit([targets, classes], [labels], batch_size=batch_size,
+    # Graph data generator with negative sampling
+    shuffle = True
+    for i in range(num_walk):
+      print('===========\n')
+      print('Graph pass:', i+1 ,'/', num_walk)
+      for j in range(math.ceil(len(self._graph)/walk_per_batch)):
+        print('Mini batch:', j+1, '/', math.ceil(len(self._graph)/walk_per_batch))
+        batch_data = self._graph.gen_walk(pos_func, neg_func, pos_args, neg_args,
+                                          walk_per_batch, walk_length, neg_samp,
+                                          num_skip, shuffle, window_size)
+        # wpb = walks per batch - to check for end of graph
+        (targets,classes), labels, wpb = batch_data
+        if wpb == walk_per_batch:
+          shuffle = False
+        else:
+          shuffle = True
+        self._model.fit([targets, classes], [labels], batch_size=batch_size,
                             nb_epoch=epoch, verbose=verbose)
 
   def init_normal(self, shape, name=None):
