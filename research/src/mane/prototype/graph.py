@@ -51,11 +51,12 @@ class Graph(defaultdict):
     super(Graph, self).__init__(list)
     self._name = name
     self._directed = directed
-    self._logger = None
     self._ids_list = None
     self._cur_idx = 0
-    self._unigram = None
-    self._distort = 0
+    self._degrees = None
+    self._distort = 1
+    self._q = None
+    self._J = None
     self._communities = None
     if directed:
       self._backward = list()
@@ -173,8 +174,8 @@ class Graph(defaultdict):
       return random.choice(walk_path[(walk_length//2):])
     return walk_path
 
-  def unigram(self, walk_length, start_node=None, 
-              rand_seed=None, reset=0.0, 
+  def unigram(self, walk_length=None, start_node=None, 
+              rand_seed=None, reset=None, 
               walk_bias=0.75, isNeg=True):
     """
     Special function to get random node in the graph.
@@ -200,7 +201,12 @@ class Graph(defaultdict):
     """
     # Check if the unigram distribution existed
     if walk_bias == self._distort:
-
+      return alias_draw(self._J, self._q)
+    self._distort = walk_bias
+    for i, j in enumerate(self._degrees):
+      self._degrees[i] = j**walk_bias
+    self._J, self._q = alias_setup(self._degrees)
+    return alias_draw(self._J, self._q)
 
   def gen_walk(self, pos_func, neg_func, pos_args, neg_args,
                walk_per_batch, walk_length, neg_samp, num_skip, 
@@ -335,16 +341,12 @@ def graph_from_pickle(pickle_filename, comm_filename=None, **graph_config):
     for key, val in graph_config.items():
       setattr(graph, key, val)
   # Compute total frequency
-  num_edges = 0
+  graph._degrees = np.ndarray(shape=(max(data.keys())+1))
   for key, val in data.items():
     graph[key] = val
-    num_edges += len(val)
-  graph._unigram = np.ndarray(shape=(num_edges))
-  i = 0
-  for key, val in data.items():
-    for _ in range(len(val)):
-      graph._freq[i] = key
-      i += 1
+    graph._degrees[key] = len(val)
+  graph._distort = 1.0
+  graph._J, graph._q = alias_setup(graph._degrees)
   if comm_filename != None:
     with open(comm_filename, 'rb') as pfile:
       graph._communities = pickle.load(pfile)
@@ -376,8 +378,8 @@ def alias_setup(probs):
 
 def alias_draw(J, q):
   K = len(J)
-  kk = int(np.floor(random.rand()*K))
-  if random.rand() < q[kk]:
+  kk = int(np.floor(np.random.rand()*K))
+  if np.random.rand() < q[kk]:
     return kk
-  else
+  else:
     return J[kk]
