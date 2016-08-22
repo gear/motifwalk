@@ -227,7 +227,7 @@ class Graph(defaultdict):
         random.seed(rand_seed)
         # Select starting node
         walk_path = np.ndarray(shape=(walk_length))
-        if start_node None:
+        if start_node is None:
             start_node = random.choice(self.nodes())
         walk_path[0] = start_node
         cur = start_node
@@ -254,7 +254,7 @@ class Graph(defaultdict):
 
     def gen_walk(self, pos_func, neg_func, pos_args, neg_args,
                  walk_per_batch, walk_length, neg_samp, num_skip, 
-                 shuffle=True, window_size):
+                 shuffle, window_size):
         """
         Generate data from positive and negative context generators.
 
