@@ -18,7 +18,6 @@ import os
 
 import numpy as np
 import keras
-import theano
 import math
 
 # Import keras modules

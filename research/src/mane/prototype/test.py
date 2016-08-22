@@ -18,7 +18,7 @@ numWalk = 10
 walkLength = 80
 windowSize = 10
 walkPerBatch = 200
-batchSize = 200
+batchSize = 2000
 vb = 1
 
 model=e.EmbeddingNet(graph=bc, emb_dim=embDim)
