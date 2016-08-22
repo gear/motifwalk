@@ -14,7 +14,7 @@ negArgs = {'walk_length': 80, 'start_node': None, 'rand_seed': None,
 ep = 1
 negSamp = 15
 numSkip = 5
-numWalk = 8
+numWalk = 5
 walkLength = 80
 windowSize = 10
 walkPerBatch = 400
@@ -29,7 +29,7 @@ model.train(pos_func=posFunc, neg_func=negFunc, epoch=ep,
             walk_per_batch=walkPerBatch, batch_size=batchSize, 
             verbose=vb)
 # Extra training with different method
-numWalk = 2
+numWalk = 5
 pos_func = 'triangle_walk'
 model.train(pos_func=posFunc, neg_func=negFunc, epoch=ep,
             neg_samp=negSamp, num_skip=numSkip, num_walk=numWalk,
@@ -37,5 +37,5 @@ model.train(pos_func=posFunc, neg_func=negFunc, epoch=ep,
             walk_per_batch=walkPerBatch, batch_size=batchSize, 
             verbose=vb)
 weights = model.get_weights()
-with open('embeddings/BC3031.weights', 'wb') as f:
+with open('embeddings/BC3032.weights', 'wb') as f:
   p.dump(weights, f, p.HIGHEST_PROTOCOL)
