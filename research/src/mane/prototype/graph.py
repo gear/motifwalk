@@ -35,9 +35,6 @@ LOGFORMAT = "%(asctime)s %(levelname)s %(filename)s: %(lineno)s %(message)s"
 __author__ = "Hoang Nguyen - Nukui Shun"
 __email__ = "{hoangnt,nukui.s}@net.c.titech.ac.jp"
 
-ids_list = []
-cur_idx = []
-
 class Graph(defaultdict):
 
   def __init__(self, directed=False, name='graph'):
@@ -57,7 +54,8 @@ class Graph(defaultdict):
     self._logger = None
     self._ids_list = None
     self._cur_idx = 0
-    self._freq = None
+    self._unigram = None
+    self._distort = 0
     self._communities = None
     if directed:
       self._backward = list()
@@ -177,10 +175,31 @@ class Graph(defaultdict):
 
   def unigram(self, walk_length, start_node=None, 
               rand_seed=None, reset=0.0, 
-              walk_bias=0.99, isNeg=True):
+              walk_bias=0.75, isNeg=True):
     """
-    Get random node in the graph.
+    Special function to get random node in the graph.
+    This function is designed to use as the negative 
+    sampling method. No meaning in using this function
+    as positive samples generator.
+
+    Parameters
+    ----------
+      walk_length: <unused>
+      start_node: <unused>
+      rand_seed: Seed for python random.
+      reset: <unused>
+      walk_bias: Distortion parameter for unigram.
+                 0 - Uniform random.
+                 1 - Unigram.
+                 0.75 - Recommended by cool people.
+      isNeg: <unused>
+
+    Returns
+    -------
+      A single node id samples from the distribution.
     """
+    # Check if the unigram distribution existed
+    if walk_bias == self._distort:
 
 
   def gen_walk(self, pos_func, neg_func, pos_args, neg_args,
@@ -303,7 +322,6 @@ def graph_from_pickle(pickle_filename, comm_filename=None, **graph_config):
   -------
     graph: Graph object with data from pickle file.
   """
-  # Check if file exists. TODO: Use log and exit instead of assert.
   assert os.path.exists(
     pickle_filename), 'Pickle file not found. Please check.'
   with open(pickle_filename, 'rb') as pfile:
@@ -321,7 +339,7 @@ def graph_from_pickle(pickle_filename, comm_filename=None, **graph_config):
   for key, val in data.items():
     graph[key] = val
     num_edges += len(val)
-  graph._freq = np.ndarray(shape=(num_edges))
+  graph._unigram = np.ndarray(shape=(num_edges))
   i = 0
   for key, val in data.items():
     for _ in range(len(val)):
@@ -331,3 +349,35 @@ def graph_from_pickle(pickle_filename, comm_filename=None, **graph_config):
     with open(comm_filename, 'rb') as pfile:
       graph._communities = pickle.load(pfile)
   return graph
+
+# Alias method. https://hips.seas.harvard.edu/blog/2013/03/03/the-alias-method-efficient-sampling-with-many-discrete-outcomes/
+def alias_setup(probs):
+  K = len(probs)
+  q = np.zeros(K)
+  J = np.zeros(K, dtype=np.int32)
+  smaller = []
+  larger = []
+  for kk, prob in enumerate(probs):
+    q[kk] = K * prob
+    if q[kk] < 1.0:
+      smaller.append(kk)
+    else:
+      larger.append(kk)
+  while len(smaller) > 0 and len(larger) > 0:
+    small = smaller.pop()
+    large = larger.pop()
+    J[small] = large
+    q[large] = q[large] - (1.0 - q[small])
+    if q[large] < 1.0:
+      smaller.append(large)
+    else:
+      larger.append(large)
+  return J, q
+
+def alias_draw(J, q):
+  K = len(J)
+  kk = int(np.floor(random.rand()*K))
+  if random.rand() < q[kk]:
+    return kk
+  else
+    return J[kk]
