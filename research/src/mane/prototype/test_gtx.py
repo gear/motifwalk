@@ -5,7 +5,7 @@ import pickle as p
 bc = g.graph_from_pickle('../data/blogcatalog3.graph')
 embDim = 128
 
-posFunc = 'random_walk'
+posFunc = 'triangle_walk'
 posArgs = {'walk_length': 80, 'start_node': None, 'rand_seed': None,
             'reset': 0.0, 'walk_bias': 0.99, 'isNeg': False}
 negFunc = 'unigram'
@@ -30,12 +30,12 @@ model.train(pos_func=posFunc, neg_func=negFunc, epoch=ep,
             verbose=vb)
 # Extra training with different method
 numWalk = 5
-pos_func = 'triangle_walk'
+pos_func = 'random_walk'
 model.train(pos_func=posFunc, neg_func=negFunc, epoch=ep,
             neg_samp=negSamp, num_skip=numSkip, num_walk=numWalk,
             walk_length=walkLength, window_size=windowSize,
             walk_per_batch=walkPerBatch, batch_size=batchSize, 
             verbose=vb)
 weights = model.get_weights()
-with open('embeddings/BC3032.weights', 'wb') as f:
+with open('embeddings/BC3033.weights', 'wb') as f:
   p.dump(weights, f, p.HIGHEST_PROTOCOL)
