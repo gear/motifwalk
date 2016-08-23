@@ -433,25 +433,9 @@ NOTE: Test run new negative sampling scheme (GTX)
 10. Method: Random walk;
 11. Negative sampling: Unigram distorted by 0.75;
 
-NOTE: Test run new negative sampling scheme (GTX)
+NOTE: batch\_size=1000 gives the best performance
 
-### Id: BC3026
-
-1. epoch = 1; 
-2. emb\_dim = 128; 
-3. neg\_samp = 15; 
-4. num\_skip = 5; 
-5. num\_walk = 10;
-6. walk\_length = 80;
-7. nodes\_per\_epoch = 200;
-8. batch\_size = 200;
-9. skip\_window = 10;
-10. Method: Random walk;
-11. Negative sampling: Unigram distorted by 0.75;
-
-NOTE: Test run new negative sampling scheme
-
-### Id: BC3026
+### Id: BC3029
 
 1. epoch = 1; 
 2. emb\_dim = 128; 
@@ -459,15 +443,15 @@ NOTE: Test run new negative sampling scheme
 4. num\_skip = 5; 
 5. num\_walk = 10;
 6. walk\_length = 80;
-7. nodes\_per\_epoch = 200;
-8. batch\_size = 200;
+7. nodes\_per\_epoch = 400;
+8. batch\_size = 8000;
 9. skip\_window = 10;
 10. Method: Random walk;
 11. Negative sampling: Unigram distorted by 0.75;
 
-NOTE: Test run new negative sampling scheme
+NOTE: 8000 is too much, worse result
 
-### Id: BC3026
+### Id: BC3030
 
 1. epoch = 1; 
 2. emb\_dim = 128; 
@@ -475,10 +459,122 @@ NOTE: Test run new negative sampling scheme
 4. num\_skip = 5; 
 5. num\_walk = 10;
 6. walk\_length = 80;
-7. nodes\_per\_epoch = 200;
-8. batch\_size = 200;
+7. nodes\_per\_epoch = 400;
+8. batch\_size = 1000;
 9. skip\_window = 10;
-10. Method: Random walk;
+10. Method: Triangle walk - bias 0.99;
 11. Negative sampling: Unigram distorted by 0.75;
 
-NOTE: Test run new negative sampling scheme
+NOTE: Test bias walk only
+
+### Id: BC3031
+
+1. epoch = 1; 
+2. emb\_dim = 128; 
+3. neg\_samp = 15; 
+4. num\_skip = 5; 
+5. num\_walk = 10 (8 + 2);
+6. walk\_length = 80;
+7. nodes\_per\_epoch = 400;
+8. batch\_size = 1000;
+9. skip\_window = 10;
+10. Method: 8 Random walk and 2 triangle 0.99;
+11. Negative sampling: Unigram distorted by 0.75;
+
+NOTE: Test join training between 2 algorithms
+
+### Id: BC3032
+
+1. epoch = 1; 
+2. emb\_dim = 128; 
+3. neg\_samp = 15; 
+4. num\_skip = 5; 
+5. num\_walk = 10 (5 + 5);
+6. walk\_length = 80;
+7. nodes\_per\_epoch = 400;
+8. batch\_size = 1000;
+9. skip\_window = 10;
+10. Method: 5 Random walk and 5 triangle 0.99;
+11. Negative sampling: Unigram distorted by 0.75;
+
+NOTE: Test join training between 2 algorithms
+
+### Id: BC3033
+
+1. epoch = 1; 
+2. emb\_dim = 128; 
+3. neg\_samp = 15; 
+4. num\_skip = 5; 
+5. num\_walk = 10 (5 + 5);
+6. walk\_length = 80;
+7. nodes\_per\_epoch = 400;
+8. batch\_size = 1000;
+9. skip\_window = 10;
+10. Method: 5 triangle 0.99 then 5 Random walk
+11. Negative sampling: Unigram distorted by 0.75;
+
+NOTE: Reverse the order of the joint training
+
+### Id: BC3034
+
+1. epoch = 1; 
+2. emb\_dim = 128; 
+3. neg\_samp = 15; 
+4. num\_skip = 5; 
+5. num\_walk = 10 (2 + 8);
+6. walk\_length = 80;
+7. nodes\_per\_epoch = 400;
+8. batch\_size = 1000;
+9. skip\_window = 10;
+10. Method: 2 triangle 0.99 then 8 Random walk
+11. Negative sampling: Unigram distorted by 0.75;
+
+NOTE: Try other training setting.
+
+### Id: BC3035
+
+1. epoch = 1; 
+2. emb\_dim = 128; 
+3. neg\_samp = 15; 
+4. num\_skip = 5; 
+5. num\_walk = 10;
+6. walk\_length = 80;
+7. nodes\_per\_epoch = 400;
+8. batch\_size = 1000;
+9. skip\_window = 10;
+10. Method: Random walk;
+11. Negative sampling: Unigram distorted by 1.0;
+
+NOTE: Test on unigram distortion.
+
+### Id: BC3036
+
+1. epoch = 1; 
+2. emb\_dim = 128; 
+3. neg\_samp = 15; 
+4. num\_skip = 5; 
+5. num\_walk = 10;
+6. walk\_length = 80;
+7. nodes\_per\_epoch = 400;
+8. batch\_size = 1000;
+9. skip\_window = 10;
+10. Method: Random walk;
+11. Negative sampling: Unigram distorted by 0 (uniform);
+
+NOTE: Try result with uniform negative sampling
+
+### Id: BC3037
+
+1. epoch = 1; 
+2. emb\_dim = 128; 
+3. neg\_samp = 10; 
+4. num\_skip = 5; 
+5. num\_walk = 10;
+6. walk\_length = 80;
+7. nodes\_per\_epoch = 400;
+8. batch\_size = 1000;
+9. skip\_window = 10;
+10. Method: Random walk;
+11. Negative sampling: Unigram distorted by 0;
+
+NOTE: Try decrease negative sampling number.
