@@ -10,7 +10,7 @@ posArgs = {'walk_length': 80, 'start_node': None, 'rand_seed': None,
             'reset': 0.0, 'walk_bias': 0.99, 'isNeg': False}
 negFunc = 'unigram'
 negArgs = {'walk_length': 80, 'start_node': None, 'rand_seed': None,
-            'reset': 0.0, 'walk_bias': 1.0, 'isNeg': True}
+            'reset': 0.0, 'walk_bias': 0, 'isNeg': True}
 ep = 1
 negSamp = 15
 numSkip = 5
@@ -37,5 +37,5 @@ model.train(pos_func=posFunc, neg_func=negFunc, epoch=ep,
 #            walk_per_batch=walkPerBatch, batch_size=batchSize, 
 #            verbose=vb)
 weights = model.get_weights()
-with open('embeddings/BC3035.weights', 'wb') as f:
+with open('embeddings/BC3036.weights', 'wb') as f:
   p.dump(weights, f, p.HIGHEST_PROTOCOL)
