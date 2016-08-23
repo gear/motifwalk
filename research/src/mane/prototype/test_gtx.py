@@ -5,16 +5,16 @@ import pickle as p
 bc = g.graph_from_pickle('../data/blogcatalog3.graph')
 embDim = 128
 
-posFunc = 'triangle_walk'
+posFunc = 'random_walk'
 posArgs = {'walk_length': 80, 'start_node': None, 'rand_seed': None,
             'reset': 0.0, 'walk_bias': 0.99, 'isNeg': False}
 negFunc = 'unigram'
 negArgs = {'walk_length': 80, 'start_node': None, 'rand_seed': None,
-            'reset': 0.0, 'walk_bias': 0.75, 'isNeg': True}
+            'reset': 0.0, 'walk_bias': 1.0, 'isNeg': True}
 ep = 1
 negSamp = 15
 numSkip = 5
-numWalk = 2
+numWalk = 10
 walkLength = 80
 windowSize = 10
 walkPerBatch = 400
@@ -29,13 +29,13 @@ model.train(pos_func=posFunc, neg_func=negFunc, epoch=ep,
             walk_per_batch=walkPerBatch, batch_size=batchSize, 
             verbose=vb)
 # Extra training with different method
-numWalk = 8
-pos_func = 'random_walk'
-model.train(pos_func=posFunc, neg_func=negFunc, epoch=ep,
-            neg_samp=negSamp, num_skip=numSkip, num_walk=numWalk,
-            walk_length=walkLength, window_size=windowSize,
-            walk_per_batch=walkPerBatch, batch_size=batchSize, 
-            verbose=vb)
+#numWalk = 8
+#pos_func = 'random_walk'
+#model.train(pos_func=posFunc, neg_func=negFunc, epoch=ep,
+#            neg_samp=negSamp, num_skip=numSkip, num_walk=numWalk,
+#            walk_length=walkLength, window_size=windowSize,
+#            walk_per_batch=walkPerBatch, batch_size=batchSize, 
+#            verbose=vb)
 weights = model.get_weights()
-with open('embeddings/BC3034.weights', 'wb') as f:
+with open('embeddings/BC3035.weights', 'wb') as f:
   p.dump(weights, f, p.HIGHEST_PROTOCOL)
