@@ -12,11 +12,11 @@ negFunc = 'unigram'
 negArgs = {'walk_length': 80, 'start_node': None, 'rand_seed': None,
             'reset': 0.0, 'walk_bias': 0, 'isNeg': True}
 ep = 1
-negSamp = 60
+negSamp = 30
 numSkip = 5
-numWalk = 10
+numWalk = 9
 walkLength = 80
-windowSize = 7
+windowSize = 10
 walkPerBatch = 400
 batchSize = 1000
 vb = 1
@@ -29,14 +29,14 @@ model.train(pos_func=posFunc, neg_func=negFunc, epoch=ep,
             walk_per_batch=walkPerBatch, batch_size=batchSize, 
             verbose=vb)
 # Extra training with different method
-#numWalk = 8
-#pos_func = 'random_walk'
-#model.train(pos_func=posFunc, neg_func=negFunc, epoch=ep,
-#            neg_samp=negSamp, num_skip=numSkip, num_walk=numWalk,
-#            walk_length=walkLength, window_size=windowSize,
-#            walk_per_batch=walkPerBatch, batch_size=batchSize, 
-#            verbose=vb)
+numWalk = 1
+pos_func = 'triangle_walk'
+model.train(pos_func=posFunc, neg_func=negFunc, epoch=ep,
+            neg_samp=negSamp, num_skip=numSkip, num_walk=numWalk,
+            walk_length=walkLength, window_size=windowSize,
+            walk_per_batch=walkPerBatch, batch_size=batchSize, 
+            verbose=vb)
 weights = model.get_weights()
-with open('embeddings/BC3044.weights', 'wb') as f:
+with open('embeddings/BC3045.weights', 'wb') as f:
   p.dump(weights, f, p.HIGHEST_PROTOCOL)
 
