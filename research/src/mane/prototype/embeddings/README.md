@@ -577,4 +577,148 @@ NOTE: Try result with uniform negative sampling
 10. Method: Random walk;
 11. Negative sampling: Unigram distorted by 0;
 
-NOTE: Try decrease negative sampling number.
+NOTE: Try decrease negative sampling number. Worse results
+
+### Id: BC3038
+
+1. epoch = 1; 
+2. emb\_dim = 128; 
+3. neg\_samp = 15; 
+4. num\_skip = 5; 
+5. num\_walk = 10;
+6. walk\_length = 80;
+7. nodes\_per\_epoch = 400;
+8. batch\_size = 1000;
+9. skip\_window = 8;
+10. Method: Random walk;
+11. Negative sampling: Unigram distorted by 0;
+
+NOTE: Decrease skip window to 8. Good result: 0.2690
+
+### Id: BC3039
+
+1. epoch = 1; 
+2. emb\_dim = 128; 
+3. neg\_samp = 20; 
+4. num\_skip = 5; 
+5. num\_walk = 10;
+6. walk\_length = 80;
+7. nodes\_per\_epoch = 400;
+8. batch\_size = 1000;
+9. skip\_window = 8;
+10. Method: Random walk;
+11. Negative sampling: Unigram distorted by 0;
+
+NOTE: Try increase negative sampling. Good result: 0.2724
+
+### Id: BC3040
+
+1. epoch = 1; 
+2. emb\_dim = 128; 
+3. neg\_samp = 25; 
+4. num\_skip = 5; 
+5. num\_walk = 10;
+6. walk\_length = 80;
+7. nodes\_per\_epoch = 400;
+8. batch\_size = 1000;
+9. skip\_window = 8;
+10. Method: Random walk;
+11. Negative sampling: Unigram distorted by 0;
+
+NOTE: Try increase negative sampling even more. 0.2793
+
+### Id: BC3041
+
+1. epoch = 1; 
+2. emb\_dim = 128; 
+3. neg\_samp = 30; 
+4. num\_skip = 5; 
+5. num\_walk = 10;
+6. walk\_length = 80;
+7. nodes\_per\_epoch = 400;
+8. batch\_size = 1000;
+9. skip\_window = 8;
+10. Method: Random walk;
+11. Negative sampling: Unigram distorted by 0;
+
+NOTE: Even more negative sampling.
+
+### Id: BC3042
+
+1. epoch = 1; 
+2. emb\_dim = 128; 
+3. neg\_samp = 30; 
+4. num\_skip = 5; 
+5. num\_walk = 10;
+6. walk\_length = 80;
+7. nodes\_per\_epoch = 400;
+8. batch\_size = 1000;
+9. skip\_window = 20;
+10. Method: Motif walk - 0.8;
+11. Negative sampling: Unigram distorted by 0;
+
+NOTE: Try to use motif walk. Worse results
+
+### Id: BC3043
+
+1. epoch = 1; 
+2. emb\_dim = 128; 
+3. neg\_samp = 40; 
+4. num\_skip = 5; 
+5. num\_walk = 10;
+6. walk\_length = 80;
+7. nodes\_per\_epoch = 400;
+8. batch\_size = 1000;
+9. skip\_window = 8;
+10. Method: Random walk;
+11. Negative sampling: Unigram distorted by 0;
+
+NOTE: Try more negative sampling. 
+
+### Id: BC3044
+
+1. epoch = 1; 
+2. emb\_dim = 128; 
+3. neg\_samp = 60; 
+4. num\_skip = 5; 
+5. num\_walk = 10;
+6. walk\_length = 80;
+7. nodes\_per\_epoch = 400;
+8. batch\_size = 1000;
+9. skip\_window = 7;
+10. Method: Random walk;
+11. Negative sampling: Unigram distorted by 0;
+
+NOTE: Try larger negative sampling number. Decrease skip window
+
+### Id: BC3045
+
+1. epoch = 1; 
+2. emb\_dim = 128; 
+3. neg\_samp = 60; 
+4. num\_skip = 5; 
+5. num\_walk = 10;
+6. walk\_length = 80;
+7. nodes\_per\_epoch = 400;
+8. batch\_size = 1000;
+9. skip\_window = 8;
+10. Method: Random walk;
+11. Negative sampling: Unigram distorted by 0;
+
+NOTE: Try decrease negative sampling number. Worse results
+
+### Id: BC3037
+
+1. epoch = 1; 
+2. emb\_dim = 128; 
+3. neg\_samp = 10; 
+4. num\_skip = 5; 
+5. num\_walk = 10;
+6. walk\_length = 80;
+7. nodes\_per\_epoch = 400;
+8. batch\_size = 1000;
+9. skip\_window = 8;
+10. Method: Random walk;
+11. Negative sampling: Unigram distorted by 0;
+
+NOTE: Try decrease negative sampling number. Worse results
