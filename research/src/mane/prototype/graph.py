@@ -294,7 +294,7 @@ class Graph(defaultdict):
   def gen_training_community(self, la=0.5):
     print("\nERROR::Switched to use get_ids_labels.\n") 
 
-  def get_ids_labels(self, cut):
+  def get_ids_labels(self, split=0.5):
     """
     Generate training node ids and its community vector.
 
@@ -312,6 +312,9 @@ class Graph(defaultdict):
     """
     if self._communities is None:
       print("ERROR. Community not found.")
+    if not self._ids_list:
+      self._ids_list = self.nodes()
+      random.shuffle(self._ids_list)
     labels = list()
     for i in self._ids_list:
       labels.append(self._communities[i])
