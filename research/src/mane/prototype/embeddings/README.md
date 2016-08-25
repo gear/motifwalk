@@ -705,20 +705,36 @@ NOTE: Try larger negative sampling number. Decrease skip window
 10. Method: Random walk;
 11. Negative sampling: Unigram distorted by 0;
 
-NOTE: Try decrease negative sampling number. Worse results
+NOTE: Try decrease negative sampling number. Best result.
 
-### Id: BC3037
+### Id: BC3046
 
 1. epoch = 1; 
 2. emb\_dim = 128; 
-3. neg\_samp = 10; 
+3. neg\_samp = 30; 
 4. num\_skip = 5; 
-5. num\_walk = 10;
+5. num\_walk = 10 (9+1);
 6. walk\_length = 80;
 7. nodes\_per\_epoch = 400;
 8. batch\_size = 1000;
-9. skip\_window = 8;
-10. Method: Random walk;
+9. skip\_window = 10;
+10. Method: 9 Random walk and 1 triangle 0.8 walk;
 11. Negative sampling: Unigram distorted by 0;
 
-NOTE: Try decrease negative sampling number. Worse results
+NOTE: Try final touch with 1 triangle walk.
+
+### Id: BC3047
+
+1. epoch = 1; 
+2. emb\_dim = 128; 
+3. neg\_samp = 30; 
+4. num\_skip = 5; 
+5. num\_walk = 10 (1);
+6. walk\_length = 80;
+7. nodes\_per\_epoch = 400;
+8. batch\_size = 1000;
+9. skip\_window = 10;
+10. Method: 5 Random walk and 5 triangle 0.6 walk telescoping;
+11. Negative sampling: Unigram distorted by 0;
+
+NOTE: Try final touch with 1 triangle walk.
