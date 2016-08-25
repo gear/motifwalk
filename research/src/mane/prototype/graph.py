@@ -291,6 +291,9 @@ class Graph(defaultdict):
           labels[la] = 0.0
     return ((targets, classes),labels, walk_per_batch) 
 
+  def gen_training_community(self, la=0.5):
+    print("\nERROR::Switched to use get_ids_labels.\n") 
+
   def get_ids_labels(self, cut):
     """
     Generate training node ids and its community vector.
