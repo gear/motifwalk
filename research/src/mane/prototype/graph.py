@@ -291,28 +291,29 @@ class Graph(defaultdict):
           labels[la] = 0.0
     return ((targets, classes),labels, walk_per_batch) 
 
-  def gen_training_community(self, portion=0.1):
+  def get_ids_labels(self, cut):
     """
-    Generate list of data labels and corresponding node id.
-    Guarantees to yeild all communities. Non-overlapping only.
+    Generate training node ids and its community vector.
+
+    Parameters
+    ----------
+      cut: How many percent of the node will be used 
+           for training.
+
+    Returns
+    -------
+      train_ids: training ids
+      train_labels : each label contain a list of comm
+      test_ids: testing ids
+      test_labels: testing labels
     """
     if self._communities is None:
       print("ERROR. Community not found.")
-    reverse_comm = defaultdict(list)
-    ids = list()
-    for key, val in self._communities.items():
-      reverse_comm[val].append(key)
-    for comm_id in reverse_comm.keys():
-      num_true = int(portion*len(reverse_comm[comm_id]))
-      cand = random.choice(reverse_comm[comm_id])
-      for _ in range(num_true):
-        while cand in ids:
-          cand = random.choice(reverse_comm[comm_id])
-        ids.append(cand)
-    labels = [self._communities[x] for x in ids] 
-    combined = list(zip(ids,labels))
-    random.shuffle(combined)
-    return zip(*combined)
+    labels = list()
+    for i in self._ids_list:
+      labels.append(self._communities[i])
+    num_train = int(cut * len(self.nodes()))
+    return self._ids_list[:num_train], labels[:num_train], self._ids_list[num_train:], labels[num_train:]
 
 def graph_from_pickle(pickle_filename, comm_filename=None, **graph_config):
   """
