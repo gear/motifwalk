@@ -300,7 +300,7 @@ class Graph(defaultdict):
 
     Parameters
     ----------
-      cut: How many percent of the node will be used 
+      split: How many percent of the node will be used 
            for training.
 
     Returns
@@ -318,7 +318,7 @@ class Graph(defaultdict):
     labels = list()
     for i in self._ids_list:
       labels.append(self._communities[i])
-    num_train = int(cut * len(self.nodes()))
+    num_train = int(split * len(self.nodes()))
     return self._ids_list[:num_train], labels[:num_train], self._ids_list[num_train:], labels[num_train:]
 
 def graph_from_pickle(pickle_filename, comm_filename=None, **graph_config):
