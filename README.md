@@ -24,9 +24,8 @@ Read docs for more information. Here I only provide a quick example code for sta
 
 1. Tensorflow
 
-## Installation 
-
-Some fancy package installation. Look into this later.
+## Installation
+. Look into this later.
 
 ## Citing
 
