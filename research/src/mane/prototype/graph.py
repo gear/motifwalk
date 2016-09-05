@@ -116,6 +116,16 @@ class Graph(defaultdict):
       return random.choice(walk_path[(walk_length//2):])
     return walk_path
 
+  def node2vec(self, walk_length, start_node=None,
+               rand_seed=None, reset=.0,
+               walk_bias=[0.25, 0.25], isNeg=False):
+    """
+    Implement biased walk in Node2Vec paper.
+
+    Parameters
+    ----------
+    """
+
   def triangle_walk(self, walk_length, start_node=None, 
                     rand_seed=None, reset=0.0, 
                     walk_bias=0.99, isNeg=False):
