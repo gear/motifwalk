@@ -1,4 +1,6 @@
+# Abstract
 
+# Introduction
 
 ## Paragraph 1: Context
 
@@ -8,11 +10,14 @@ with graph and graph embedding.
 
 ### Main idea: Graph is important in many fields.
 
-Graph (or network) data model is an useful tool for a wide range of 
-disciplines and it is importance to have a low dimensionality 
+The graph (or network) data model is an useful tool for a wide 
+range of disciplines and it is important to have a low dimensionality 
 representation of a complex graph.
 
 ### Supporting 1: What is graph (or network).
+
+The graph
+
 
 ### Supporting 2: Many discoveries are from analizing graph structures.
 
@@ -46,12 +51,22 @@ Some of the "need" is mentioned in paragraph 1.
 
 ### Main idea: The document is divided into 4 parts.
 
-## Supporting 1: Methods and data.
+### Supporting 1: Methods and data.
 
-## Supporting 2: Results.
+### Supporting 2: Results.
 
-## Supporting 3: Discussion.
+### Supporting 3: Discussion.
 
-## Supporting 4: Related works.
+### Supporting 4: Related works.
 
-## Supporting 5: Discussion.
+### Supporting 5: Discussion.
+
+# Methods
+
+## Subsection 1: Probabilistic model
+
+## Subsection 2: Positive sample generation
+
+## Subsection 3: Negative sample generation
+
+## Subsection 4: Implementation details
