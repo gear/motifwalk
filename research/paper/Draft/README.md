@@ -48,15 +48,20 @@ the latent representation to make predictions on the data.
 
 ### Conclusion: Graph model is important and learning latent representation can help solving many problems.
 
+In summary, graph embedding techniques promises a feasible solutions to many graph analysis tasks.
+
 ## Paragraph 2: Need (maybe skip for now)
 
 Traditionally, eigenvalues-based techniques such as spectral clustering, PCA, or CCA
 provide a good projection (embedding) from the adjacency matrix representation to real vector
 representation. However, these methods are known to be impractical when the graph
 is large [Deepwalk, PCA]. In 2014, Peperozi et al. proposed Deepwalk [Deepwalk], 
-a skipgram-based [Skipgram] algorithm for graph embedding. Deepwalk provides a
-fast and scalable 
-Some of the "need" is mentioned in paragraph 1.
+a skipgram-based [Skipgram] algorithm for graph embedding. Deepwalk is a fast and
+scalable approach to *learn* the latent representation of some given graph. By treating
+a random series of nodes as if it is a sentence of words, Deepwalk utilizes Skipgram model to
+produce latent real-vector representations. Succeeding models to Deepwalk such as LINE [LINE], 
+platenoid [platenoid], and node2vec [node2vec] improve embedding quality by 
+taking network structures or community labels into the embedding process. 
 
 ## Paragraph 3: Introduce skipgram with negative sampling
 
