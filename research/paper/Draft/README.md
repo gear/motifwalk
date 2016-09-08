@@ -30,15 +30,18 @@ networks are also studied under the graph model.
 
 ### Supporting 3: What is complex network? Many system must be modeled as a complex network.
 
-The problem of analyzing a graph structure becomes challanging when the graph 
-becomes complex. One example of such graph is the Internet with approximately XXXX 
-nodes and XXXXX [cite internet].
-
-
+The graph analysis process becomes challenging as the scientic problem deals with
+complex data.
 
 ### Supporting 4: Dimensionality problem, mapping solution (PCA, CCA, embeddings).
 
+complex data. In such case, the graph usually contains several thousands to millions
+of nodes. Therefore, it is deseriable to have an alternate representation of the
+graph with a lower dimensionality while retaining the structural properties.
+
 ### Supporting 5: Usefulness of embedding techniques.
+
+
 
 ### Conclusion: Graph model is important and learning latent representation can help solving many problems.
 
