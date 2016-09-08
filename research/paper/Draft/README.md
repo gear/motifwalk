@@ -36,17 +36,26 @@ complex data.
 ### Supporting 4: Dimensionality problem, mapping solution (PCA, CCA, embeddings).
 
 complex data. In such case, the graph usually contains several thousands to millions
-of nodes. Therefore, it is deseriable to have an alternate representation of the
+of nodes. Therefore, it is deseriable to have a latent representation of the
 graph with a lower dimensionality while retaining the structural properties.
 
 ### Supporting 5: Usefulness of embedding techniques.
 
-
+A *meaningful* latent representation of a graph can benefit researchers
+in many ways. For instance, instead of relying on only graph algorithms to analyze
+a given structure, researchers can also apply other machine learnings algorithms on
+the latent representation to make predictions on the data.
 
 ### Conclusion: Graph model is important and learning latent representation can help solving many problems.
 
 ## Paragraph 2: Need (maybe skip for now)
 
+Traditionally, eigenvalues-based techniques such as spectral clustering, PCA, or CCA
+provide a good projection (embedding) from the adjacency matrix representation to real vector
+representation. However, these methods are known to be impractical when the graph
+is large [Deepwalk, PCA]. In 2014, Peperozi et al. proposed Deepwalk [Deepwalk], 
+a skipgram-based [Skipgram] algorithm for graph embedding. Deepwalk provides a
+fast and scalable 
 Some of the "need" is mentioned in paragraph 1.
 
 ## Paragraph 3: Introduce skipgram with negative sampling
