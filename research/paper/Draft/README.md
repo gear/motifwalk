@@ -16,12 +16,25 @@ representation of a complex graph.
 
 ### Supporting 1: What is graph (or network).
 
-The graph
-
+Graph, in its simplest form, is a set of vertices (nodes) and edges
+connecting them. 
 
 ### Supporting 2: Many discoveries are from analizing graph structures.
 
+Because of its representation power, the graph-theoric approach has been applied
+in many scientic fields and proven to be a powerful in structure discovery. For
+example, the study conducted by [MP Van Den Heuvel] suggests that brain functional-
+connectivity network provides insights about the human brain's organization. In the
+same way, other complex structures such as social networks or molecule interaction 
+networks are also studied under the graph model.
+
 ### Supporting 3: What is complex network? Many system must be modeled as a complex network.
+
+The problem of analyzing a graph structure becomes challanging when the graph 
+becomes complex. One example of such graph is the Internet with approximately XXXX 
+nodes and XXXXX [cite internet].
+
+
 
 ### Supporting 4: Dimensionality problem, mapping solution (PCA, CCA, embeddings).
 
