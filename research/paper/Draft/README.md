@@ -87,22 +87,44 @@ in Section 3. The result discussion and conclusion are Section 4 and 5 consecuti
 
 ### P2: Motif conductance for community definition
 
-# Methods 
+# Methods and experiments
 
 ## Motif-Aware context generation 
 
-### Popular motif in graph (social network and citation network)
+### P1: Popular motif in graph (social network and citation network)
+
+### P2: Sample generation algorithm
 
 ## Negative sampling
 
+### P1: Inverse motif generation
+
+### P2: Negative sample generation algorithm
+
 ## Motif-Aware Graph Embedding Model
 
-## Implementation
+### P1: Loss function definition (learning ratio)
+
+### P2: Distance function
+
+## Experiments design
+
+### P1: Multilabel classification (mention dataset)
+
+### P2: Link prediction (mention dataset)
 
 # Results and discussion
 
-## Datasets and evaluation tasks
+## Multilabel classification result
 
-## Results
+### P1: Result
+
+### P2: Discussion
+
+## Link prediction
+
+### P1: Result
+
+### P2: Discussion
 
 ## Discussion
