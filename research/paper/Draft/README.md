@@ -2,7 +2,7 @@
 
 # Introduction
 
-## Paragraph 1: Context
+### Paragraph 1: Context
 
 The graph (or network) data model is an useful tool for a wide 
 range of disciplines and it is important to have a low dimensionality 
@@ -24,7 +24,7 @@ a given structure, researchers can also apply other machine learnings algorithms
 the latent representation to make predictions on the data.
 In summary, graph embedding techniques promise a feasible solutions to many graph analysis tasks.
 
-## Paragraph 2: Need
+### Paragraph 2: Need
 
 Finding a latent representation can be a challenging task.
 Traditionally, eigenvalues-based techniques such as spectral clustering, PCA, or CCA
@@ -40,7 +40,7 @@ taking network structures or community labels into the embedding process. Howeve
 all of the aforementioned algorithms lack motif structure consideration in their
 normalization factor estimation process.
 
-## Paragraph 3: Introduce skipgram with negative sampling
+### Paragraph 3: Introduce skipgram with negative sampling
 
 In this work, we propose an algorithm which controls both graph context and
 negative samples generation. The motif-aware context generation aims to emphasize
@@ -59,18 +59,28 @@ but does not belong to the motif structure, which also an indicator for overlapp
 
 The algorithm implementation and experimental results are available on Github. [Footnote Link]
 
-## Paragraph 4: Structure of the document
+### Paragraph 4: Structure of the document
 
 The remaining of this paper is divided into 4 parts. The related works and background
 are provided in Section 2. Our implementation detail and experiment design are presented 
 in Section 3. The discussion and conclusion are Section 4 and 5 consecutively.
 
-# Methods
+# Related work
 
-## Subsection 1: Probabilistic model
+## Skipgram model and negative sampling
 
-## Subsection 2: Positive sample generation
+## Context generation 
 
-## Subsection 3: Negative sample generation
+## Motif in graph
 
-## Subsection 4: Implementation details
+# Methods 
+
+## Motif-Aware context generation 
+
+## Negative sampling
+
+## Implementation
+
+# Results and discussion
+
+## Datasets and evaluation tasks
