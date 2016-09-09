@@ -68,26 +68,26 @@ normalization factor estimation process.
 
 ## Paragraph 3: Introduce skipgram with negative sampling
 
-### Main idea: Careful negative sample selection algorithm improves the result.
-
 In this work, we propose an algorithm which controls both graph context and
-negative sample generation. 
+negative samples generation. The motif-aware context generation aims to emphasize
+nodes that are in the same motif community structure, while inverse-motif negative
+samples generation further improves the normalization factor estimation, which is
+intrinsic to Skipgram model. Generally, our algorithm has two following advantages:
 
-### Supporting 1: Skipgram model depends on normalization factor estimation.
+- Motif-aware positive samples generation process emphasizes the motif structure, which
+is a strong indicator of communities [Jure motif, Harvard motif]. Tang et al. and Grover et al. also
+have similar idea mentioned in their researches [LINE, nove2vec].
 
-In the literature, the quality of learned latent vector representation is often
-determined by clustering or labeling task. Since Skipgram model is a variant of
-softmax model, it exhibits the problem of normalization factor estimation.
+- Instead of using distorted degree distribution or uniform distribution as negative
+sampling, we use another motif-biased random walk as a negative sample generator. Intuitively,
+this negative sampling procedure generates nodes that are close to the target community,
+but does not belong to the motif structure, which also an indicator for overlapping communities.
 
-### Supporting 2: Common use is negative sampling which is a simplified version of NCE.
-
-### Supporting 3: Control positive walk similar to node2vec proves to be useful.
-
-### Supporting 4: Control negative sample generation will further improve the work.
-
-### Supporting 5: Use motif and negative motif as basis for generating these.
 
 ## Paragraph 4: Structure of the document
+
+The remaining of this paper is divided into 4 parts. Section 2 presents 
+our algorithm in detail and dataset
 
 ### Main idea: The document is divided into 4 parts.
 
