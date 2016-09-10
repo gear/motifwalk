@@ -71,6 +71,8 @@ in Section 3. The result discussion and conclusion are Section 4 and 5 consecuti
 
 ### P1: Natural Language Processing model (Softmax, unigram, skipgram)
 
+Representation learning
+
 ### P2: Normalization factor estimation with negative sampling, negative sampling loss function
 
 ## Graph embedding
