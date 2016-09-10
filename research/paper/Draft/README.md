@@ -71,7 +71,11 @@ in Section 3. The result discussion and conclusion are Section 4 and 5 consecuti
 
 ### P1: Natural Language Processing model (Softmax, unigram, skipgram)
 
-Representation learning
+Representation learning has been a key role in the current success of machine learning
+algorithms [Bengio Review]. In the context of natural language processing (NLP), representation
+learning becomes even more important as the data has large dimension. To address the dimensionality 
+problem in NLP, Mikholov et al. have proposed the Skipgram model [Skipgram]. Instead of maximizing
+the n-gram distribution, Skipgram maximize the local context words given a target word.
 
 ### P2: Normalization factor estimation with negative sampling, negative sampling loss function
 
