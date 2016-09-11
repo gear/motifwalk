@@ -89,9 +89,22 @@ algorithms [Bengio Review]. In the context of natural language processing (NLP),
 learning becomes even more important as the data has large dimension. To address the dimensionality 
 problem in NLP, Mikholov et al. have proposed the Skipgram model [Skipgram]. Instead of maximizing
 the n-gram distribution, Skipgram maximize the local context words given a target word. The 
-un-normalized potential function for a context word given a target word is given by:
+softmax potential function for a context word given a target word is given by:
 
-$$ \mbox{Pr} (wc | wt) = e^{<wc,wt>} $$
+=== Function and explainatio ===
+
+Generally, the objective of Skipgram model is to maximize the following average log likelihood:
+
+=== Average log likelihood ===
+
+The straight-forward computation of the normalization factor in equation (1) is intractable
+due to the size of corpus V can be arbitary large. Therefore, normalization factor estimation
+technique such as noise contrastive estimation [nce] is needed. In [Skipgram], Mikholov et al.
+introduced negative sampling, which can be considered as a simplified version of noise contrastive
+estimation. The objective function under negative sampling is given by:
+
+=== Negative sampling objective ===
+
 
 ### P2: Normalization factor estimation with negative sampling, negative sampling loss function
 
