@@ -1,5 +1,18 @@
 # Abstract
 
+Given a large complex graph, how can we have a lower dimension real-vector 
+representations of vertices that preserve structural information? Recent 
+advancements in graph embedding have adopted word embedding techniques 
+and deep architectures to propose a feasible solution to this question. 
+However, most of these former researches considers the notion of "neighborhood" 
+by vertex adjacency only. In this paper, we propose a novel graph embedding 
+algorithm that employs motif structures into the latent vector representation 
+learning process. Our algorithm learns the graph latent representation by 
+contrasting between different type of motif-biased random walk. We showed 
+that our algorithm yields more accurate embedding results compared to 
+other existing algorithms through various 
+graph mining benchmark tasks.
+
 # Introduction
 
 ### P1: Context
@@ -75,10 +88,10 @@ Representation learning has been a key role in the current success of machine le
 algorithms [Bengio Review]. In the context of natural language processing (NLP), representation
 learning becomes even more important as the data has large dimension. To address the dimensionality 
 problem in NLP, Mikholov et al. have proposed the Skipgram model [Skipgram]. Instead of maximizing
-the n-gram distribution, Skipgram maximize the local context words given a target word. The log 
-likelihood function is given by:
+the n-gram distribution, Skipgram maximize the local context words given a target word. The 
+un-normalized potential function for a context word given a target word is given by:
 
-$$ \log $$
+$$ \mbox{Pr} (wc | wt) = e^{<wc,wt>} $$
 
 ### P2: Normalization factor estimation with negative sampling, negative sampling loss function
 
