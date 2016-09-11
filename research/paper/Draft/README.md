@@ -75,7 +75,10 @@ Representation learning has been a key role in the current success of machine le
 algorithms [Bengio Review]. In the context of natural language processing (NLP), representation
 learning becomes even more important as the data has large dimension. To address the dimensionality 
 problem in NLP, Mikholov et al. have proposed the Skipgram model [Skipgram]. Instead of maximizing
-the n-gram distribution, Skipgram maximize the local context words given a target word.
+the n-gram distribution, Skipgram maximize the local context words given a target word. The log 
+likelihood function is given by:
+
+$$ \log $$
 
 ### P2: Normalization factor estimation with negative sampling, negative sampling loss function
 
