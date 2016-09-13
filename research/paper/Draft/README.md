@@ -115,9 +115,16 @@ of the negative-sampling Skipgram model.
 
 ## Graph embedding
 
-### P1: Spectral clustering, PCA
+### P1: Spectral clustering, PCA, NFM
 
-NUKUI's part.
+Most of machine learning techniques such as Logistic Regression, K-means or SVM
+accept semantic feature vectors as its input.
+Thus, if nodes in a graph can be encoded into semantic vecters, we obtain large benefits of those machine learing techniques,
+For that purpose, a number of reseachers are addressing the problem to obtain more meaningful embedding representation of nodes.
+The most traditional approach is Principal Component Analysis (PCA) [PCA] for a graph Laplacian, which is based on eigenvalue decomposition.
+Laplacian Eigenmaps proposed by Belkin et al. [labemb] is eigenvalue decomposition method as like PCA but reflects the intrinsic geometric structure.
+However, since the embeddings are linear representations, they have a limitation of the power of expression.
+
 
 ### P2: Deepwalk, LINE, GraRep, Planetoid, Node2vec
 
