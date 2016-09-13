@@ -193,7 +193,7 @@
             of Deepwalk is in the fact that it ignores the graph's deep structures which cannot 
             be discovered only by random walks. 
 
-            % Figure for structure-aware context generation
+            % Figure for structure-aware context generation (LINE)
             
             In one of the researches subsequent to Deepwalk, Tang et al.\ hinted the advantages 
             of structure-aware graph context generation in their citation network experimental 
@@ -205,22 +205,41 @@
             from LINE in friendship-based graphs \cite{node2vec}. On the contrary, we noticed that 
             LINE has exceptionally good performance in some graphs that have acyclic structure 
             (e.g.\ citation networks). We also found the similarity between the definition of 
-            second-order proximity in \cite{line} and the bipartite motif (Figure~\ref{fig:motif}). 
+            second-order proximity in \cite{line} and the bipartite motif (Figure~\ref{fig:motifs}).
             From the observations above, we hypothesize that the graph embedding quality can be
             improved by taking advantage of the statistically significant motifs with the graph.
+
+            % Figure for node2vec vs node community
              
             In 2016, Grover et al.\ proposed \emph{node2vec}, an algorithm based on biased random
             walks. This idea of using biased random walk to manipulate graph context generation
             is aligned perfectly with our idea. However, while node2vec aims to emphasize statistically
             important \emph{vertices}, our algorithm aims to emphasize the local motif community
             structure. Another noteworthy graph embedding research is Planetoid \cite{planetoid} 
-            proposed in 2015 by Yang et al. Planetoid can be considered a deep learning framework
-            rather than just a graph embedding algorithm. 
+            proposed in 2015 by Yang et al. While other graph embedding algorithms is unsupervised, 
+            Planetoid is a semi-supervised approach. In addition to random walk graph context generation, 
+            Planetoid generates another context using the training community labels. Due to the
+            semi-supervised learning procedure of Planetoid, we consider it belongs to another
+            category of algorithm. However, we will discuss the integration of Planetoid to our
+            algorithm in later section.
 
+        \subsection{Network Motifs}
 
+            Network motifs are defined to be recurring and regulating patterns in a complex network 
+            \cite{netmotif}. First mentioned by Milo et al. \cite{motifblockmilo}, network motifs
+            soon became a topic of attention in many research fields especially in biology and sociology
+            \cite{masoudirev}. Recent researches suggested that network motifs withhold the structural 
+            information of the network \cite{motifcon, harvardmotif, deepgraphkernel}. Due to the
+            computational complexity of graph isomorphism, in most researches, the studied motifs 
+            often has a small size (number of vertices in a motif is less than 4) \cite{motifdectrev}.
+            Figure~\ref{fig:motifs} presents some of the most noteworthy motifs.
 
+            % Figure for motifs - 2 columns.
+
+            % Formal motif definition.
+
+            The sentence ``a friend of a friend is a friend'' makes sense to us in real life.
             
-
             The Skipgram model proposed by Mikolov et al. \cite{skipgram} is a powerful model 
             in natural language processing. Under the Distributional Hypothesis \cite{disthyp},
             the Skipgram model maximizes the occurent probability of context words given a target
