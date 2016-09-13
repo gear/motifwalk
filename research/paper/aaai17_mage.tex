@@ -9,6 +9,9 @@
 \usepackage{times}
 \usepackage{helvet}
 \usepackage{courier}
+\usepackage{graphics} % Using scalebox
+\usepackage{dsfont} % Mathds
+\usepackage{amsmath, amsthm, amssymb} % Align environment
 \setlength{\pdfpagewidth}{8.5in}
 \setlength{\pdfpageheight}{11in}
 % PDF metadata
@@ -73,13 +76,13 @@
         Conventionally, the latent representation learning procedure on graph is called
         \emph{graph embedding}.
 
-        % Include fig 1 task explaination here.
+        % Include fig 1 dimensionality reduction task explaination here.
 
         \emph{Learning} a high quality latent representation is a challenging task. Traditionally,
         dimensionality reduction technique such as PCA \cite{pca}, CCA \cite{cca}, and IsoMap 
-        \cite{IsoMap} are used. Although these aforementioned techniques have a profound theoretical
+        \cite{isomap} are used. Although these aforementioned techniques have a profound theoretical
         background \cite{++++++}, they are impractical due to computational drawbacks. To address
-        the dimensionality problem, Peperozi et al. proposed Deepwalk - a Skipgram-based algorithm
+        the dimensionality problem, Peperozi et al.\ proposed Deepwalk - a Skipgram-based algorithm
         for graph embedding \cite{deepwalk}. Different from traditional linear algebra approach,
         Deepwalk learns the latent representation from probabilistic point of view. By treating
         a random series of vertices as if it is a sentence of words, Deepwalk adopts the operation
@@ -113,7 +116,7 @@
                 samples, hence better quality embedding.
         \end{itemize}
 
-        Our algorithm is implemented on Keras \cite{Keras} framework. The implementation and experimental
+        Our algorithm is implemented on Keras \cite{keras} framework. The implementation and experimental
         results are available on Github. (TODO: ADD FOOTNOTE).
 
         The remaining of this paper is divided into 4 parts. Section 2 provides additional information
@@ -125,13 +128,14 @@
             Representation learning has been one of the key to the success of machine learning 
             algorithms \cite{bengiorepreview}. In the context of natural language processing (NPL),
             representation learning becomes even more important as the data has a discrete, but
-            high-dimension nature. To address the dimensionality problem in NLP, Mikholov et al. have
-            proposed the Skipgram model \cite{Skipgram}. Instead of maximizing the n-gram distribution
+            high-dimension nature. To address the dimensionality problem in NLP, Mikholov et al.\ have
+            proposed the Skipgram model \cite{skipgram}. Instead of maximizing the n-gram distribution
             as prior works, Skipgram maximize the occurence probability of context words given a
             target word. The softmax potential function for a context word given a target 
             word is given by:
 
             \begin{equation}
+                \label{eq:model}
                 \mbox{Pr} (v_c | v_t) = \frac{\exp{( \langle \omega_{v_c} ,  \omega_{v_t} \rangle )}}{\sum_{k \in V} \exp{( \langle \omega_{v_k} ,  \omega_{v_t} \rangle )}},
             \end{equation}
             
@@ -141,10 +145,33 @@
             vector selected from the \emph{embedding matrix} by the token $v_t$; $\omega_{v_c}$ is the
             embedding vector selected from the \emph{context matrix} by the token $v_c$.
 
+            Based on equation~\ref{eq:model}, the objective of Skipgram model is to maximize the following
+            average log likelihood:
+
+            \begin{equation}
+                \label{eq:avgloglikelihood}
+                \mathcal{O} = \max \left( \frac{1}{T} \sum_{t=1}^{T} \sum_{-c \leq j \leq c, j \neq 0} \log \mbox{Pr} (v_{t+j} | v_t) \right)
+            \end{equation}
+
+            The intrinsic instractable problem for softmax model is normalization factor computation. 
+            Therefore, the normalization factor in equation~\ref{eq:model} needs to be estimated by 
+            approximation techniques such as Hierachial Softmax \cite{hs} or Noise Contrastive estimation
+            \cite{nce}. In their landmark paper, Mikolov et al.\  also proposed \emph{negative sampling} - a 
+            simplified version of noise contrastive estimation. The log likelihood of under negative
+            sampling scheme is given by:
+
+            \begin{equation}
+                \label{eq:objneg}
+                \begin{aligned}
+                \log \mbox{Pr} (v_c | v_t) = & \log \sigma( \langle \omega^{\scalebox{0.7}{nce}}_{v_c} , \omega^{\scalebox{0.7}{emb}}_{v_t} \rangle ) \\
+                & + \sum_{i=1}^{k} \mathds{E}_{\omega_{v_i} \sim P_n(\omega)} \left[ \log \sigma( \langle \omega^{\scalebox{0.7}{nce}}_{v_i} , \omega^{\scalebox{0.7}{emb}}_{v_t} \rangle) \right]
+                \end{aligned}
+            \end{equation}
+            
 
         \subsection{Context representation importance}
             The Skipgram model proposed by Mikolov et al. \cite{skipgram} is a powerful model 
             in natural language processing. Under the Distributional Hypothesis \cite{disthyp},
             the Skipgram model maximizes the occurent probability of context words given a target
-            word. 
+            word.  
 \end{document}
