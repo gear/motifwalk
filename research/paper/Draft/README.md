@@ -238,23 +238,56 @@ is represented in Figure XXX, and undirected wedge motif is presented in Figure 
 
 ## Negative sampling
 
-Our negative sampling also based on motif   
-
 ### P1: Inverse motif generation 
 
-### P2: Negative sample generation algorithm
+For each positive motif walk, it is trivial to define the negative version of it. For example,
+the inverse of the aforementioned undirected triangle motif walk is the wedge motif walk. In addition
+to the traditional unigram-based negative sampling, we further emphasize the importance of
+motif structure by choosing negative samples from inverse of the chosen postive motif. The algorithm
+for negative motif sampling with an arbitary MCMC is given in algorithm XXX. 
+
+=== Algorithm for motif negative sampling ===
+
+=== Figure describe the negative selection (not motif community) ===
 
 ## Motif-Aware Graph Embedding Model
 
 ### P1: Loss function definition (learning ratio)
 
+We formally define our objective function as follow:
+
+=== Objective function with split ratio and explaination ===
+
+Without the loss of generality, we use the following toy graph to clearly demonstrate our
+algorithm's operation. Consider the toy graph in Figure XXX (a), there are 10 nodes and 50 edges.
+Under the assumption that we know the most statistically significant motif is the triangle 
+motif, our algorithm first generates context by performing random walk and triangle motif walk.
+With skip window of size 5, MAGE generates pairs of positive samples. In the same way, negative
+samples pairs are picked randomly from negative motif walks and unigram distribution. The data
+samples are given in Figure XXX (b). These samples are then fed to the neural network described
+in Figure XXX to optimize the objective given in Equation XXX.
+
 ### P2: Distance function
+
+In addition to the dot product (cosine distance) kernel, there are several other
+distance metric that can be employed in graph embedding. The simplicity of dot product
+is difficult to compete. MORE ON THIS LATER.
 
 ## Experiments design
 
+We conducted graph embedding evaluation experiments 
+on two main tasks: Multiclass labeling and link prediction. Table XXX presents 
+the datasets in use and the corresponding evaluation tasks.
+
+=== Table for 6 evaluation graphs (may use 2 colums table)
+
 ### P1: Multilabel classification (mention dataset)
 
+===+ Detail about each graph and background of each dataset. Mention motif in use.
+
 ### P2: Link prediction (mention dataset)
+
+===+ Detail about each graph and background of each dataset. Mention motif in use.
 
 # Results and discussion
 
@@ -262,12 +295,26 @@ Our negative sampling also based on motif
 
 ### P1: Result
 
+=== Table f1-macro and micro score ===
+
+=== Graph corresponding to each label ===
+
 ### P2: Discussion
+
+Mention percentage improvements and discuss reason why.
 
 ## Link prediction
 
 ### P1: Result
 
+=== Table f1-macro and micro score ===
+
+=== Graph corresponding to each label ===
+
 ### P2: Discussion
 
+Mention percentage improvements and disccuss reason why.
+
 ## Discussion
+
+### P1: Parallel and scalibility and 
