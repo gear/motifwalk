@@ -18,24 +18,16 @@
 \pdfinfo{
     /Title (Motif-Aware Graph Embedding)
     /Author (Hoang Nguyen, Shun Nukui, Tsuyoshi Murata)
-    /Keywords (Graph latent features, vertex representation, skipgram, graph motif)
+    /Keywords (Graph embedding, Latent representation, Complex network, Motif, Random walk, Biased random walk, MAGE)
 }
 % Section number
 \setcounter{secnumdepth}{0}
 % Title and authors
 \title{Motif-Aware Graph Embedding}
 \author{
-    Hoang Nguyen \\
-    Tokyo Institute of Technology \\
-    hoangnt@net.c.titech.ac.jp \\
-    \And 
-    Shun Nukui \\ 
-    Tokyo Institute of Techonology \\
-    nukui.s@net.c.titech.ac.jp 
-    \And 
-    Tsuyoshi Murata \\
-    Tokyo Institute of Techonology \\
-    murata@c.titech.ac.jp 
+    Anonymous Author(s) \\
+    Anonymous Institute \\
+    Anonymous Email Address(es) \\
 }
 
 %% Paper content
@@ -78,7 +70,7 @@
 
         % Include fig 1 dimensionality reduction task explaination here.
 
-        \emph{Learning} a high quality latent representation is a challenging task. Traditionally,
+        To \emph{learn} a high quality latent representation is a challenging task. Traditionally,
         dimensionality reduction technique such as PCA \cite{pca}, CCA \cite{cca}, and IsoMap 
         \cite{isomap} are used. Although these aforementioned techniques have a profound theoretical
         background \cite{++++++}, they are impractical due to computational drawbacks. To address
@@ -123,8 +115,8 @@
         about related work on graph embedding and graph motif. Section 3 presents our algorithm and
         experimental design. Section 4 and 5 discusses results and conclusion.
 
-    \section{Related work}
-        \subsection{Skipgram model}
+    \section{Related Works}
+        \subsection{Skipgram Model}
             Representation learning has been one of the key to the success of machine learning 
             algorithms \cite{bengiorepreview}. In the context of natural language processing (NPL),
             representation learning becomes even more important as the data has a discrete, but
@@ -156,9 +148,9 @@
             The intrinsic instractable problem for softmax model is normalization factor computation. 
             Therefore, the normalization factor in equation~\ref{eq:model} needs to be estimated by 
             approximation techniques such as Hierachial Softmax \cite{hs} or Noise Contrastive estimation
-            \cite{nce}. In their landmark paper, Mikolov et al.\  also proposed \emph{negative sampling} - a 
-            simplified version of noise contrastive estimation. The log likelihood of under negative
-            sampling scheme is given by:
+            \cite{nce}. In their landmark paper, Mikolov et al.\  also proposed \emph{Negative Sampling} - a 
+            simplified version of noise contrastive estimation \cite{skipgram}. The log likelihood of 
+            under negative sampling scheme is given by:
 
             \begin{equation}
                 \label{eq:objneg}
@@ -167,7 +159,8 @@
                 + \sum_{i=1}^{k} & \mathds{E}_{\omega_{v_i} \sim P_n(\omega)} \left[ \log \sigma( -\langle \omega^{\scalebox{0.7}{nce}}_{v_i} , \omega^{\scalebox{0.7}{emb}}_{v_t} \rangle) \right],
                 \end{aligned}
             \end{equation}
-
+            
+            \noindent
             where $\sigma$ is the sigmoid function; $\omega_{v_i}$ is sampled from the user-defined
             negative distribution $P_n(\omega)$; $k$ is the number of negative sample for each target
             $v_t$; $\omega^{\scalebox{0.7}{nce}}_{v_c}$ and $\omega^{\scalebox{0.7}{emb}}_{v_t}$ 
@@ -175,10 +168,55 @@
             context embedding matrix (named ``nce'') and the target embedding matrix (named ``emb'')
             are different.
 
+            Similar to Noice Contrastive Estimation, Negative Sampling changes log likelihood
+            maximization objective to positive/negative samples classification task. As discussed
+            in depth by Gutmann et al.\ and Mikolov et al.\ , the choice of negative distribution 
+            $P_n(\omega)$ can greatly affect the quality of the embedding result. Therefore, an
+            appropriate negative sampling setting will benefit the system in term of statistical
+            performance and computational cost.
+
+        \subsection{Graph Embedding}
             
+            Traditionally, dimension-reduction techniques can be adopted to produce latent 
+            representation for vertices in a graph. Linear algebra approaches such as Principal
+            Component Analysis (PCA) \cite{pca} or Non-negative Matrix Factorization has
+            strong theoretical background but great computation drawbacks. NUKUI NEEDS TO ADD.
+
+            Inspired by the power-law similarity between the vertex frequency distribution in
+            random walks and the word frequency distribution of English text, Peperozi et al.\ proposed
+            Deepwalk algorithm to \emph{learn} the latent representations of vertices in a
+            graph \cite{deepwalk}. The operation of Deepwalk is based on hierachial-softmax
+            Skipgram, the only different is artifical ``sentences'' are generated by performing
+            random walk on the graph. Inherrting the advantages of the Skipgram model, Deepwalk
+            has been successful in various graph-related machine learning tasks. However, the weakness
+            of Deepwalk is in the fact that it ignores the graph's deep structures which cannot 
+            be discovered only by random walks. 
+
+            % Figure for structure-aware context generation
+            
+            In one of the researches subsequent to Deepwalk, Tang et al.\ hinted the advantages 
+            of structure-aware graph context generation in their citation network experimental 
+            results \cite{line}. In their work, Tang et al.\ proposed LINE, which consider the
+            second-order proximity into the embedding process. By contructing half the embedding
+            vector with Deepwalk, and the other half with vertices that have second-order proximity,
+            LINE has improved embedding results compare to Deepwalk. However, in the most recent
+            graph embedding reserach, Grover et al.\ reported some unexpected poor performance
+            from LINE in friendship-based graphs \cite{node2vec}. On the contrary, we noticed that 
+            LINE has exceptionally good performance in some graphs that have acyclic structure 
+            (e.g.\ citation networks). We also found the similarity between the definition of 
+            second-order proximity in \cite{line} and the bipartite motif (Figure~\ref{fig:motif}). 
+            From the observations above, we hypothesize that the graph embedding quality can be
+            improved by taking advantage of the statistically significant motifs with the graph.
+             
+            In 2016, Grover et al.\ proposed \emph{node2vec}, an algorithm based on biased random
+            walk. This idea of using biased random walk to manipulate graph context generation
+            is aligned perfectly with our idea. However, while node2vec aims to emphasize statistically
+            important \emph{vertices}, our algorithm aims to emphasize the local motif community
+            structure. Another noteworthy graph embedding research is Planetoid \cite{planetoid} 
+            proposed in 2015 by Yang et al. Planetoid can be considered a deep learning framework
+            rather than just a graph embedding algorithm. 
             
 
-        \subsection{Context representation importance}
             The Skipgram model proposed by Mikolov et al. \cite{skipgram} is a powerful model 
             in natural language processing. Under the Distributional Hypothesis \cite{disthyp},
             the Skipgram model maximizes the occurent probability of context words given a target
