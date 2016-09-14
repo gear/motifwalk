@@ -247,7 +247,7 @@ is represented in Figure XXX, and undirected wedge motif is presented in Figure 
 
 ### P1: Inverse motif generation 
 
-For each positive motif walk, it is trivial to define the negative version of it. For example,
+For each positive motif walk, it is trivial to define the negative versn of it. For example,
 the inverse of the aforementioned undirected triangle motif walk is the wedge motif walk. In addition
 to the traditional unigram-based negative sampling, we further emphasize the importance of
 motif structure by choosing negative samples from inverse of the chosen postive motif. The algorithm
