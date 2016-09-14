@@ -370,8 +370,21 @@
 
         \subsection{Learning framework}
             
-             
-
+            Up to this point of the paper, we have presented the graph context generation procedures.
+            In this section, we present the neural network implemented on Keras \cite{keras} 
+            (with Theano \cite{theano} backend). One advantage of our implementation is that
+            it can run on both CPU and GPU (when available) thanks to the Keras wrapper. Our
+            neural network contains 3 modules. Firstly, there are two embedding matrices of 
+            the same shape (\texttt{num\_vertices}, \texttt{emb\_dim}). The matrix named ``emb''
+            contains embedding vectors for the target vertices, while the other matrix named
+            ``nce'' contains embedding vectors for the context vertices. Secondly, the computation
+            module computes the dot product of each samples in the mini-batch, applies the
+            sigmoid function, then yeilds the final logit. The last modules compute the
+            the cross-entropy \cite{xentropy} of samples in the mini-batch and its positive/negative
+            labels. Figure~\ref{fig:mage} present the block diagram of our learning framework.
+            To optimize the binary cross entropy objective, we use Adam \cite{adam} as the 
+            mini-batch gradient optimizer.
+            
         \subsection{Experiments design}
             
             In our experiments, we compare our approach (MAGE) with Deepwalk \cite{deepwalk}, 
@@ -398,7 +411,9 @@
             Blogcatalog \cite{blogcatalog} is a social network of bloggers. The labels represent
             a blogger's interest. There are 39 labels in total, each blogger (vertex) has at least
             one label. Since Blogcatalog is a social network, we chose undirected triangle motif
-            walk for this graph.
+            walk for this graph. On the other hand, Wikipedia \cite{wiki} nad Citeseer \cite{citeseer} 
+            are coocurrence and citation networks. Therefore, we employ bipartite motif for 
+            these networks.
 
             The Skipgram model proposed by Mikolov et al. \cite{skipgram} is a powerful model 
             in natural language processing. Under the Distributional Hypothesis \cite{disthyp},
