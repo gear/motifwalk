@@ -10,6 +10,7 @@
 \usepackage{helvet}
 \usepackage{courier}
 \usepackage{graphics} % Using scalebox
+\usepackage{graphicx} % Figures
 \usepackage{dsfont} % Mathds
 \usepackage{amsmath, amsthm, amssymb} % Align environment, definition (theorem)
 \usepackage[ruled,vlined]{algorithm2e} % Use algorithm environment
@@ -72,22 +73,34 @@
         \emph{graph embedding}.
 
         % Include fig 1 dimensionality reduction task explaination here.
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.45\textwidth]{fig1_dimrec}
+            \caption{Graph dimension reduction.}
+            \label{fig:dimrec}
+        \end{figure}
 
         \emph{Learning} a high-quality latent representation is a challenging task. Traditionally,
         dimensionality reduction technique such as PCA \cite{pca}, CCA \cite{cca}, and IsoMap 
         \cite{isomap} are used. Although these aforementioned techniques have a profound theoretical
-        background \cite{++++++}, they are impractical due to computational drawbacks. To address
+        background \cite{dimrecrev}, they are impractical due to computational drawbacks. To address
         the dimensionality problem, Peperozi et al.\ proposed Deepwalk - a Skipgram-based algorithm
         for graph embedding \cite{deepwalk}. Different from traditional linear algebra approach,
         Deepwalk learns the latent representation from the probabilistic point of view. By treating
         a random series of vertices as if it is a sentence of words, Deepwalk adopts the operation
         of Skipgram model \cite{skipgram} to learn a vertex's latent representation. Following
         Deepwalk, other Skipgram-based graph embedding algorithms which aim to improve embedding
-        quality were proposed \cite{GraRep, LINE, platenoid, node2vec}. However, these algorithms
+        quality were proposed \cite{grarep, line, planetoid, node2vec}. However, these algorithms
         do not consider the intrinsic \emph{motif structure} of a graph. Therefore, the performance
         of these algorithms depends heavily on heuristic hyper-parameter tuning.
 
         % Include fig 2 sentence vs random walk.
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.4\textwidth]{fig2_congen}
+            \caption{Random walk generates ``sentence'' from graph.}
+            \label{fig:congen}
+        \end{figure}
 
         In this work, we propose an algorithm which controls both graph context and negative samples
         generation. The motif-aware context generation aims to emphasize the importance of local
@@ -121,7 +134,7 @@
     \section{Related Works}
         \subsection{Skipgram Model}
             Representation learning has been one of the keys to the success of machine learning 
-            algorithms \cite{bengiorepreview}. In the context of natural language processing (NPL),
+            algorithms \cite{bengioreprev}. In the context of natural language processing (NPL),
             representation learning becomes even more important as the data has a discrete, but
             high-dimension nature. To address the dimensionality problem in NLP, Mikolov et al.\ have
             proposed the Skipgram model \cite{skipgram}. Instead of maximizing the n-gram distribution
@@ -180,12 +193,6 @@
 
         \subsection{Graph Embedding}
             
-            Traditionally, dimension-reduction techniques can be adopted to produce latent 
-            representation for vertices in a graph. Linear algebra approaches such as Principal
-            Component Analysis (PCA) \cite{pca} or Non-negative Matrix Factorization has
-            a strong theoretical background but great computation drawbacks. (TODO: ASK NUKUI
-            TO REWRITE)
-
             Inspired by the power-law similarity between the vertex frequency distribution in
             random walks and the word frequency distribution of English text, Peperozi et al.\ proposed
             Deepwalk algorithm to \emph{learn} the latent representations of vertices in a
@@ -197,7 +204,13 @@
             be discovered only by random walks. 
 
             % Figure for structure-aware context generation (LINE)
-            
+            \begin{figure}
+                \centering
+                \includegraphics[width=0.3\textwidth]{fig3_line}
+                \caption{LINE generates context where blue vertices are together, whereas random walk cannot. It is trivial to see the bipartite structure in this figure.}
+                \label{fig:line}
+            \end{figure}
+
             In one of the researches subsequent to Deepwalk, Tang et al.\ hinted the advantages 
             of structure-aware graph context generation in their citation network experimental 
             results \cite{line}. In their work, Tang et al.\ proposed LINE, which consider the
@@ -213,7 +226,13 @@
             improved by taking advantage of the statistically significant motifs with the graph.
 
             % Figure for node2vec vs node community
-             
+            \begin{figure}
+                \centering
+                \includegraphics[width=0.3\textwidth]{fig4_n2v}
+                \caption{Node2vec emphasizes central ``important'' vertices.}
+                \label{fig:n2v}
+            \end{figure}
+
             In 2016, Grover et al.\ proposed \emph{node2vec}, an algorithm based on biased random
             walks. This idea of using biased random walk to manipulate graph context generation
             is aligned perfectly with our idea. However, while node2vec aims to emphasize statistically
@@ -232,16 +251,18 @@
             \cite{netmotif}. First mentioned by Milo et al. \cite{motifblockmilo}, network motifs
             soon became a topic of attention in many research fields especially in biology and sociology
             \cite{masoudirev}. Recent researches suggested that network motifs withhold the structural 
-            information of the network \cite{motifcon, harvardmotif, deepgraphkernel}. Due to the
+            information of the network \cite{juremotif, harvardmotif, deepgraphkernel}. Due to the
             computational complexity of graph isomorphism, in most researches, the studied motifs 
-            often has a small size (number of vertices in a motif is less than 4) \cite{motifdectrev}.
+            often has a small size (number of vertices in a motif is less than 4) \cite{motifdecrev}.
             Figure~\ref{fig:motifs} presents some of the most noteworthy motifs.
 
             % Figure for motifs - 2 columns. On page 3. (TODO: DRAW FIGURE)
 
             % Formal motif definition.
             \begin{ntdef}
-                Network motif is a small subgraph that is statistically significant. (TODO: FILL THIS)
+                \textbf{Network motif} are patterns of interconnections that recur in many different
+                parts of a network at frequencies much higher than those found in randomized networks
+                \cite{motifblockmilo}.
             \end{ntdef}
 
             The sentence ``a friend of a friend is a friend'' makes sense to us in real life. Interestingly,
@@ -256,13 +277,20 @@
             for the importance of network motifs in a complex network, we cannot ignore the pragmatic 
             representation capability of network motifs.
 
-    \section{Methods and Experiments}
+    \section{Method}
 
         In this section, we present our algorithm in detail. Although there are many different types of motif
         in a graph, within this paper, we only consider undirected triangle motif (figure~\ref{fig:motifs}),
         undirected wedge motif (figure~\ref{fig:motifs}), and undirected bipartite motif 
         (figure~\ref{fig:motifs}) for the sake of simplicity. Other types of motif and directed graph
         extension is discussed in Section 5.
+
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.3\textwidth]{fig5_mage}
+            \caption{MAGE discovers local motif structure.}
+            \label{fig:n2v}
+        \end{figure}
 
         \subsection{Motif-Aware Context Generation}
 
@@ -282,6 +310,7 @@
             \end{ntdef}
 
             % Figure for triangle MCMC
+
 
             \begin{algorithm}
                 \DontPrintSemicolon
@@ -385,35 +414,93 @@
             To optimize the binary cross entropy objective, we use Adam \cite{adam} as the 
             mini-batch gradient optimizer.
             
+    \section{Experiments and Result}
+
         \subsection{Experiments design}
             
             In our experiments, we compare our approach (MAGE) with Deepwalk \cite{deepwalk}, 
-            LINE \cite{LINE}, and node2vec \cite{node2vec} in two machine learning task: Multilabel
-            classification (abbr. MC) and link prediction (abbr. LP). Table~\ref{tb:data} gives 
-            graph statistics and its corresponding machine learning task. 
+            LINE \cite{line}, and node2vec \cite{node2vec} by multilabel classification. 
+            Table~\ref{tb:data} gives graph statistics and its corresponding machine learning task. 
 
             \begin{table}
                 \centering
                 \resizebox{\columnwidth}{!}{%
-                    \begin{tabular}{c r r r r}
-                        \textsc{Dataset} & \textsc{\#Classes} & \textsc{\#Vertices} & \textsc{\#Edges} & \textsc{Task} \\
+                    \begin{tabular}{c r r r}
+                        \textsc{Dataset} & \textsc{\#Classes} & \textsc{\#Vertices} & \textsc{\#Edges} \\
                         \hline \\
-                        \textsc{Blogcatalog} & 39 & 10,312 & 333,983 & MC \\
-                        \textsc{Wikipedia} & 40 & 4,777 & 184,812 & MC \\
-                        \textsc{Citeseer} & 6 & 3,327 & 4,732 & MC \\
-                        \textsc{Facebook} & - & 4,039 & 88,234 & LP \\
+                        \textsc{BlogCatalog} & 39 & 10,312 & 333,983 \\
+                        \textsc{Wikipedia} & 40 & 4,777 & 184,812 \\
+                        \textsc{Citeseer} & 6 & 3,327 & 4,732 \\
+                        \textsc{Youtube} & 47 & 1,138,499 & 2,990,443 \\ 
                         \end{tabular}%
                 }
                 \label{tb:data}
-                \caption{Datasets and machine learning task}
+                \caption{Dataset statistics}
             \end{table}
 
             Blogcatalog \cite{blogcatalog} is a social network of bloggers. The labels represent
             a blogger's interest. There are 39 labels in total, each blogger (vertex) has at least
             one label. Since Blogcatalog is a social network, we chose undirected triangle motif
-            walk for this graph. On the other hand, Wikipedia \cite{wiki} nad Citeseer \cite{citeseer} 
+            walk for this graph. On the other hand, Wikipedia \cite{wiki} and Citeseer \cite{citeseer} 
             are coocurrence and citation networks. Therefore, we employ bipartite motif for 
-            these networks.
+            these networks. The last graph we consider is Youtube, which is especially
+            large with more than 1 million vertices. Since Youtube is also a friendship network,
+            we also use triangle motif in context generation.
+
+            Conventionally, multilabel classification task is contructed as Peperozi et al.\ suggested
+            in their paper. The embedding vector for each vertex will be treated as the feature
+            vector for a One-versus-Rest logistic regression with L2 regularizaation. We split the 
+            data into training set and testing set. The result reported here is the weighted f1-macro and
+            f1-micro score with split ratio of 0.5. One exception is with the Youtube network, the
+            split ratio is 0.1 (training data : testing data) due to the size of the network.
+
+            In all of our experiments, we use the same hyper-parameters which gave the best
+            reported results in previous researches. For our algorithm, the hyper-parameters
+            are given in table~\ref{tb:hyper}.
+
+
+            \begin{table}
+                \centering
+                \resizebox{\columnwidth}{!}{%
+                    \begin{tabular}{c r r }
+                        \textsc{Hyper Parameter} & \textsc{Abbr.} & \textsc{Value} \\
+                        \hline \\
+                        Embedding dimenison & \texttt{emb\_dim} & 128 (Youtube=8) \\
+                        Skip window size & \texttt{window\_size} & 10 \\
+                        Walk length & \texttt{walk\_length} & 80 \\
+                        \#Negative samples & \texttt{neg\_samp} & 30 \\ 
+                        \#Positive samples & \texttt{num\_skip} & 5 \\
+                        \#Motif weight & $\alpha$ & 0.2 \\
+                        \#Motif bias & $\beta$ & 0.9 \\
+                        \end{tabular}%
+                }
+                \label{tb:hyper}
+                \caption{MAGE Hyper-parameters}
+            \end{table}
+
+        \subsection{Experimental Results}
+
+            Experimental results are presented in table~\ref{tb:result}.
+
+            \begin{table}
+                \centering
+                \resizebox{\columnwidth}{!}{%
+                    \begin{tabular}{c | c | c | c | c}
+                        \textbf{\textsc{Method}} & \textsc{BlogCatalog} & \textsc{Wikipedia} & \textsc{Citeseer} & \textsc{Youtube} \\
+                        \hline
+                        & & & &  \\
+                        Spectral clustering & 0.28 * & 0.1 & 0.1 & 0.1  \\
+                        Deepwalk & 0.20 & 0.1 & 0.1 & 0.1 \\
+                        LINE & 0.07 & 0.1 & 0.1 & 0.1 \\
+                        Node2Vec & 0.11 & 0.25 & 0.1 & 0.1 \\
+                        \textbf{MAGE} & 0.24 & 0.1 & 0.1 & 0.1 \\
+                        \end{tabular}%
+                }
+                \label{tb:result}
+                \caption{Multilabel classification weighted f1-macro}
+            \end{table}
+
+    \section{Discussion}
 
             The Skipgram model proposed by Mikolov et al. \cite{skipgram} is a powerful model 
             in natural language processing. Under the Distributional Hypothesis \cite{disthyp},
