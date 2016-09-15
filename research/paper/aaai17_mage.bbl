@@ -1,5 +1,46 @@
 \begin{thebibliography}{}
 
+\bibitem[\protect\citeauthoryear{Alon}{2007}]{netmotif}
+Alon, U.
+\newblock 2007.
+\newblock Network motifs: theory and experimental approaches.
+\newblock {\em Nature Reviews Genetics} 8(6):450--461.
+
+\bibitem[\protect\citeauthoryear{Bader, Betel, and Hogue}{2003}]{molecule}
+Bader, G.~D.; Betel, D.; and Hogue, C.~W.
+\newblock 2003.
+\newblock Bind: the biomolecular interaction network database.
+\newblock {\em Nucleic acids research} 31(1):248--250.
+
+\bibitem[\protect\citeauthoryear{Belkin and Niyogi}{2001}]{eigmaps}
+Belkin, M., and Niyogi, P.
+\newblock 2001.
+\newblock Laplacian eigenmaps and spectral techniques for embedding and
+  clustering.
+\newblock In {\em NIPS}, volume~14,  585--591.
+
+\bibitem[\protect\citeauthoryear{Bengio, Courville, and
+  Vincent}{2013}]{bengioreprev}
+Bengio, Y.; Courville, A.; and Vincent, P.
+\newblock 2013.
+\newblock Representation learning: A review and new perspectives.
+\newblock {\em IEEE transactions on pattern analysis and machine intelligence}
+  35(8):1798--1828.
+
+\bibitem[\protect\citeauthoryear{Benson, Gleich, and
+  Leskovec}{2016}]{juremotif}
+Benson, A.~R.; Gleich, D.~F.; and Leskovec, J.
+\newblock 2016.
+\newblock Higher-order organization of complex networks.
+\newblock {\em Science} 353(6295):163--166.
+
+\bibitem[\protect\citeauthoryear{Callon}{1986}]{sociology}
+Callon, M.
+\newblock 1986.
+\newblock The sociology of an actor-network: The case of the electric vehicle.
+\newblock In {\em Mapping the dynamics of science and technology}. Springer.
+\newblock  19--34.
+
 \bibitem[\protect\citeauthoryear{Cao, Lu, and Xu}{2015}]{grarep}
 Cao, S.; Lu, W.; and Xu, Q.
 \newblock 2015.
@@ -9,12 +50,98 @@ Cao, S.; Lu, W.; and Xu, Q.
   Information and Knowledge Management},  891--900.
 \newblock ACM.
 
+\bibitem[\protect\citeauthoryear{Chollet}{2015}]{keras}
+Chollet, F.
+\newblock 2015.
+\newblock keras.
+\newblock \texttt{https://github.com/fchollet/keras}.
+
+\bibitem[\protect\citeauthoryear{De~Boer \bgroup et al\mbox.\egroup
+  }{2005}]{xentropy}
+De~Boer, P.-T.; Kroese, D.~P.; Mannor, S.; and Rubinstein, R.~Y.
+\newblock 2005.
+\newblock A tutorial on the cross-entropy method.
+\newblock {\em Annals of operations research} 134(1):19--67.
+
+\bibitem[\protect\citeauthoryear{Faust and Skvoretz}{2002}]{comsocialnetwork}
+Faust, K., and Skvoretz, J.
+\newblock 2002.
+\newblock Comparing networks across space and time, size and species.
+\newblock {\em Sociological methodology} 32(1):267--299.
+
+\bibitem[\protect\citeauthoryear{Fodor}{2002}]{dimrecrev}
+Fodor, I.~K.
+\newblock 2002.
+\newblock A survey of dimension reduction techniques.
+
+\bibitem[\protect\citeauthoryear{Grover and Leskovec}{2016}]{node2vec}
+Grover, A., and Leskovec, J.
+\newblock 2016.
+\newblock node2vec: Scalable feature learning for networks.
+\newblock In {\em Proceedings of the 22nd ACM SIGKDD International Conference
+  on Knowledge Discovery and Data Mining}.
+
 \bibitem[\protect\citeauthoryear{Gutmann and Hyv{\"a}rinen}{2010}]{nce}
 Gutmann, M., and Hyv{\"a}rinen, A.
 \newblock 2010.
 \newblock Noise-contrastive estimation: A new estimation principle for
   unnormalized statistical models.
 \newblock In {\em AISTATS}, volume~1, ~6.
+
+\bibitem[\protect\citeauthoryear{Hastings}{1970}]{mh}
+Hastings, W.~K.
+\newblock 1970.
+\newblock Monte carlo sampling methods using markov chains and their
+  applications.
+\newblock {\em Biometrika} 57(1):97--109.
+
+\bibitem[\protect\citeauthoryear{Jolliffe}{2002}]{pca}
+Jolliffe, I.
+\newblock 2002.
+\newblock {\em Principal component analysis}.
+\newblock Wiley Online Library.
+
+\bibitem[\protect\citeauthoryear{Kingma and Ba}{2014}]{adam}
+Kingma, D., and Ba, J.
+\newblock 2014.
+\newblock Adam: A method for stochastic optimization.
+\newblock {\em arXiv preprint arXiv:1412.6980}.
+
+\bibitem[\protect\citeauthoryear{Masoudi-Nejad, Schreiber, and
+  Kashani}{2012}]{masoudirev}
+Masoudi-Nejad, A.; Schreiber, F.; and Kashani, Z.
+\newblock 2012.
+\newblock Building blocks of biological networks: a review on major network
+  motif discovery algorithms.
+\newblock {\em IET systems biology} 6(5):164--174.
+
+\bibitem[\protect\citeauthoryear{Mikolov and Dean}{2013}]{skipgram}
+Mikolov, T., and Dean, J.
+\newblock 2013.
+\newblock Distributed representations of words and phrases and their
+  compositionality.
+\newblock {\em Advances in neural information processing systems}.
+
+\bibitem[\protect\citeauthoryear{Milo \bgroup et al\mbox.\egroup
+  }{2002}]{motifblockmilo}
+Milo, R.; Shen-Orr, S.; Itzkovitz, S.; Kashtan, N.; Chklovskii, D.; and Alon,
+  U.
+\newblock 2002.
+\newblock Network motifs: simple building blocks of complex networks.
+\newblock {\em Science} 298(5594):824--827.
+
+\bibitem[\protect\citeauthoryear{Morin and Bengio}{2005}]{hs}
+Morin, F., and Bengio, Y.
+\newblock 2005.
+\newblock Hierarchical probabilistic neural network language model.
+\newblock In {\em Aistats}, volume~5,  246--252.
+\newblock Citeseer.
+
+\bibitem[\protect\citeauthoryear{Newman}{2010}]{physicnet}
+Newman, M.
+\newblock 2010.
+\newblock {\em Networks: an introduction}.
+\newblock Oxford university press.
 
 \bibitem[\protect\citeauthoryear{Perozzi, Al-Rfou, and Skiena}{2014}]{deepwalk}
 Perozzi, B.; Al-Rfou, R.; and Skiena, S.
@@ -24,6 +151,14 @@ Perozzi, B.; Al-Rfou, R.; and Skiena, S.
   on Knowledge discovery and data mining},  701--710.
 \newblock ACM.
 
+\bibitem[\protect\citeauthoryear{Tang and Liu}{2009}]{blogcatalog}
+Tang, L., and Liu, H.
+\newblock 2009.
+\newblock Relational learning via latent social dimensions.
+\newblock In {\em Proceedings of the 15th ACM SIGKDD international conference
+  on Knowledge discovery and data mining},  817--826.
+\newblock ACM.
+
 \bibitem[\protect\citeauthoryear{Tang \bgroup et al\mbox.\egroup }{2015}]{line}
 Tang, J.; Qu, M.; Wang, M.; Zhang, M.; Yan, J.; and Mei, Q.
 \newblock 2015.
@@ -31,5 +166,58 @@ Tang, J.; Qu, M.; Wang, M.; Zhang, M.; Yan, J.; and Mei, Q.
 \newblock In {\em Proceedings of the 24th International Conference on World
   Wide Web},  1067--1077.
 \newblock ACM.
+
+\bibitem[\protect\citeauthoryear{Tenenbaum, De~Silva, and
+  Langford}{2000}]{isomap}
+Tenenbaum, J.~B.; De~Silva, V.; and Langford, J.~C.
+\newblock 2000.
+\newblock A global geometric framework for nonlinear dimensionality reduction.
+\newblock {\em science} 290(5500):2319--2323.
+
+\bibitem[\protect\citeauthoryear{{Theano Development Team}}{2016}]{theano}
+{Theano Development Team}.
+\newblock 2016.
+\newblock {Theano: A {Python} framework for fast computation of mathematical
+  expressions}.
+\newblock {\em arXiv e-prints} abs/1605.02688.
+
+\bibitem[\protect\citeauthoryear{Tran \bgroup et al\mbox.\egroup
+  }{2014}]{motifdecrev}
+Tran, N. T.~L.; Mohan, S.; Xu, Z.; and Huang, C.-H.
+\newblock 2014.
+\newblock Current innovations and future challenges of network motif detection.
+\newblock {\em Briefings in bioinformatics}  bbu021.
+
+\bibitem[\protect\citeauthoryear{University}{2016}]{snap}
+University, S.
+\newblock 2016.
+\newblock Snap: Stanford network analysis project.
+\newblock \texttt{snap.stanford.edu}.
+\newblock Accessed: 2016-08-24.
+
+\bibitem[\protect\citeauthoryear{Van Den~Heuvel and Pol}{2010}]{brainnetheuvel}
+Van Den~Heuvel, M.~P., and Pol, H. E.~H.
+\newblock 2010.
+\newblock Exploring the brain network: a review on resting-state fmri
+  functional connectivity.
+\newblock {\em European Neuropsychopharmacology} 20(8):519--534.
+
+\bibitem[\protect\citeauthoryear{Yanardag and
+  Vishwanathan}{2015}]{deepgraphkernel}
+Yanardag, P., and Vishwanathan, S.
+\newblock 2015.
+\newblock Deep graph kernels.
+\newblock In {\em Proceedings of the 21th ACM SIGKDD International Conference
+  on Knowledge Discovery and Data Mining},  1365--1374.
+\newblock ACM.
+
+\bibitem[\protect\citeauthoryear{Yang, Cohen, and
+  Salakhutdinov}{2016}]{planetoid}
+Yang, Z.; Cohen, W.~W.; and Salakhutdinov, R.
+\newblock 2016.
+\newblock Revisiting semi-supervised learning with graph embeddings.
+\newblock In {\em Proceedings of the 33rd International Conference on Machine
+  Learning}.
+\newblock ICML.
 
 \end{thebibliography}

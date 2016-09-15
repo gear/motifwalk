@@ -5,7 +5,7 @@
 
 % Standard settings by AAAI'17 authors' kit
 \documentclass[letterpaper]{article}
-\usepackage{aaai}
+\usepackage{aaai17}
 \usepackage{times}
 \usepackage{helvet}
 \usepackage{courier}
@@ -57,9 +57,9 @@
         and expressive, the graph-theoric approach has been applied in many scientific fields
         for untangling complex discrete structures. For example, the study conducted by 
         MP Van Den Heuvel suggested that the human brain functional network provides many new
-        discoveries about our brain's organization \cite{BrainNetHeuvel}. The same approach
+        discoveries about our brain's organization \cite{brainnetheuvel}. The same approach
         for structural analysis can be found in other fields such as chemistry \cite{molecule}, 
-        physics \cite{physicnet}, and sociology \cite{socialnet}. However, the graph analysis
+        physics \cite{physicnet}, and sociology \cite{sociology}. However, the graph analysis
         process often becomes intractable due to the complexity of the data. In such case,
         the graph usually contains several thousand to millions of vertices and edges.
         Therefore, it is desirable to have a compact latent representation of the graph while
@@ -81,7 +81,7 @@
         \end{figure}
 
         \emph{Learning} a high-quality latent representation is a challenging task. Traditionally,
-        dimensionality reduction technique such as PCA \cite{pca}, CCA \cite{cca}, and IsoMap 
+        dimensionality reduction technique such as PCA \cite{pca}, EigenMaps \cite{eigmaps}, and IsoMap 
         \cite{isomap} are used. Although these aforementioned techniques have a profound theoretical
         background \cite{dimrecrev}, they are impractical due to computational drawbacks. To address
         the dimensionality problem, Peperozi et al.\ proposed Deepwalk - a Skipgram-based algorithm
@@ -115,7 +115,7 @@
             \setlength{\parskip}{0pt}
             \item Positive samples are generated using a motif-biased walk. This motif-aware context 
                 generation procedure is backed by the hypothesis that vertices in the same motif
-                are more likely to belong to the same community \cite{juremotif,harvardmotif}.
+                are more likely to belong to the same community \cite{juremotif}.
                 By selecting the appropriate motif for each graph, we have a sensible way to control
                 the context generated for embedding.
             \item Negative samples are also generated using a motif-biased walk. However, by choosing
@@ -252,7 +252,7 @@
             \cite{netmotif}. First mentioned by Milo et al. \cite{motifblockmilo}, network motifs
             soon became a topic of attention in many research fields especially in biology and sociology
             \cite{masoudirev}. Recent researches suggested that network motifs withhold the structural 
-            information of the network \cite{juremotif,harvardmotif,deepgraphkernel}. Due to the
+            information of the network \cite{juremotif,deepgraphkernel}. Due to the
             computational complexity of graph isomorphism, in most researches, the studied motifs 
             often has a small size (number of vertices in a motif is less than 4) \cite{motifdecrev}.
             Figure~\ref{fig:motifs} presents some of the most noteworthy motifs.
@@ -278,7 +278,7 @@
             networks of animals using the triangle motif \cite{comsocialnetwork}. Faust pointed
             out the representation power of various directed triangle motifs to each type of animal social
             interaction and also suggested that triangle motifs play a central role in a social network's
-            structure. Moreover, studying the Stanford's SNAP network datasets archive \cite{SNAP}, 
+            structure. Moreover, studying the Stanford's SNAP network datasets archive \cite{snap}, 
             we also observe that the social networks have higher triangle count compared to another type of 
             network such as citation network. In conclusion, although there has not been a concrete proof 
             for the importance of network motifs in a complex network, we cannot ignore the pragmatic 
@@ -444,7 +444,7 @@
             Blogcatalog \cite{blogcatalog} is a social network of bloggers. The labels represent
             a blogger's interest. There are 39 labels in total, each blogger (vertex) has at least
             one label. Since Blogcatalog is a social network, we chose undirected triangle motif
-            walk for this graph. On the other hand, Citeseer \cite{citeseer} 
+            walk for this graph. On the other hand, Citeseer \cite{planetoid} 
             is a citation network. Therefore, we employ the bipartite motif for the context generation
             of Citeseer. The last graph we consider is Youtube, which is especially
             large with more than 1 million vertices. Since Youtube is also a friendship network,
