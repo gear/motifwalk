@@ -58,7 +58,7 @@
         for untangling complex discrete structures. For example, the study conducted by 
         MP Van Den Heuvel suggested that the human brain functional network provides many new
         discoveries about our brain's organization \cite{brainnetheuvel}. The same approach
-        for structural analysis can be found in other fields such as chemistry \cite{molecule}, 
+        for structural analysis can be found in other fields such as chemical biology \cite{molecule}, 
         physics \cite{physicnet}, and sociology \cite{sociology}. However, the graph analysis
         process often becomes intractable due to the complexity of the data. In such case,
         the graph usually contains several thousand to millions of vertices and edges.
@@ -82,12 +82,12 @@
 
         \emph{Learning} a high-quality latent representation is a challenging task. Traditionally,
         dimensionality reduction technique such as PCA \cite{pca}, EigenMaps \cite{eigmaps}, and IsoMap 
-        \cite{isomap} are used. Although these aforementioned techniques have a profound theoretical
+        \cite{isomap} are often used. Although these aforementioned techniques have a profound theoretical
         background \cite{dimrecrev}, they are impractical due to computational drawbacks. To address
-        the dimensionality problem, \cite{deepwalk} proposed Deepwalk - a Skipgram-based algorithm
+        the dimensionality problem, \citeauthor{deepwalk} proposed Deepwalk - a Skipgram-based algorithm
         for graph embedding \cite{deepwalk}. Different from traditional linear algebra approach,
         Deepwalk learns the latent representation from the probabilistic point of view. By treating
-        a random series of vertices as if it is a sentence of words, Deepwalk adopts the operation
+        a random series of vertices as if it is a sentence, Deepwalk adopts the operation
         of Skipgram model \cite{skipgram} to learn a vertex's latent representation. Following
         Deepwalk, other Skipgram-based graph embedding algorithms which aim to improve embedding
         quality were proposed \cite{grarep,line,planetoid,node2vec}. However, these algorithms
@@ -104,17 +104,18 @@
 
         In this work, we propose an algorithm which controls both graph context and negative samples
         generation. Our motif-aware context generation aims to emphasize the importance of local
-        motif community, which is a strong indicator for true community in a graph. On the other hand,
+        motif community, which is a strong indicator for true community in a graph \cite{juremotif}. 
+        On the other hand,
         negative sampling is known to be the state of the art technique to estimate the normalization
         factor of a probabilistic model. Instead of sampling from a distorted unigram distribution as
-        suggested by \cite{skipgram}, we propose a motif-aware method to generate 
+        suggested by \citeauthor{skipgram}, we propose a motif-aware method to generate 
         negative samples from a graph. Generally, our algorithm, named Motif-Aware Graph Embedding (MAGE),
         has two following advantages:
 
         \begin{itemize}
             \setlength{\parskip}{0pt}
             \item Positive samples are generated using a motif-biased walk. This motif-aware context 
-                generation procedure is backed by the hypothesis that vertices in the same motif
+                generation procedure is based on the hypothesis that vertices in the same motif
                 are more likely to belong to the same community \cite{juremotif}.
                 By selecting the appropriate motif for each graph, we have a sensible way to control
                 the context generated for embedding.
@@ -135,8 +136,8 @@
         \subsection{Skipgram Model}
             Representation learning has been one of the keys to the success of machine learning 
             algorithms \cite{bengioreprev}. In the context of natural language processing (NPL),
-            representation learning becomes even more important as the data has a discrete, but
-            high-dimension nature. To address the dimensionality problem in NLP, \cite{skipgram} have
+            representation learning becomes even more important as the data has a discrete but
+            high-dimension nature. To address the dimensionality problem in NLP, \citeauthor{skipgram} have
             proposed the Skipgram model. Instead of maximizing the n-gram distribution
             as prior works, Skipgram maximizes the co-occurrence probability of context words given a
             target word. The softmax potential function for a context word given a target 
@@ -151,10 +152,11 @@
             where $ \langle \cdot ,  \cdot \rangle $ is vector dot product; $ v_c $ and $ v_t $ are the
             tokens for the context word and the target word respectively; $\omega_{v_t}$ is the embedding
             vector selected from the \emph{embedding matrix} by the token $v_t$; $\omega_{v_c}$ is the
-            embedding vector selected from the \emph{context matrix} by the token $v_c$.
+            embedding vector selected from the \emph{context matrix} by the token $v_c$; $V$ is the
+            set of all unique words in the dataset.
 
-            Based on equation~\ref{eq:model}, the objective of Skipgram model is to maximize the following
-            average log-likelihood:
+            Based on equation~(\ref{eq:model}), the objective of Skipgram model is to maximize the following
+            average log-likelihood of co-occurence probability:
 
             \begin{equation}
                 \label{eq:avgloglikelihood}
@@ -162,10 +164,10 @@
             \end{equation}
 
             The intrinsic intractable problem for softmax model is normalization factor computation. 
-            Therefore, the normalization factor in equation~\ref{eq:model} needs to be estimated by 
+            Therefore, the normalization factor in equation~(\ref{eq:model}) needs to be estimated by 
             approximation techniques such as Hierarchical Softmax \cite{hs} or Noise Contrastive estimation
-            \cite{nce}. In their landmark paper, \cite{skipgram} also proposed \emph{Negative Sampling} - a 
-            simplified version of noise contrastive estimation. The log-likelihood of 
+            \cite{nce}. In their landmark paper, \citeauthor{skipgram} also proposed \emph{Negative Sampling} - a 
+            simplified version of noise contrastive estimation. The log-likelihood of the co-occurence probability
             under negative sampling scheme is given by:
 
             \begin{equation}
@@ -184,7 +186,7 @@
             context embedding matrix (named ``nce'') and the target embedding matrix (named ``emb'')
             are different.
 
-            Similar to Noice Contrastive Estimation, Negative Sampling changes log-likelihood
+            Similar to Noise Contrastive Estimation, Negative Sampling changes log-likelihood
             maximization objective to positive/negative samples classification task. As discussed
             in depth by \cite{nce} and \cite{skipgram}, the choice of negative distribution 
             $P_n(\omega)$ can greatly affect the quality of the embedding result. Therefore, an
@@ -194,10 +196,10 @@
         \subsection{Graph Embedding}
             
             Inspired by the power-law similarity between the vertex frequency distribution in
-            random walks and the word frequency distribution of English text, \cite{deepwalk} proposed
+            random walks and the word frequency distribution of English text, \citeauthor{deepwalk} proposed
             Deepwalk algorithm to \emph{learn} the latent representations of vertices in a
             graph. The operation of Deepwalk is based on hierarchial-softmax
-            Skipgram, the only different is artificial ``sentences'' are generated by performing
+            Skipgram, the only difference is artificial ``sentences'' which are generated by performing
             random walks on the graph. Inheriting the advantages of the Skipgram model, Deepwalk
             has been successful in various graph-related machine learning tasks. However, the weakness
             of Deepwalk is in the fact that it ignores the graph's deep structures which cannot 
@@ -212,13 +214,13 @@
                 \label{fig:line}
             \end{figure}
 
-            In one of the researches subsequent to Deepwalk, \cite{line} hinted the advantages 
+            In one of the researches subsequent to Deepwalk, \citeauthor{line} hinted the advantages 
             of structure-aware graph context generation in their citation network experimental 
             results. In their work, \citeauthor{line} proposed LINE, which deploys the
             second-order proximity into the embedding process. By constructing half the embedding
             vector with Deepwalk, and the other half with vertices that have second-order proximity,
             LINE has improved embedding results compare to Deepwalk. However, in the most recent
-            graph embedding research, \cite{node2vec} reported some unexpected poor performance
+            graph embedding research, \citeauthor{node2vec} reported some unexpected poor performance
             from LINE in friendship-based graphs. On the contrary, we noticed that 
             LINE has exceptionally good performance in some graphs that have acyclic structure 
             (e.g.\ citation networks). We also found the similarity between the definition of 
@@ -231,7 +233,7 @@
                 \centering
                 \includegraphics[width=0.3\textwidth]{fig4_n2v}
                 \caption{Node2vec emphasizes central ``important'' vertices.}
-                \label{fig:n2v}
+                \label{fig:nv}
             \end{figure}
 
             In 2016, \citeauthor{node2vec} proposed \emph{node2vec}, an algorithm based on biased random
@@ -242,14 +244,14 @@
             While other graph embedding algorithms is unsupervised, 
             Planetoid is a semi-supervised approach. In addition to random walk graph context generation, 
             Planetoid generates another context using the training community labels. Due to the
-            semi-supervised learning procedure of Planetoid, we consider it belongs to another
+            semi-supervised learning procedure of Planetoid, we consider it belongs to a different
             category of algorithm. However, we will discuss the integration of Planetoid to our
-            algorithm in later section.
+            algorithm in Section 5.
 
         \subsection{Network Motifs}
 
             Network motifs are defined to be recurring and regulating patterns in a complex network 
-            \cite{netmotif}. First mentioned by \cite{motifblockmilo}, network motifs
+            \cite{netmotif}. First mentioned in \cite{motifblockmilo}, network motifs
             soon became a topic of attention in many research fields especially in biology and sociology
             \cite{masoudirev}. Recent researches suggested that network motifs withhold the structural 
             information of the network \cite{juremotif,deepgraphkernel}. Due to the
@@ -287,23 +289,23 @@
     \section{Method}
 
         In this section, we present our algorithm in detail. Although there are many different types of motif
-        in a graph, within this paper, we only consider undirected triangle motif (figure~\ref{fig:motifs}),
-        undirected wedge motif (figure~\ref{fig:motifs}), and undirected bipartite motif 
-        (figure~\ref{fig:motifs}) for the sake of simplicity. Other types of motif and directed graph
+        in a graph, within this paper, we only consider undirected triangle motif (figure~\ref{fig:motifs}b),
+        undirected wedge motif (figure~\ref{fig:motifs}b), and undirected bipartite motif 
+        (figure~\ref{fig:motifs}a) for the sake of simplicity. Other types of motif and directed graph
         extension is discussed in Section 5.
 
         \begin{figure}
             \centering
             \includegraphics[width=0.3\textwidth]{fig5_mage}
             \caption{MAGE discovers local motif structure.}
-            \label{fig:n2v}
+            \label{fig:nv}
         \end{figure}
 
         \subsection{Motif-Aware Context Generation}
 
             Our algorithm is based on the Negative Sampling Skipgram model (NEG-Skipgram) \cite{skipgram}.
             As mentioned in the previous section, Skipgram-based graph embedding \emph{is} word embedding,
-            the difference is the ``sentences'' are generated by a random process in graph embedding.
+            the difference is that the ``sentences'' which are generated by a random process in graph embedding.
             We first discuss the graph context generation phase, also called the positive sample generation.
             In order to highlight the local motif structure given a target vertex, we define a motif-biased
             random walk (or \emph{motif walk} for short). Our motif walk can be viewed as a variant of
@@ -337,16 +339,19 @@
                         }
                     }
                 }
+                \Return vertexList \;
                 \caption{Motif context sampling $P_m(\omega)$.}
                 \label{al:amotif}
             \end{algorithm}
 
-            The motif statistic of a graph is the key input to our algorithm. As mentioned by \cite{motifdecrev} 
+            The motif statistic of a graph is the key input to our algorithm. As mentioned by \citeauthor{motifdecrev} 
             in their research on motif detection algorithms, motif detection is a costly operation. The
             exact motif statistic is desirable but costly to obtain. However, we found that only one or 
             two most characteristic motifs are enough to improve the graph embedding quality. Therefore, 
             to keep the topic of the paper focused, we pose an assumption that we know in advance the most
-            statistically significant motif for a given graph. 
+            statistically significant motif for a given graph. Although our assumption here is strong
+            in general case, but in practice, there is a very small number of motif types that are
+            representative to a network \cite{juremotif,motifdecrev,comsocialnetwork}.
 
         \subsection{Negative Sampling}
 
@@ -361,7 +366,7 @@
             \begin{figure}
                 \centering
                 \includegraphics[width=0.4\textwidth]{fig6_mneg}
-                \caption{While the positive motif walk generates local context (blue and red), the inverse version walks toward other motif structures.}
+                \caption{While the positive motif walk generates local context (blue and red), the inverse version walks toward other motif structures. In this figure, the orange vertices do not belong to any significant motif structure, hence they are considered as the bridge between other significant motif structures.}
                 \label{fig:mneg}
             \end{figure}
 
@@ -383,14 +388,14 @@
             \end{equation}
 
             \noindent
-            where $\mathcal{L}_{\scalebox{0.7}{random}}$ is given in equation~\ref{eq:objneg};
+            where $\mathcal{L}_{\scalebox{0.7}{random}}$ is given in equation~(\ref{eq:objneg});
             $\mathcal{L}_{\scalebox{0.7}{motif}}$ is defined as:
 
             \begin{equation}
                 \label{eq:objmotif}
                 \begin{aligned}
                     \log \mbox{Pr} (v_c | v_t) & = \mathds{E}_{\omega_{v_c} \sim P_m(\omega)} \left[ \log \sigma( \langle \omega^{\scalebox{0.7}{nce}}_{v_c} , \omega^{\scalebox{0.7}{emb}}_{v_t} \rangle ) \right] \\
-                + \sum_{i=1}^{k} & \mathds{E}_{\omega_{v_i} \sim (1-P_m(\omega))} \left[ \log \sigma( -\langle \omega^{\scalebox{0.7}{nce}}_{v_i} , \omega^{\scalebox{0.7}{emb}}_{v_t} \rangle) \right],
+                + \sum_{i=1}^{k} & \mathds{E}_{\omega_{v_i} \sim (1-P_m(\omega))} \left[ \log \sigma( -\langle \omega^{\scalebox{0.7}{nce}}_{v_i} , \omega^{\scalebox{0.7}{emb}}_{v_t} \rangle) \right] .
                 \end{aligned}
             \end{equation}
 
@@ -437,8 +442,8 @@
                         \textsc{Youtube} & 47 & 1,138,499 & 2,990,443 \\ 
                         \end{tabular}%
                 }
-                \label{tb:data}
                 \caption{Dataset statistics}
+                \label{tb:data}
             \end{table}
 
             Blogcatalog \cite{blogcatalog} is a social network of bloggers. The labels represent
@@ -450,7 +455,7 @@
             large with more than 1 million vertices. Since Youtube is also a friendship network,
             so we use triangle motif in context generation.
 
-            Conventionally, multilabel classification task is constructed as \cite{deepwalk} suggested
+            Conventionally, multilabel classification task is constructed as \citeauthor{deepwalk} suggested
             in their paper. The embedding vector for each vertex will be treated as the feature
             vector for a One-versus-Rest logistic regression with L2 regularization. We split the 
             data into training set and testing set. The result reported here is the weighted f1-macro and
@@ -476,23 +481,23 @@
                         Motif bias & $\beta$ & 0.9 \\
                         \end{tabular}%
                 }
-                \label{tb:hyper}
                 \caption{MAGE Hyper-parameters}
+                \label{tb:hyper}
             \end{table}
 
         \subsection{Experimental Results}
 
-            Experimental results are presented in table~\ref{tb:result}. For each algorithm
+            Experimental results are presented in table~\ref{tb:re}. For each algorithm
             presented here as a comparison to our algorithm, we try to use the provided implementation
             by its authors. The result we obtained here agrees with the result by \cite{deepwalk}.
             We confirm the simplicity and effectiveness of Deepwalk. Generally, Deepwalk and
             Spectral clustering has the advantage of acceptable performance without having 
             to many hyper-parameter tuning. Although in our experiment Node2Vec by \cite{node2vec} 
-            performed poorly compare to other algorithms, it is not an unexpected result. Due to the
+            performed poorly compared to other algorithms, it is not an unexpected result. Due to the
             fact that we did not \emph{search} for the optimal $p$ and $q$ parameters of Node2Vec,
-            we do not expect this algorithm to achieve give a good result. About the YouTube
-            dataset, we can only run Deepwalk (MAGE with no motif) and our algorithm with triangle
-            motif. It is not possible for us to do experiment with Spectral clustering and LINE on
+            we do not expect this algorithm to give a good result. About the YouTube
+            dataset, we can only run Deepwalk (MAGE with no motif) and MAGE-triangle (undirected triangle
+            motif). It is not possible for us to do experiment with Spectral clustering and LINE on
             this large dataset due to the scalability of the algorithms. 
             In all three datasets, our algorithm MAGE outperforms other prior algorithms. This result
             showed that by taking advantage of a network's motif structure we can improve the embedding
@@ -512,8 +517,8 @@
                         \textbf{MAGE} & \textbf{0.24} & \textbf{0.35} & \textbf{0.32} \\
                         \end{tabular}%
                 }
-                \label{tb:result}
                 \caption{Weighted f1-macro score.}
+                \label{tb:re}
             \end{table}
 
     \section{Discussion}
@@ -522,8 +527,8 @@
         and its accuracy. For example, the result reported by \cite{node2vec} promised a high-performance
         model, but it requires searching for the biased random walk hyper-parameters
         heuristically. In our work, we have proposed a graph embedding algorithm with a clear
-        method to integrate the prior knowledge about the graph's structure. Our preliminary results
-        proved the scalability and accuracy of our algorithm. It can be seen that comparing to 
+        method to integrate the prior knowledge about the graph's structure. Our results
+        proved the scalability and accuracy of our algorithm. It can be seen that compared to 
         Deepwalk or Spectral clustering, our algorithm has better performance with some computational
         cost and hyper-parameter tunning trade-off. However, the most sensitive hyper-parameter
         in our algorithm is the network motif choice itself - which can be solved by fast motif detection
@@ -534,10 +539,10 @@
         our current algorithm only addresses graph embedding on undirected graphs. The immediate 
         solution that we employed in this work is to convert any directed graph input to undirected.
         However, in many real-world networks, the information gain for embedding task on a directed graph
-        may worth the computational cost. Secondly, MAGE can be integrated to the framework proposed
-        by \cite{planetoid} to further improve the embedding quality. Thanks to the nature of our
-        implementation, MAGE can be easily integrated into any deep architecture based on Theano framework.
-        To summary, MAGE is a practical embedding algorithm that can be extended in a various ways.
+        maybe worth the computational cost. Secondly, MAGE can be integrated to the framework proposed
+        by \citeauthor{planetoid} to further improve the embedding quality. Furthermore, our implementation 
+        can be integrated into any deep architecture based on Theano framework. Therefore, MAGE is a 
+        practical embedding algorithm that can be extended in a various ways.
 
     \bibliography{aaai17_mage}
     \bibliographystyle{aaai}

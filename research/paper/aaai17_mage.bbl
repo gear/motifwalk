@@ -151,6 +151,13 @@ Perozzi, B.; Al-Rfou, R.; and Skiena, S.
   on Knowledge discovery and data mining},  701--710.
 \newblock ACM.
 
+\bibitem[\protect\citeauthoryear{SNAP}{2016}]{snap}
+SNAP.
+\newblock 2016.
+\newblock Snap: Stanford network analysis project.
+\newblock \texttt{snap.stanford.edu}.
+\newblock Accessed: 2016-08-24.
+
 \bibitem[\protect\citeauthoryear{Tang and Liu}{2009}]{blogcatalog}
 Tang, L., and Liu, H.
 \newblock 2009.
@@ -165,7 +172,6 @@ Tang, J.; Qu, M.; Wang, M.; Zhang, M.; Yan, J.; and Mei, Q.
 \newblock Line: Large-scale information network embedding.
 \newblock In {\em Proceedings of the 24th International Conference on World
   Wide Web},  1067--1077.
-\newblock ACM.
 
 \bibitem[\protect\citeauthoryear{Tenenbaum, De~Silva, and
   Langford}{2000}]{isomap}
@@ -187,13 +193,6 @@ Tran, N. T.~L.; Mohan, S.; Xu, Z.; and Huang, C.-H.
 \newblock 2014.
 \newblock Current innovations and future challenges of network motif detection.
 \newblock {\em Briefings in bioinformatics}  bbu021.
-
-\bibitem[\protect\citeauthoryear{University}{2016}]{snap}
-University, S.
-\newblock 2016.
-\newblock Snap: Stanford network analysis project.
-\newblock \texttt{snap.stanford.edu}.
-\newblock Accessed: 2016-08-24.
 
 \bibitem[\protect\citeauthoryear{Van Den~Heuvel and Pol}{2010}]{brainnetheuvel}
 Van Den~Heuvel, M.~P., and Pol, H. E.~H.

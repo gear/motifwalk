@@ -5,30 +5,30 @@ The style file: aaai.bst
 Database file #1: aaai17_mage.bib
 You've used 31 entries,
             2568 wiz_defined-function locations,
-            761 strings with 9450 characters,
-and the built_in function-call counts, 12952 in all, are:
-= -- 1420
+            761 strings with 9435 characters,
+and the built_in function-call counts, 12941 in all, are:
+= -- 1418
 > -- 449
 < -- 13
 + -- 150
 - -- 146
 * -- 978
-:= -- 2034
-add.period$ -- 164
+:= -- 2032
+add.period$ -- 163
 call.type$ -- 31
 change.case$ -- 195
 chr.to.int$ -- 31
 cite$ -- 31
 duplicate$ -- 532
-empty$ -- 955
+empty$ -- 954
 format.name$ -- 203
-if$ -- 2734
+if$ -- 2731
 int.to.chr$ -- 1
 int.to.str$ -- 0
 missing$ -- 30
-newline$ -- 197
+newline$ -- 196
 num.names$ -- 93
-pop$ -- 177
+pop$ -- 178
 preamble$ -- 1
 purify$ -- 228
 quote$ -- 0
@@ -43,4 +43,4 @@ type$ -- 240
 warning$ -- 0
 while$ -- 110
 width$ -- 35
-write$ -- 446
+write$ -- 444
