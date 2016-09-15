@@ -1,0 +1,77 @@
+This is BibTeX, Version 0.99d (TeX Live 2015)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: aaai17_mage.aux
+The style file: aaai.bst
+Database file #1: aaai17_mage.bib
+Warning--I didn't find a database entry for "BrainNetHeuvel"
+Warning--I didn't find a database entry for "molecule"
+Warning--I didn't find a database entry for "physicnet"
+Warning--I didn't find a database entry for "socialnet"
+Warning--I didn't find a database entry for "pca"
+Warning--I didn't find a database entry for "cca"
+Warning--I didn't find a database entry for "isomap"
+Warning--I didn't find a database entry for "dimrecrev"
+Warning--I didn't find a database entry for "skipgram"
+Warning--I didn't find a database entry for "planetoid"
+Warning--I didn't find a database entry for "node2vec"
+Warning--I didn't find a database entry for "juremotif"
+Warning--I didn't find a database entry for "harvardmotif"
+Warning--I didn't find a database entry for "keras"
+Warning--I didn't find a database entry for "bengioreprev"
+Warning--I didn't find a database entry for "hs"
+Warning--I didn't find a database entry for "netmotif"
+Warning--I didn't find a database entry for "motifblockmilo"
+Warning--I didn't find a database entry for "masoudirev"
+Warning--I didn't find a database entry for "deepgraphkernel"
+Warning--I didn't find a database entry for "motifdecrev"
+Warning--I didn't find a database entry for "comsocialnetwork"
+Warning--I didn't find a database entry for "SNAP"
+Warning--I didn't find a database entry for "mh"
+Warning--I didn't find a database entry for "theano"
+Warning--I didn't find a database entry for "xentropy"
+Warning--I didn't find a database entry for "adam"
+Warning--I didn't find a database entry for "blogcatalog"
+Warning--I didn't find a database entry for "citeseer"
+Warning--can't use both volume and number fields in nce
+You've used 4 entries,
+            2568 wiz_defined-function locations,
+            628 strings with 5637 characters,
+and the built_in function-call counts, 2207 in all, are:
+= -- 239
+> -- 82
+< -- 5
++ -- 28
+- -- 28
+* -- 161
+:= -- 329
+add.period$ -- 23
+call.type$ -- 4
+change.case$ -- 30
+chr.to.int$ -- 4
+cite$ -- 5
+duplicate$ -- 96
+empty$ -- 160
+format.name$ -- 37
+if$ -- 488
+int.to.chr$ -- 1
+int.to.str$ -- 0
+missing$ -- 4
+newline$ -- 30
+num.names$ -- 12
+pop$ -- 30
+preamble$ -- 1
+purify$ -- 34
+quote$ -- 0
+skip$ -- 82
+stack$ -- 0
+substring$ -- 126
+swap$ -- 42
+text.length$ -- 5
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 32
+warning$ -- 1
+while$ -- 18
+width$ -- 5
+write$ -- 65
+(There were 30 warnings)

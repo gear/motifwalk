@@ -1,0 +1,35 @@
+\begin{thebibliography}{}
+
+\bibitem[\protect\citeauthoryear{Cao, Lu, and Xu}{2015}]{grarep}
+Cao, S.; Lu, W.; and Xu, Q.
+\newblock 2015.
+\newblock Grarep: Learning graph representations with global structural
+  information.
+\newblock In {\em Proceedings of the 24th ACM International on Conference on
+  Information and Knowledge Management},  891--900.
+\newblock ACM.
+
+\bibitem[\protect\citeauthoryear{Gutmann and Hyv{\"a}rinen}{2010}]{nce}
+Gutmann, M., and Hyv{\"a}rinen, A.
+\newblock 2010.
+\newblock Noise-contrastive estimation: A new estimation principle for
+  unnormalized statistical models.
+\newblock In {\em AISTATS}, volume~1, ~6.
+
+\bibitem[\protect\citeauthoryear{Perozzi, Al-Rfou, and Skiena}{2014}]{deepwalk}
+Perozzi, B.; Al-Rfou, R.; and Skiena, S.
+\newblock 2014.
+\newblock Deepwalk: Online learning of social representations.
+\newblock In {\em Proceedings of the 20th ACM SIGKDD international conference
+  on Knowledge discovery and data mining},  701--710.
+\newblock ACM.
+
+\bibitem[\protect\citeauthoryear{Tang \bgroup et al\mbox.\egroup }{2015}]{line}
+Tang, J.; Qu, M.; Wang, M.; Zhang, M.; Yan, J.; and Mei, Q.
+\newblock 2015.
+\newblock Line: Large-scale information network embedding.
+\newblock In {\em Proceedings of the 24th International Conference on World
+  Wide Web},  1067--1077.
+\newblock ACM.
+
+\end{thebibliography}
