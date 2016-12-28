@@ -1,8 +1,10 @@
 import networkx as nx
-import utils
 import numpy as np
 from numpy.random import choice
 from numpy.random import randint
+import constains
+# from mage.utils import *
+# from mage.constrains import N2V, R # Node2Vec walk, Random Walk
 
 class WalkGenerator(object):
 
@@ -19,20 +21,21 @@ class WalkGenerator(object):
             corpus_gen = WalkGenerator(G, n2v) '''
 
         self.g = graph
-        self.constrain = constrain 
+        self.c = constrain 
 
     def setup(self, graph = None, constrain = None):
     
         ''' Set the graph or constrain to new values. '''
 
         self.g = graph
-        self.constrain = constrain
+        self.c = constrain
 
-    def __call__(self):
-    
+    def __call__(self, walk_length = 10, num_walk = 10, \
+                 batch = 10, start = None, reset = None):    
         ''' Short cut for calling the walk generator. '''
         
-        return self._gen
+        return self._gen(walk_length, num_walk, \
+                 batch, start, reset)
 
     def _gen(self, walk_length = 10, num_walk = 10, \
                  batch = 10, start = None, reset = None):
@@ -65,14 +68,19 @@ class WalkGenerator(object):
             walk_length = (i for i in walk_length)
             lengthf = lambda x: next(x)
         else:
-            pass
+            pass # Other cases
 
         # Determine start node
         if start is None or start not in self.graph.nodes():
             start = choice(self.graph.nodes())
  
         # Random walk with constrain and append the result  
-        data = []
-        for _ in num_walk: 
-            while len(data) < batch:
-                constrain.select(curr_node)
+        data = [start]
+        while num_walk > 0: 
+            for _ in range(lengthf(walk_length)):
+                # Using a constrains object to select next node
+                next_node = self.c.select(curr_node, self.graph, data)
+                data.append(next_node) 
+            yield data
+            data.clear()
+            num_walk -= 1
