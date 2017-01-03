@@ -28,12 +28,12 @@ class R(Constrains):
         super().__init__()
         self._desc = """Random walk with no constrain."""
 
-    def select(self, curr_node, graph):
+    def select(self, curr_node, graph, data=None):
         
         """Select next random node in the graph
            based on the current nodes."""
 
-        return choice(list(graph[curr_node]))
+        return choice(graph.neighbors(curr_node))
 
 class UTriangle(Constrains):
 
