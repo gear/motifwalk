@@ -56,7 +56,7 @@ class WalkGenerator(object):
 
         # Determine start node
         if start is None or start not in self.g.nodes():
-            start = choice(self.g.nodes())
+            start = choice(self.g)
  
         # Random walk with constrain and append the result  
         data = [start]
@@ -65,6 +65,8 @@ class WalkGenerator(object):
             for w in range(walk_length-1):
                 # Using a constrains object to select next node
                 next_node = self.c.select(next_node, self.g, data)
+                if not next_node:
+                    next_node = choice(self.g)
                 data.append(next_node)
             yield data
             if reset:

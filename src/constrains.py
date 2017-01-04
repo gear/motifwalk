@@ -35,6 +35,7 @@ class R(Constrains):
 
         return choice(graph.neighbors(curr_node))
 
+
 class UTriangle(Constrains):
 
     """Random walk in triangle manner."""
@@ -47,19 +48,59 @@ class UTriangle(Constrains):
 
         super().__init__()
         self._a = enforce_prob
+        self._num_nodes = 3
+        self._is_directed = False
 
     def select(self, curr_node, graph, data):
 
         """Select the next node in based on current
         node and the current walk."""
 
+        if graph.is_directed() != self._is_directed:
+            print("Warning: Using mismatch directness.")
+
         triangle_nodes = [i for i in graph[curr_node]
-                       if set().union(graph[i], graph[curr_node])]
+                          if set().union(graph[i], graph[curr_node])]
         rand_num = rand()
         if len(triangle_nodes) > 0:
             if rand_num > self._a:
                 return choice(triangle_nodes)
         return choice(graph.neighbors(curr_node))
+
+class UWedge(Constrains):
+
+    """Random walk in wedge manner."""
+
+    def __init__(self, enforce_prob=0.9):
+
+        """Create a wedge motif constrain object with the
+        probability of following the triangle pattern is
+        `enforce_prob`."""
+
+        super().__init__()
+        self._a = enforce_prob
+        self._num_nodes = 3
+        self._is_directed = False
+
+    def select(self, curr_node, graph, data):
+
+        """Select the next node based on current
+        node and the current walk."""
+
+        if graph.is_directed() != self._is_directed:
+            print("Warning: Using mismatch directness.")
+
+        if not graph[curr_node]:
+            return choice(graph)
+
+        wedge_nodes = [i for i in graph[curr_node]
+                       if not set().union(graph[i], graph[curr_node])]
+        rand_num = rand()
+        if len(wedge_nodes) > 0:
+            if rand_num > self._a:
+                return choice(wedge_nodes)
+        return choice(graph.neighbors(curr_node))
+
 
 
 class N2V(Constrains):
