@@ -67,6 +67,7 @@ class UTriangle(Constrains):
                 return choice(triangle_nodes)
         return choice(graph.neighbors(curr_node))
 
+
 class UWedge(Constrains):
 
     """Random walk in wedge manner."""
@@ -102,7 +103,6 @@ class UWedge(Constrains):
         return choice(graph.neighbors(curr_node))
 
 
-
 class N2V(Constrains):
 
     """Node2Vec biased random walk."""
@@ -124,18 +124,17 @@ class N2V(Constrains):
         based on the defined hyperparameter
         p and q."""
 
-
     def _preprocess_transition_probs(self, nxgraph):
 
         """Preprocessing of transition probs
         for guiding the random walks."""
 
         alias_nodes = {}
-        for node in G.nodes():
+        for node in nxgraph.nodes():
             unnormalized_probs = [nxgraph[node][nbr]['weight'] for
                                   nbr in sorted(nxgraph.neighbors(node))]
             norm_const = sum(unnormalized_probs)
-            normalized_probs = [float(u_prob)/norm_const for u_prob in unnormalized_probs]
+            normalized_probs = [u_prob / norm_const for u_prob in unnormalized_probs]
             alias_nodes[node] = _alias_setup(normalized_probs)
 
         alias_edges = {}

@@ -2,7 +2,7 @@ import networkx as nx
 import numpy as np
 from numpy.random import choice
 from numpy.random import randint
-from constrains import N2V, R, UTriangle
+from constrains import N2V, R, UTriangle, UWedge
 # from mage.utils import *
 # from mage.constrains import N2V, R # Node2Vec walk, Random Walk
 
@@ -96,6 +96,8 @@ def test():
     print([i[:] for i in walker._gen()])
     walker_triangle = WalkGenerator(graph=test_graph, constrain=UTriangle())
     print([i[:] for i in walker_triangle._gen()])
+    walker_wedge = WalkGenerator(graph=test_graph, constrain=UWedge())
+    print([i[:] for i in walker_wedge._gen()])
 
 if __name__ == '__main__':
     test()
