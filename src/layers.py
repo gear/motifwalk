@@ -6,6 +6,7 @@ func='keras like layers for dnn, copied from gcn.
 """
 
 import tensorflow as tf
+import keras as k
 from collections import defaultdict as dd
 
 
