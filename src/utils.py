@@ -88,7 +88,7 @@ def run_embedding_classify_f1(dataset_name, emb_file, clf=LogisticRegression(),
             mclf.fit(X_train, y_train)
             test_results = mclf.predict(X_test, top_k_list,
                                         num_classes=labels.shape[1])
-            str_output = "Train ratio: {}\n".format(sr)
+            str_output = "Train ratio: {}\n".format(1.0 - sr)
             for avg in averages:
                 str_output += avg + ': ' + str(f1_score(test_results, y_test,
                                                     average=avg)) + '\n'

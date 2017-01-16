@@ -3,6 +3,23 @@
 The output of related algorithms (deepwalk, node2vec, gcn, etc.) is stored
 here. 
 
+### How to run
+
+I use the function named `run_embedding_classify_f1` in `src/utils.py` to
+create these results. Copy the code below and run in your favorite python REPL.
+Check the environment is the root folder of this repository for packages
+versions.
+
+```python
+# Running from *this* folder
+sys.path.append('../src/')
+from utils import run_embedding_classify_f1
+
+run_embedding_classify_f1("blogcatalog", "blogcatalog.n2v2", 
+                          splits_ratio=[0.1, 0.5, 0.9], 
+                          write_to_file="blogcatalog_n2v2_LG.outlog")
+```
+
 ### Blogcatalog
 
 The task for Blogcatalog graph is to classify node labels based **only on graph
