@@ -81,7 +81,6 @@ def run_embedding_classify_f1(dataset_name, emb_file, clf=LogisticRegression(),
     for run in range(num_run):
         results_str.append("\nRun number {}:\n".format(run+1))
         for sr in splits_ratio:
-            sr = splits_ratio[run % len(splits_ratio)]
             X_train, X_test, y_train, y_test = train_test_split(
                 emb, labels, test_size=sr, random_state=run)
             top_k_list = get_top_k(y_test)

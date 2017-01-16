@@ -1,0 +1,34 @@
+Embedding dim: 128, graph: blogcatalog
+Run number 1:
+Train ratio: 0.1
+micro: 0.386239782016
+macro: 0.214543608614
+samples: 0.382663113695
+weighted: 0.433085025533
+Train ratio: 0.5
+micro: 0.377251316154
+macro: 0.196185333812
+samples: 0.38467214677
+weighted: 0.434697123758
+Train ratio: 0.9
+micro: 0.319039187004
+macro: 0.135642244857
+samples: 0.320834124333
+weighted: 0.386029599543
+
+Run number 2:
+Train ratio: 0.1
+micro: 0.410666666667
+macro: 0.234535155633
+samples: 0.425321738985
+weighted: 0.454988176881
+Train ratio: 0.5
+micro: 0.388228792484
+macro: 0.198769371908
+samples: 0.392826350337
+weighted: 0.441545453007
+Train ratio: 0.9
+micro: 0.332357923918
+macro: 0.142543600217
+samples: 0.330996319343
+weighted: 0.398522047349
