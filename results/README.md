@@ -18,6 +18,7 @@ number of walks: 10; skipgram window size: 10.This is the result of deepwalk alg
 - `blogcatalog.n2v`: 128 dimenstions embeddings, walk length: 80;
 number of walks: 10; skipgram window size: 10, p: 0.25, q: 0.25. This is the result
 of node2vec algorithm.
+- `blogcatalog.n2v2`: Resun of `blogcatalog.n2v`
 - `blogcatalog_deepwalk_LG.outlog`: f1 scores with different testing size. The multilabels
 classifier is trained by `LogisticRegression` (sklearn) with default parameters.
 - `blogcatalog_deepwalk_LGCV.outlog`: `LogisticRegressionCV` (cross-validation version).
