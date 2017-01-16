@@ -41,11 +41,25 @@ def load_embeddings(emb_file):
 """https://github.com/gear/deepwalk/blob/master/example_graphs/scoring.py"""
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.linear_model import LogisticRegression
-from itertools import izip
 from sklearn.metrics import f1_score
 from sklearn.utils import shuffle
 
 class TopKRanker(OneVsRestClassifier):
-    def predict(self, X, top_k_list):
-        assert X.shape[0] == len(top_k_list)
-        probs = np.
+    """Python 3 and sklearn 0.18.1 compatible version
+    of the original implementation."""
+    def predict(self, features, top_k_list, num_classes=39):
+        """Predicts top k labels for each sample
+        in the `features` list. `top_k_list` stores
+        number of labels given in the dataset. This
+        function returns a binary matrix containing
+        the predictions."""
+        assert features.shape[0] == len(top_k_list)
+        probs = np.asarray(super().predict_proba(features))
+        all_labels = np.zeros(shape=(features.shape[0], num_classes))
+        for i, k in enumerate(top_k_list):
+            probs_ = probs[i, :]
+            labels = self.classes_[probs_.argsort()[-k:]].tolist()
+            for l in labels:
+                all_labels[i][l] = 1.0
+        return all_labels
+
