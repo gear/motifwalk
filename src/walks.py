@@ -1,8 +1,7 @@
 import networkx as nx
 import numpy as np
-from numpy.random import choice
-from numpy.random import randint
-from constrains import N2V, R, UTriangle, UWedge
+from numpy.random import choice, shuffle
+from constrains import R, UTriangle, UWedge
 # from mage.utils import *
 # from mage.constrains import N2V, R # Node2Vec walk, Random Walk
 
@@ -31,52 +30,56 @@ class WalkGenerator(object):
         self.g = graph
         self.c = constrain
 
-    def __call__(self, walk_length=10, num_walk=10,
-                 batch=10, start=None, reset=None):
+    def __call__(self, walk_length=10, num_walk=10, yield_size=None):
         """ Short cut for calling the walk generator. """
         
-        return self._gen(walk_length, num_walk,
-                         batch, start, reset)
+        return self._gen(walk_length, num_walk, yield_size)
 
-    def _gen(self, walk_length=10, num_walk=10,
-             start=None, reset=None):
+    def _gen(self, walk_length=10, num_walk=1, yield_size=None):
         
         """ Generate batches of random walk node ids.
 
         Parameters:
-            walk_length: (int, tuple, list) specify how the
-                walk's length is computed.
-            num_walk: (int) number of walks in total
-            start: (int, str) graph (networkx) node id.
+            walk_length: Length of a walk starting with a node.
+            num_walk: (int) number of walks for each node.
+            yield_size: Data buffer size
 
         Example:
             walk_generator._gen() => Generate 1 batch 
                                      of 10 random walks 
                                      of length 10. """
 
-        # Determine start node
-        if start is None or start not in self.g.nodes():
-            start = choice(self.g)
- 
-        # Random walk with constrain and append the result  
-        data = [start]
-        next_node = start
-        while num_walk > 0:
-            for w in range(walk_length-1):
-                # Using a constrains object to select next node
-                next_node = self.c.select(next_node, self.g, data)
-                if not next_node:
-                    next_node = choice(self.g)
-                data.append(next_node)
-            yield data
-            if reset:
-                data.clear()
-                data.append(start)
-            else:
-                data.clear()
-                data.append(next_node)  # Last appended to data
-            num_walk -= 1
-
+        total_length = len(self.g) * num_walk * walk_length
+        context_length = yield_size if yield_size else total_length
+        if context_length > total_length:
+            context_length = total_length
+        buffer = np.ndarray(shape=context_length, dtype=np.int32)
+        i = 0
+        print("Walking total of {} walks, will yield every {} nodes...".format(
+            len(self.g) * num_walk, context_length
+        ))
+        for _ in range(num_walk):
+            nodes = self.g.nodes()[:]
+            shuffle(nodes)
+            for node in nodes:
+                buffer[i] = node
+                i += 1
+                if i % context_length == 0:
+                    yield buffer
+                    i = 0
+                next_node = node
+                for w in range(walk_length-1):
+                    next_node = self.c.select(next_node, self.g, buffer, i)
+                    if not next_node:
+                        next_node = choice(self.g)
+                    buffer[i] = next_node
+                    i += 1
+                    if i % context_length == 0:
+                        yield buffer
+                        i = 0
+        if i != 0:  # Yield the remaining data
+            buffer[i:].fill(-1)
+            yield buffer
 
 def test():
     test_graph = nx.Graph()  # Undirected
@@ -93,11 +96,11 @@ def test():
               [34,27],[34,28],[34,29],[34,30],[34,31],[34,32],[34,33]]
     test_graph.add_edges_from(karate)
     walker = WalkGenerator(graph=test_graph, constrain=R())
-    print([i[:] for i in walker._gen()])
+    print([i for i in walker._gen()])
     walker_triangle = WalkGenerator(graph=test_graph, constrain=UTriangle())
-    print([i[:] for i in walker_triangle._gen()])
+    print(i for i in walker_triangle._gen())
     walker_wedge = WalkGenerator(graph=test_graph, constrain=UWedge())
-    print([i[:] for i in walker_wedge._gen()])
+    print(i for i in walker_wedge._gen())
 
 if __name__ == '__main__':
     test()
