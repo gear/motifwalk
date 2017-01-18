@@ -36,7 +36,7 @@
 % page charge instructions.
 % Put where the files are available in the appropriate places.
 
-\title{Motif-Aware Graph Embeddings}
+\title{Motif-Aware Network Embeddings}
 
 \author{Anonymous authors}
 
@@ -56,8 +56,10 @@
 
 \section{Introduction}
 
+\subsection{Complex network and machine learning}
+
 Network modeling have been an essential tool for a wide
-range of scientific fields \cite{physicnet, molecule, youtube, motifblockmilo, juremotif}.
+range of scientific fields \cite{physicnet,molecule,youtube,motifblockmilo,juremotif}.
 The network science view usually reveals the underlying structure 
 of a complex system. Based on the system's network structure, 
 scientists can make predictions and explaination
@@ -66,30 +68,53 @@ study on neuronal systems connectivity indicated
 that the component arrangement of a neural system is optimized
 for short processing paths rather than wiring lengths \cite{kaiser2006nonoptimal}. 
 Similarly, social networks analysis provides communities structures
-as well as social interaction patterns \cite{west2014exploiting, barabasi2014network}. 
-However, along with the information explosion, large graph-structured
-data poses a great challenge for traditional network analysis methods.
+as well as social interaction patterns \cite{west2014exploiting,barabasi2014network}. 
+However, along with the information explosion, the large graph-structured
+data poses a great challenge for traditional network analysis methods
+in term of scalability and complexity. To deal with such challendges,
+one promising approach is to apply machine learning methods (especially
+deep learning) methods to network problems.
 
+Bridging the gap between network science and machine learning
+is also a challenging task. Due to the irregularity in network and 
+graph-structured data, it is desirable to have a \emph{meaningful}
+and structural network representation for machine learning application. 
+Traditionally, vector representation can be obtained via graph spectral methods.
+However, spectral methods are shown to be unscalable without estimation
+methods TODO: find theoretical citation \cite{deepwalk,node2vec}.
+Recently, inspired by the skipgram model in natural language processing
+\cite{skipgram}, \citeauthor{deepwalk} propsed their scalable graph
+embedding algorithm named DeepWalk. Their results node classification
+proved the effectiveness of their algorithm in learning a lower dimensionality 
+representation of a complex network. Subsequence works to DeepWalk
+further improved node classification accuracy by modifying graph 
+context generation process \cite{line,grarep,node2vec}. On the other
+hand, more direct (and more effective) approaches were proposed in
+\cite{planetoid,gcn}. Instead of learning the network representation
+using only network structure (e.g. adjacency matrix), \citeauthor{planetoid}
+proposed to injects the known labeling and node feature into the
+representation learning process. \citeauthor{gcn} further improved
+results from planetoid \cite{planetoid} by applying graph convolution
+technique in their deep network model. These aforementioned approaches 
+are similar in the sense that they all learn a latent representation 
+of a complex network from data, then use this representation to solve 
+a machine learning tasks. 
 
+\subsection{Motif in complex network}
 
-\subsection{Length of Papers}
+There are three scale of network analysis: macroscopic, mesoscopic, 
+and microscopic. The macroscopic scale displays a network as a whole to
+study its robustness \cite{callaway2000network} or dynamics TODO: find citation \cite{barabasi2014network}.
+In contrast, the microscopic scale studies the pair-wise interactions
+between nodes in a network which is specific to the given system
+TODO: find citation \cite{physicnet}. On the other hand, the mesoscopic
+scale is an intermediate in which we consider the network is a composition of
+subgraphs. In many research, especially computational biology, the
+mesoscopic components are called \emph{motifs}, and it is common
+to think of them as building blocks for a complex system \cite{motifblockmilo}.
 
-Each accepted full paper is allocated six pages in the conference 
-proceedings, excluded references. References can take up to one page.
-Up to two additional pages may be purchased at a price 
-to be announced per page for any accepted paper. However, all 
-{\em submissions} must 
-be a maximum of six pages, plus at most one for references, in length.
-
-
-\subsection{Word Processing Software}
-
-As detailed below, IJCAI has prepared and made available a set of
-\LaTeX{} macros and a Microsoft Word template for use in formatting
-your paper. If you are using some other word processing software (such
-as WordPerfect, etc.), please follow the format instructions given
-below and ensure that your final paper looks as much like this sample
-as possible.
+Network motifs, also refered as higher-order organization in \cite{juremotif},
+are believed to represent the underlying mechanism of a complex system \cite
 
 \section{Style and Format}
 

@@ -1,0 +1,56 @@
+This is BibTeX, Version 0.99d (TeX Live 2015/Debian)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: ijcai17.aux
+The style file: named.bst
+Database file #1: ijcai17.bib
+Warning--I didn't find a database entry for "gcn"
+Warning--I didn't find a database entry for "gottlob:nonmon"
+Warning--I didn't find a database entry for "abelson-et-al:scheme"
+Warning--I didn't find a database entry for "bgf:Lixto"
+Warning--I didn't find a database entry for "brachman-schmolze:kl-one"
+Warning--I didn't find a database entry for "nebel:jair-2000"
+Warning--I didn't find a database entry for "gls:hypertrees"
+Warning--I didn't find a database entry for "levesque:functional-foundations"
+Warning--I didn't find a database entry for "levesque:belief"
+You've used 15 entries,
+            2439 wiz_defined-function locations,
+            655 strings with 7306 characters,
+and the built_in function-call counts, 6225 in all, are:
+= -- 641
+> -- 273
+< -- 3
++ -- 92
+- -- 92
+* -- 497
+:= -- 1004
+add.period$ -- 48
+call.type$ -- 15
+change.case$ -- 105
+chr.to.int$ -- 15
+cite$ -- 15
+duplicate$ -- 252
+empty$ -- 458
+format.name$ -- 110
+if$ -- 1291
+int.to.chr$ -- 1
+int.to.str$ -- 0
+missing$ -- 16
+newline$ -- 78
+num.names$ -- 45
+pop$ -- 100
+preamble$ -- 1
+purify$ -- 121
+quote$ -- 0
+skip$ -- 202
+stack$ -- 0
+substring$ -- 306
+swap$ -- 64
+text.length$ -- 3
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 116
+warning$ -- 0
+while$ -- 49
+width$ -- 18
+write$ -- 194
+(There were 9 warnings)
