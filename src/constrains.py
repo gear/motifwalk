@@ -56,16 +56,20 @@ class UTriangle(Constrains):
         """Select the next node in based on current
         node and the current walk."""
 
-        if graph.is_directed() != self._is_directed:
-            print("Warning: Using mismatch directness.")
+        if not graph[curr_node]:
+            return choice(graph)
 
-        triangle_nodes = [i for i in graph[curr_node]
-                          if set().union(graph[i], graph[curr_node])]
-        rand_num = rand()
-        if len(triangle_nodes) > 0:
+        while True:
+            cand = choice(graph.neighbors(curr_node))
+            rand_num = rand()
             if rand_num > self._a:
-                return choice(triangle_nodes)
-        return choice(graph.neighbors(curr_node))
+                tricands = list(graph[cand].keys()
+                                & graph[curr_node].keys())
+                tricand = choice(tricands) if tricands else None
+            else:
+                return cand
+            if tricand:
+                return tricand
 
 
 class UWedge(Constrains):

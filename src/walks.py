@@ -58,7 +58,8 @@ class WalkGenerator(object):
         print("Walking total of {} walks, will yield every {} nodes...".format(
             len(self.g) * num_walk, context_length
         ))
-        for _ in range(num_walk):
+        for nn in range(num_walk):
+            print("Walk {}/{}".format(nn+1,num_walk))
             nodes = self.g.nodes()[:]
             shuffle(nodes)
             for node in nodes:
@@ -98,9 +99,9 @@ def test():
     walker = WalkGenerator(graph=test_graph, constrain=R())
     print([i for i in walker._gen()])
     walker_triangle = WalkGenerator(graph=test_graph, constrain=UTriangle())
-    print(i for i in walker_triangle._gen())
+    print([i for i in walker_triangle._gen()])
     walker_wedge = WalkGenerator(graph=test_graph, constrain=UWedge())
-    print(i for i in walker_wedge._gen())
+    print([i for i in walker_wedge._gen()])
 
 if __name__ == '__main__':
     test()
