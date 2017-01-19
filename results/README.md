@@ -50,3 +50,23 @@ the embedding process, semi-supervised approaches such as planetoid and gcn can
 take advantages of both graph structures and feature vectors into node classification.
 
 - `cora.deepwalk`: 64 dimensions embeddings using deepwalk's default parameters.
+
+# Motif analysis results
+
+### Cora
+
+Cora is a directed citation network. Due to the small size of this network,
+I could compute the motif significance of size 4 motifs.
+
+- `cora_4m.motifslog`: Motif of size 4 adjacency matrix with z-score computed with
+100 uncorrelated random graph (graph-tool).
+- `cora_3m.motifslog`: Motif of size 3 adjacency matrix with z-score computed with
+100 uncorrelated random graph (graph-tool).
+
+### Blogcatalog
+
+Blogcatalog is a relatively large undirected network when we consider the cost of
+computing motif-statistics (>10,000 nodes). Due to this fact, I could not
+compute the statistic of this graph under motif size 4.
+
+- `blogcatalog_3um.motifscount`: Adjacency matrix and corresponding count of that motif.
