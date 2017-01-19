@@ -5,6 +5,7 @@ from scipy.sparse import lil_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import f1_score
 from sklearn.linear_model import LogisticRegression
+from graph_tool.all import adjacency
 
 dataloc = './../data/'
 
@@ -60,6 +61,26 @@ def load_embeddings(emb_file):
     return emb_matrix
 
 
+def write_motifs_results(output, motifs_list, z_scores, **kwags):
+    """Write the adjacency matrix of motifs in the `motifs_list`
+    and its corresponding z-scores to file.
+    Naming convention: blogcatalog_3um.motifslog
+    Parameters
+    ==========
+        output: name of file will be writen to disk
+        motifs_list: list of motifs (graph-tool graph instances)
+        z_scores: corresponding z_scores to each motif."""
+    assert len(motifs_list) == len(z_scores)
+    
+    with open(output, 'w') as f:
+        for i, m in enumerate(motifs_list):
+            f.write("Motif {} - z-score: {}\n".format(i+1, z_scores[i]))
+            for rows in adjacency(m).toarray():
+                f.write(str(row) + '\n')
+            f.write('\n')
+    return output
+
+
 def get_top_k(labels):
     """Return the number of classes for each row in the `labels`
     binary matrix. If `labels` is Linked List Matrix format, the number
@@ -100,6 +121,7 @@ def run_embedding_classify_f1(dataset_name, emb_file, clf=LogisticRegression(),
             f.writelines(results_str)
     print(info)
     print(''.join(results_str))
+    return write_to_file
 
 
 class TopKRanker(OneVsRestClassifier):
