@@ -5,7 +5,10 @@ from scipy.sparse import lil_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import f1_score
 from sklearn.linear_model import LogisticRegression
-from graph_tool.all import adjacency
+from graph_tool.clustering import motifs, motif_significance
+from graph_tool.spectral import adjacency
+from graph_tool import load_graph_from_csv
+from _thread import start_new_thread
 
 dataloc = './../data/'
 
@@ -61,7 +64,8 @@ def load_embeddings(emb_file):
     return emb_matrix
 
 
-def write_motifs_results(output, motifs_list, z_scores, **kwags):
+def write_motifs_results(output, motifs_list, z_scores,
+                         n_shuf, model="uncorrelated"):
     """Write the adjacency matrix of motifs in the `motifs_list`
     and its corresponding z-scores to file.
     Naming convention: blogcatalog_3um.motifslog
@@ -69,17 +73,38 @@ def write_motifs_results(output, motifs_list, z_scores, **kwags):
     ==========
         output: name of file will be writen to disk
         motifs_list: list of motifs (graph-tool graph instances)
-        z_scores: corresponding z_scores to each motif."""
+        z_scores: corresponding z_scores to each motif.
+        n_shuf: number of random graph generated
+        model: name of the random graph generation algorithm"""
     assert len(motifs_list) == len(z_scores)
-    
     with open(output, 'w') as f:
+        f.write("Number of shuffles: {} ({})\n".format(n_shuf, model))
         for i, m in enumerate(motifs_list):
             f.write("Motif {} - z-score: {}\n".format(i+1, z_scores[i]))
             for rows in adjacency(m).toarray():
-                f.write(str(row) + '\n')
+                f.write(str(rows) + '\n')
             f.write('\n')
     return output
 
+
+def run_motif_significance(graph, directed=True, data_loc="../data/", motif_size=3,
+                           n_shuffles=16, s_model='uncorrelated'):
+    """Run z-score computation for all `motif_size` subgraph
+    on the given `graph`. By default, graph is loaded as a directed graph_tool
+    instance.
+    Parameters
+    ==========
+        graph: name of the graph file."""
+    f_name = data_loc + graph + ".edges"
+    g = load_graph_from_csv(f_name, directed,
+                            csv_options={'quotechar': '"',
+                                         'delimiter': ' '})
+    m, z = motif_significance(g, motif_size, n_shuffles,
+                              shuffle_model=s_model)
+    motif_annotation = str(motif_size) + 'm' if directed else str(motif_size) + 'um'
+    output_name = "{}{}_{}.{}".format(data_loc, graph,
+                                      motif_annotation, "motifslog")
+    return write_motifs_results(output_name, m, z, n_shuffles, s_model)
 
 def get_top_k(labels):
     """Return the number of classes for each row in the `labels`
@@ -93,7 +118,7 @@ def get_top_k(labels):
 
 
 def run_embedding_classify_f1(dataset_name, emb_file, clf=LogisticRegression(),
-                           splits_ratio=[0.5], num_run=2, write_to_file=None):
+                              splits_ratio=[0.5], num_run=2, write_to_file=None):
     """Run node classification for the learned embedding."""
     _, _, labels = load_data(dataset_name)
     emb = load_embeddings(emb_file)
@@ -112,7 +137,7 @@ def run_embedding_classify_f1(dataset_name, emb_file, clf=LogisticRegression(),
             str_output = "Train ratio: {}\n".format(1.0 - sr)
             for avg in averages:
                 str_output += avg + ': ' + str(f1_score(test_results, y_test,
-                                                    average=avg)) + '\n'
+                                                        average=avg)) + '\n'
             results_str.append(str_output)
     info = "Embedding dim: {}, graph: {}".format(emb.shape[1], dataset_name)
     if write_to_file:
