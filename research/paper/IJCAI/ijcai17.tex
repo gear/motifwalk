@@ -6,10 +6,12 @@
 % They are the same as the ones for IJCAI-11 with superficical wording
 %   changes only.
 
+
 \documentclass{article}
 % The file ijcai17.sty is the style file for IJCAI-17 (same as ijcai07.sty).
 \usepackage{ijcai17}
-
+\usepackage{amsthm}
+\usepackage{amssymb}
 % Use the postscript times font!
 \usepackage{times}
 
@@ -35,6 +37,9 @@
 % Also change the deadline and address for returning papers and the length and
 % page charge instructions.
 % Put where the files are available in the appropriate places.
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
 
 \title{Motif-Aware Network Embeddings}
 
@@ -98,7 +103,7 @@ results from planetoid \cite{planetoid} by applying graph convolution
 technique in their deep network model. These aforementioned approaches 
 are similar in the sense that they all learn a latent representation 
 of a complex network from data, then use this representation to solve 
-a machine learning tasks. 
+a network problem using various machine learning tools. 
 
 \subsection{Motif in complex network}
 
@@ -113,8 +118,25 @@ subgraphs. In many research, especially computational biology, the
 mesoscopic components are called \emph{motifs}, and it is common
 to think of them as building blocks for a complex system \cite{motifblockmilo}.
 
-Network motifs, also refered as higher-order organization in \cite{juremotif},
-are believed to represent the underlying mechanism of a complex system \cite
+\begin{definition}{\emph{Network motif}}
+Given a graph $G = {V,E}$, define a subgraph $G' = {V', E'}$ with $V' \subseteq V$;
+$E' \subset E$ s.t. $i,j \in V' \forall e_{ij} \in E'$ and $|V'| \ll |V|$. Recurring subgraphs
+are called \emph{network motif} when they are statistically significant.
+\end{definition}
+
+Also refered as higher-order organization by \citeauthor{juremotif}, network motifs
+are believed to represent the underlying mechanism of a complex system \cite{netmotif,alon2006introduction,mangan2003structure}. 
+For instance, the directional bi-fan motif TODO: figure
+and its simplified undirectional version TODO: figure are crucial in a citation network. 
+Beside having a statistical significance, bi-fan motif is also intuitively 
+sensible in citation network as it represents the citation mechanism as an activity
+in a subgraph. The correlation of recurring subgraphs and system functionality has 
+been studied extensively in biological systems such as 
+transcription networks \cite{mangan2003structure} and brain 
+networks \cite{brainnetheuvel,honey2007network}. As networks motifs
+have been recognized as the fundamental building block of a complex
+systems, using them as a strucutural guidance for machine learning
+on graph data can yield possitive improvements.
 
 \section{Style and Format}
 

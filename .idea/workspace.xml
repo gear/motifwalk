@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ea08ffa4-af5b-4a9a-a70b-378716da4841" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/research/paper/IJCAI/ijcai17.pdf" afterPath="$PROJECT_DIR$/research/paper/IJCAI/ijcai17.pdf" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/utils.py" afterPath="$PROJECT_DIR$/src/utils.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/research/paper/IJCAI/ijcai17.aux" afterPath="$PROJECT_DIR$/research/paper/IJCAI/ijcai17.aux" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/research/paper/IJCAI/ijcai17.tex" afterPath="$PROJECT_DIR$/research/paper/IJCAI/ijcai17.tex" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -410,9 +412,9 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="33" y="82" width="1040" height="1521" extended-state="0" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3028846" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3028846" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />

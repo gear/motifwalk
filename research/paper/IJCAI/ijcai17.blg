@@ -12,45 +12,45 @@ Warning--I didn't find a database entry for "nebel:jair-2000"
 Warning--I didn't find a database entry for "gls:hypertrees"
 Warning--I didn't find a database entry for "levesque:functional-foundations"
 Warning--I didn't find a database entry for "levesque:belief"
-You've used 15 entries,
+You've used 20 entries,
             2439 wiz_defined-function locations,
-            655 strings with 7306 characters,
-and the built_in function-call counts, 6225 in all, are:
-= -- 641
-> -- 273
+            686 strings with 8137 characters,
+and the built_in function-call counts, 8146 in all, are:
+= -- 845
+> -- 336
 < -- 3
-+ -- 92
-- -- 92
-* -- 497
-:= -- 1004
-add.period$ -- 48
-call.type$ -- 15
-change.case$ -- 105
-chr.to.int$ -- 15
-cite$ -- 15
-duplicate$ -- 252
-empty$ -- 458
-format.name$ -- 110
-if$ -- 1291
++ -- 113
+- -- 112
+* -- 664
+:= -- 1311
+add.period$ -- 63
+call.type$ -- 20
+change.case$ -- 134
+chr.to.int$ -- 20
+cite$ -- 20
+duplicate$ -- 323
+empty$ -- 611
+format.name$ -- 137
+if$ -- 1679
 int.to.chr$ -- 1
 int.to.str$ -- 0
-missing$ -- 16
-newline$ -- 78
-num.names$ -- 45
-pop$ -- 100
+missing$ -- 22
+newline$ -- 103
+num.names$ -- 60
+pop$ -- 121
 preamble$ -- 1
-purify$ -- 121
+purify$ -- 156
 quote$ -- 0
-skip$ -- 202
+skip$ -- 258
 stack$ -- 0
-substring$ -- 306
-swap$ -- 64
+substring$ -- 456
+swap$ -- 74
 text.length$ -- 3
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 116
+type$ -- 152
 warning$ -- 0
-while$ -- 49
-width$ -- 18
-write$ -- 194
+while$ -- 67
+width$ -- 23
+write$ -- 258
 (There were 9 warnings)
