@@ -5,13 +5,14 @@ func='keras like layers for dnn, copied from gcn.
       github.com/tkipf/gcn'
 """
 
-import tensorflow as tf
+"""
+Keras implementation for using with Theano
+backend on Tsubame 2.5
+"""
+
 import keras as k
 from collections import defaultdict as dd
 
-
-flags = tf.app.flags
-FLAGS = flags.FLAGS
 
 # global layer ID dictionary keeping number of layer types
 _LAYER_TYPES = dd(int)
