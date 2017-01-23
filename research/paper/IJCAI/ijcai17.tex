@@ -138,11 +138,13 @@ have been recognized as the fundamental building block of a complex
 systems, using them as a strucutural guidance for machine learning
 on graph data can yield possitive improvements.
 
-
 \section{Methods}
 
-In this section, we present our general approach of using
-motif co-occurrence matrix as
+In this section, we present the detail of our method. Firstly,
+we propose the use of motif co-occurence matrix and its Fourier basis.
+Secondly, we present the graph convolutional architecture. Lastly, the
+detail of each motif graph convolutional network architecture is
+presented for each classification task.
 
 \subsection{Motif laplacian}
 
@@ -155,6 +157,13 @@ Algorithms and estimation techniques.
 Present graph convolutional and estimation technique.
 Present renormalization trick and GCN.
 Present using motif types between graph layers.
+
+Graph convolution is computed using the eigenvectors of
+the graph Laplacian $\mathcal{L}$. Given two signals 
+$x$, $y$, and a filter function $g_\mathcal{G}$, the 
+convolution of $x$ and $y$ is defined as:
+
+$$ x *_{g_\mathcal{G}} = $$
 
 \subsection{Unsupervised graph motif auto-encoder}
 
