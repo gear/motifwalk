@@ -49,7 +49,18 @@ of the paper. While embedding algorithms cannot inject the feature vector into
 the embedding process, semi-supervised approaches such as planetoid and gcn can
 take advantages of both graph structures and feature vectors into node classification.
 
-- `cora.deepwalk`: 64 dimensions embeddings using deepwalk's default parameters.
+- `cora.deepwalk`: 128 dimensions embeddings using parameters described in n2v paper.
+- `cora.n2v`: 128 dimensions embeddings using parameters described in n2v paper.
+- `cora.mage_triangle`: 128 dimensions embeddings using triangle motif walks. (my alg.)
+
+### Citeseer
+
+Citeseer is a citation network with a feature vector for each nodes describing the
+content of the paper. TODO: complete info
+
+- `citeseer.deepwalk`: 128 dimensions embeddings using parameters described in n2v paper.
+- `citeseer.n2v`: 128 dimensions embeddings using parameters described in n2v paper.
+- `citeseer.mage_triangle`: 128 dimensions embeddings using triangle motif walks. (my alg.)
 
 # Motif analysis results
 
