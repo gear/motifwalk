@@ -177,7 +177,7 @@ def main():
     graph_name = re.match(r"(.+)\.(.+)", args.input).group(1)
     context_file = (graph_name + context_ext).format(args.walk_type)
     if path.exists(context_file):
-        print("Found graph context file: {}.\
+        print("Found graph context file: {}.\n \
                Skipping context generation...".format(context_file))
         context_file = open(context_file)
     else:
