@@ -5,10 +5,12 @@ from scipy.sparse import lil_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import f1_score
 from sklearn.linear_model import LogisticRegression
-from graph_tool.clustering import motifs, motif_significance
-from graph_tool.spectral import adjacency
-from graph_tool import load_graph_from_csv
-from _thread import start_new_thread
+try:
+    from graph_tool.clustering import motifs, motif_significance
+    from graph_tool.spectral import adjacency
+    from graph_tool import load_graph_from_csv
+except ImportError:
+    print("Warning: graph_tool module is missing, motif analysis is not available.")
 
 dataloc = './../data/'
 
