@@ -5,6 +5,7 @@ from scipy.sparse import lil_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import f1_score
 from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import MultiLabelBinarizer
 try:
     from graph_tool.clustering import motifs, motif_significance
     from graph_tool.spectral import adjacency
@@ -20,7 +21,9 @@ def load_citeseer():
         data = p.load(f)
         graph = data['NXGraph']
         features = data['CSRFeatures']
-        labels = data['Labels']
+        labels = data['Labels']  # Number format
+        labels = MultiLabelBinarizer().fit_transform(
+                        labels.reshape(labels.shape[0], 1))
     return graph, features, labels
 
 
@@ -29,7 +32,9 @@ def load_cora():
         data = p.load(f)
         graph = data['NXGraph']
         features = data['CSRFeatures']
-        labels = data['Labels']
+        labels = data['Labels']  # Number format
+        labels = MultiLabelBinarizer().fit_transform(
+                        labels.reshape(labels.shape[0], 1))
     return graph, features, labels
 
 
@@ -38,7 +43,7 @@ def load_blogcatalog():
         data = p.load(f)
         graph = data['NXGraph']
         features = None
-        labels = data['LILLabels']
+        labels = data['LILLabels']  # Already in binary format
     return graph, features, labels
 
 
@@ -116,7 +121,7 @@ def get_top_k(labels):
     if isinstance(labels, lil_matrix):
         return [len(i) for i in labels]
     else:
-        return [np.count_nonzero(i.toarray()) for i in labels]
+        return [np.count_nonzero(i) for i in labels]
 
 
 def run_embedding_classify_f1(dataset_name, emb_file, clf=LogisticRegression(),
