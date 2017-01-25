@@ -1,5 +1,6 @@
 import pickle as p
 import numpy as np
+import re
 from sklearn.multiclass import OneVsRestClassifier
 from scipy.sparse import lil_matrix
 from sklearn.model_selection import train_test_split
@@ -176,4 +177,14 @@ class TopKRanker(OneVsRestClassifier):
             for l in labels:
                 all_labels[i][l] = 1.0
         return all_labels
+
+
+def significant_graph(motifslog, z_thres=100, m_size=3):
+    """Plot and return the motifs significant graph from a logfile."""
+    motif_zscore = dict()
+    zscore = 0.0
+    for line in open(motifslog):
+        if re.match(r"Motif", line):
+            zscore = float(line.split()[-1])
+            if zscore > z_thres
 
