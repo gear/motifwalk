@@ -169,7 +169,7 @@ def main():
     parser.add_argument("--num-step", default=6000000, type=int,
                         help="Number of batches used for training")
     parser.add_argument("--learning-rate", default=0.1, type=float,
-                        help="Adagrad learning rate")
+                        help="SGD learning rate")
     args = parser.parse_args()
 
     print("Checking if the graph context already exists...")
