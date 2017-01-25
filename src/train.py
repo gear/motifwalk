@@ -112,7 +112,7 @@ def run_embeddings(data, args):
                                              labels=train_labels, inputs=embed,
                                              num_sampled=args.num_nsamp,
                                              num_classes=args.graph_size))
-        optimizer = tf.train.AdadeltaOptimizer(args.learning_rate).minimize(loss)
+        optimizer = tf.train.GradientDescentOptimizer(args.learning_rate).minimize(loss)
         norm = tf.sqrt(tf.reduce_sum(tf.square(embeddings), 1, keep_dims=True))
         normalized_embeddings = embeddings / norm
         init = tf.initialize_all_variables()
