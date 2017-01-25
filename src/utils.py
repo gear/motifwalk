@@ -3,7 +3,7 @@ import numpy as np
 from sklearn.multiclass import OneVsRestClassifier
 from scipy.sparse import lil_matrix
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import f1_score
+from sklearn.metrics import f1_score, accuracy_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import MultiLabelBinarizer
 try:
@@ -145,6 +145,7 @@ def run_embedding_classify_f1(dataset_name, emb_file, clf=LogisticRegression(),
             for avg in averages:
                 str_output += avg + ': ' + str(f1_score(test_results, y_test,
                                                         average=avg)) + '\n'
+            str_output += "Accuracy: " + str(accuracy_score(test_results, y_test)) + '\n'
             results_str.append(str_output)
     info = "Embedding dim: {}, graph: {}".format(emb.shape[1], dataset_name)
     if write_to_file:
