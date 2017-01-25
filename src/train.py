@@ -101,7 +101,7 @@ def run_embeddings(data, args):
     with graph.as_default():
         train_inputs = tf.placeholder(tf.int32, shape=[args.batch_size])
         train_labels = tf.placeholder(tf.int32, shape=[args.batch_size,1])
-        with tf.device('/cpu:0'):
+        with tf.device('/gpu:0'):
             embeddings = tf.get_variable("emb", shape=[args.graph_size, args.emb_dim],
                                          initializer=tf.contrib.layers.xavier_initializer())
             embed = tf.nn.embedding_lookup(embeddings, train_inputs)
@@ -112,11 +112,12 @@ def run_embeddings(data, args):
                                              labels=train_labels, inputs=embed,
                                              num_sampled=args.num_nsamp,
                                              num_classes=args.graph_size))
-        optimizer = tf.train.AdadeltaOptimizer(args.learning_rate).minimize(loss)
+        optimizer = tf.train.GradientDescentOptimizer(args.learning_rate).minimize(loss)
         norm = tf.sqrt(tf.reduce_sum(tf.square(embeddings), 1, keep_dims=True))
         normalized_embeddings = embeddings / norm
         init = tf.initialize_all_variables()
-    with tf.Session(graph=graph) as session:
+        config = tf.ConfigProto(allow_soft_placement=True)
+    with tf.Session(graph=graph, config=config) as session:
         init.run()
         print("Initialized")
         average_loss = 0
@@ -175,6 +176,7 @@ def main():
 
     print("Checking if the graph context already exists...")
     graph_name = re.match(r"(.+)\.(.+)", args.input).group(1)
+    print("Graph:", graph_name)
     context_file = (graph_name + context_ext).format(args.walk_type)
     if path.exists(context_file):
         print("Found graph context file: {}.\n \
