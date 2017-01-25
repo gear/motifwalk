@@ -33,7 +33,10 @@ class R(Constrains):
         """Select next random node in the graph
            based on the current nodes."""
 
-        return choice(graph.neighbors(curr_node))
+        if not graph[curr_node]:
+            return choice(graph)
+        else:
+            return choice(graph.neighbors(curr_node))
 
 
 class UTriangle(Constrains):
