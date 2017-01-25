@@ -12,7 +12,7 @@ class Constrains(object):
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def __init__(self):
+    def __init__(self, **kwargs):
         pass
 
     @abstractmethod
@@ -24,8 +24,8 @@ class R(Constrains):
 
     """Random walk constrain."""
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self._desc = """Random walk with no constrain."""
 
     def select(self, curr_node, graph, data=None, di=None):
@@ -40,13 +40,13 @@ class UTriangle(Constrains):
 
     """Random walk in triangle manner."""
 
-    def __init__(self, enforce_prob=0.9):
+    def __init__(self, enforce_prob=0.9, **kwargs):
 
         """Create a triangle motif constrain object with the
         probability of following the triangle pattern is
         `enforce_prob`."""
 
-        super().__init__()
+        super().__init__(**kwargs)
         self._a = enforce_prob
         self._num_nodes = 3
         self._is_directed = False
@@ -76,13 +76,13 @@ class UWedge(Constrains):
 
     """Random walk in wedge manner."""
 
-    def __init__(self, enforce_prob=0.9):
+    def __init__(self, enforce_prob=0.9, **kwargs):
 
         """Create a wedge motif constrain object with the
         probability of following the triangle pattern is
         `enforce_prob`."""
 
-        super().__init__()
+        super().__init__(**kwargs)
         self._a = enforce_prob
         self._num_nodes = 3
         self._is_directed = False
