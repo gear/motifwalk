@@ -158,12 +158,25 @@ Present graph convolutional and estimation technique.
 Present renormalization trick and GCN.
 Present using motif types between graph layers.
 
+Graph convolution is defined in graph spectral theory.
 Graph convolution is computed using the eigenvectors of
 the graph Laplacian $\mathcal{L}$. Given two signals 
 $x$, $y$, and a filter function $g_\mathcal{G}$, the 
-convolution of $x$ and $y$ is defined as:
+convolution of $x$ and $y$ on the Fourier basis $U$
+of the graph is defined as:
 
 $$ x *_{g_\mathcal{G}} = $$
+
+where $L = U \lambda U^{T}$. U is the Fourier basis
+and the triangle thing is the frequencies of the
+graph. The estimation of a signal input through
+a filter $g$ on a graph is essential to graph
+convolution as it affects performance and computational
+costs. The results from \cite{gcn} showed that
+for highly irregular graph, the renormalization
+trick worked particularly well in graph nodes labeling.
+The neural network architecture is depicted in figure 2.
+Intiutively, this nn architecture shows graph
 
 \subsection{Unsupervised graph motif auto-encoder}
 
