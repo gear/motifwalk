@@ -2,7 +2,7 @@ import pickle as p
 import numpy as np
 import re
 from sklearn.multiclass import OneVsRestClassifier
-from scipy.sparse import lil_matrix
+from scipy.sparse import lil_matrix, csr_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import f1_score, accuracy_score
 from sklearn.linear_model import LogisticRegression
@@ -119,8 +119,8 @@ def get_top_k(labels):
     binary matrix. If `labels` is Linked List Matrix format, the number
     of labels is the length of each list, otherwise it is the number
     of non-zeros."""
-    if isinstance(labels, lil_matrix):
-        return [len(i) for i in labels]
+    if isinstance(labels, csr_matrix):
+        return [np.count_nonzero(i.toarray()) for i in labels]
     else:
         return [np.count_nonzero(i) for i in labels]
 
@@ -186,5 +186,6 @@ def significant_graph(motifslog, z_thres=100, m_size=3):
     for line in open(motifslog):
         if re.match(r"Motif", line):
             zscore = float(line.split()[-1])
-            if zscore > z_thres
+            if zscore > z_thres:
+                pass
 
