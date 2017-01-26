@@ -49,12 +49,11 @@ def generate_graph_context(gfile, args):
             graph = graph.to_undirected()
     pattern = walk_type_[walk_type]
     walker = WalkGenerator(graph=graph, constrain=pattern(enforce_prob=ef))
-    with open(gfile + context_ext.format(walk_type), 'w') as f:
+    with open(gfile + context_ext.format(walk_type) + str(args.walk_bias), 'w') as f:
         for i in walker(walk_length=walk_length, 
                         num_walk=num_walk, yield_size=80):
             f.write(' '.join(map(str, i)) + '\n')
-    print("Wrote graph context file {} to\
-           disk.".format(gfile + context_ext.format(walk_type)))
+    print("Wrote graph context file {} to disk.".format(gfile + context_ext.format(walk_type)))
     return gfile + context_ext.format(walk_type)
 
 
@@ -174,10 +173,10 @@ def main():
 
     print("Checking if the graph context already exists...")
     graph_name = re.match(r"(.+)\.(.+)", args.input).group(1)
-    context_file = (graph_name + context_ext).format(args.walk_type)
+    context_file = (graph_name + context_ext + str(args.walk_bias)).format(args.walk_type)
     if path.exists(context_file):
-        print("Found graph context file: {}.\n \
-               Skipping context generation...".format(context_file))
+        print("Found graph context file: {}.".format(context_file))
+        print("Skipping context generation...")
         context_file = open(context_file)
     else:
         print("Walking... This operation might take a while...")
