@@ -3,6 +3,7 @@
 
 import tensorflow as tf
 import collections
+import math
 import pickle as p
 import numpy as np
 import random
@@ -102,11 +103,10 @@ def run_embeddings(data, args):
         train_inputs = tf.placeholder(tf.int32, shape=[args.batch_size])
         train_labels = tf.placeholder(tf.int32, shape=[args.batch_size,1])
         with tf.device('/gpu:0'):
-            embeddings = tf.get_variable("emb", shape=[args.graph_size, args.emb_dim],
-                                         initializer=tf.contrib.layers.xavier_initializer())
+            embeddings = tf.Variable(tf.random_uniform([args.graph_size, args.emb_dim], -1.0, 1.0))
             embed = tf.nn.embedding_lookup(embeddings, train_inputs)
-            nce_weights = tf.get_variable("nce", shape=[args.graph_size, args.emb_dim],
-                                         initializer=tf.contrib.layers.xavier_initializer())
+            nce_weights =  tf.Variable(tf.truncated_normal([args.graph_size, args.emb_dim], 
+							   stddev=1.0/math.sqrt(args.emb_dim)))
             nce_biases = tf.Variable(tf.zeros([args.graph_size]))
         loss = tf.reduce_mean(tf.nn.nce_loss(weights=nce_weights, biases=nce_biases,
                                              labels=train_labels, inputs=embed,
@@ -116,8 +116,7 @@ def run_embeddings(data, args):
         norm = tf.sqrt(tf.reduce_sum(tf.square(embeddings), 1, keep_dims=True))
         normalized_embeddings = embeddings / norm
         init = tf.initialize_all_variables()
-        config = tf.ConfigProto(allow_soft_placement=True)
-    with tf.Session(graph=graph, config=config) as session:
+    with tf.Session(graph=graph) as session:
         init.run()
         print("Initialized")
         average_loss = 0
