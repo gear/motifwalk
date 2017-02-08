@@ -155,7 +155,11 @@ Present laplacian and power of laplacian of graph.
 Present motif types and laplacian for each type.
 Algorithms and estimation techniques.
 
-\subsection{Graph convolutional architecture}
+\subsection{Biased random walk}
+
+Present the original motifwalk model.
+
+\subsection{Motif convolutional architecture}
 
 Present graph convolutional and estimation technique.
 Present renormalization trick and GCN.
@@ -164,11 +168,10 @@ Present using motif types between graph layers.
 Graph convolution is a signal processing technique in which
 a network of signals reside on nodes (e.g. sensor network) is
 processed in a spectral domain defined on the graph structure.
-The Fourier transformation of two signals $x$ and $y$ defined
-on graph $G$ is given by leveraging the eigenvalues decomposition
-of the graph Laplacian $\mathcal{L}$:
+The convolution on a graph $G$ of the coefficient set $g_{\theta}$ 
+(also called a filter or a kernel) and a signal $x$ is defined as:
 
-$$ x *_{g_\mathcal{G}} = $$
+$$ g_{\theta} \ast x = U g_{\theta} U^{\top} x$$
 
 where $L = U \lambda U^{T}$. U is the Fourier basis
 and the triangle thing is the frequencies of the
