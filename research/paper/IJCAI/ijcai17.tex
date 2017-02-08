@@ -41,7 +41,7 @@
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}[section]
 
-\title{Motif-Aware Network Embeddings}
+\title{Motif-Aware Graph Embeddings}
 
 \author{Anonymous authors}
 
@@ -50,13 +50,16 @@
 \maketitle
 
 \begin{abstract}
-  In this paper, we propose a deep convolutional network model for
-  the unsupervised and semi-supervised graph embedding task. Our 
-  model employs the higher-order organization (i.e. motifs) 
-  of complex networks, and injects the higher-order connectivity 
-  patterns into each layer in a deep graph convolutional networks. 
-  We demonstrate our results on node labels classification, link 
-  prediction, and t-SNE visuallization.
+  In this paper, we propose two motif-aware approaches for the unsupervised 
+  and semi-supervised graph embedding task. Our first model applies the most
+  significant motif pattern on a graph as a guilding pattern for random walks.
+  We then use a skipgram model with noise contrastive estimation to learn the
+  graph embedding from generated random walk context. The second model employs the 
+  higher-order organization (i.e. motifs organization) of complex networks, 
+  and injects the higher-order connectivity patterns into each layer in a deep 
+  graph convolutional networks. We demonstrate the effectiveness of our 
+  motif-aware approaches on node labels classification, link prediction, and t-SNE 
+  visuallization.
 \end{abstract}
 
 \section{Introduction}
@@ -158,12 +161,12 @@ Present graph convolutional and estimation technique.
 Present renormalization trick and GCN.
 Present using motif types between graph layers.
 
-Graph convolution is defined in graph spectral theory.
-Graph convolution is computed using the eigenvectors of
-the graph Laplacian $\mathcal{L}$. Given two signals 
-$x$, $y$, and a filter function $g_\mathcal{G}$, the 
-convolution of $x$ and $y$ on the Fourier basis $U$
-of the graph is defined as:
+Graph convolution is a signal processing technique in which
+a network of signals reside on nodes (e.g. sensor network) is
+processed in a spectral domain defined on the graph structure.
+The Fourier transformation of two signals $x$ and $y$ defined
+on graph $G$ is given by leveraging the eigenvalues decomposition
+of the graph Laplacian $\mathcal{L}$:
 
 $$ x *_{g_\mathcal{G}} = $$
 
