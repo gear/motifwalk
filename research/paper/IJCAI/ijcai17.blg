@@ -1,9 +1,8 @@
-This is BibTeX, Version 0.99d (TeX Live 2015)
+This is BibTeX, Version 0.99d (TeX Live 2015/Debian)
 Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
 The top-level auxiliary file: ijcai17.aux
 The style file: named.bst
 Database file #1: ijcai17.bib
-Warning--I didn't find a database entry for "gcn"
 Warning--I didn't find a database entry for "gottlob:nonmon"
 Warning--I didn't find a database entry for "abelson-et-al:scheme"
 Warning--I didn't find a database entry for "bgf:Lixto"
@@ -12,45 +11,45 @@ Warning--I didn't find a database entry for "nebel:jair-2000"
 Warning--I didn't find a database entry for "gls:hypertrees"
 Warning--I didn't find a database entry for "levesque:functional-foundations"
 Warning--I didn't find a database entry for "levesque:belief"
-You've used 20 entries,
+You've used 24 entries,
             2439 wiz_defined-function locations,
-            686 strings with 8137 characters,
-and the built_in function-call counts, 8146 in all, are:
-= -- 845
-> -- 336
-< -- 3
-+ -- 113
-- -- 112
-* -- 664
-:= -- 1311
-add.period$ -- 63
-call.type$ -- 20
-change.case$ -- 134
-chr.to.int$ -- 20
-cite$ -- 20
-duplicate$ -- 323
-empty$ -- 611
-format.name$ -- 137
-if$ -- 1679
-int.to.chr$ -- 1
+            703 strings with 8867 characters,
+and the built_in function-call counts, 9784 in all, are:
+= -- 1016
+> -- 408
+< -- 4
++ -- 139
+- -- 136
+* -- 790
+:= -- 1570
+add.period$ -- 75
+call.type$ -- 24
+change.case$ -- 162
+chr.to.int$ -- 23
+cite$ -- 24
+duplicate$ -- 391
+empty$ -- 726
+format.name$ -- 167
+if$ -- 2019
+int.to.chr$ -- 2
 int.to.str$ -- 0
-missing$ -- 22
-newline$ -- 103
-num.names$ -- 60
-pop$ -- 121
+missing$ -- 26
+newline$ -- 123
+num.names$ -- 72
+pop$ -- 146
 preamble$ -- 1
-purify$ -- 156
+purify$ -- 188
 quote$ -- 0
-skip$ -- 258
+skip$ -- 319
 stack$ -- 0
-substring$ -- 456
-swap$ -- 74
-text.length$ -- 3
+substring$ -- 536
+swap$ -- 94
+text.length$ -- 4
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 152
+type$ -- 184
 warning$ -- 0
-while$ -- 67
-width$ -- 23
-write$ -- 258
-(There were 9 warnings)
+while$ -- 80
+width$ -- 27
+write$ -- 308
+(There were 8 warnings)

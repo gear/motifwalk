@@ -41,6 +41,14 @@ Shaosheng Cao, Wei Lu, and Qiongkai Xu.
 \newblock In {\em Proceedings of the 24th ACM International on Conference on
   Information and Knowledge Management}, pages 891--900. ACM, 2015.
 
+\bibitem[\protect\citeauthoryear{Defferrard \bgroup \em et al.\egroup
+  }{2016}]{defferrard2016convolutional}
+Micha{\"e}l Defferrard, Xavier Bresson, and Pierre Vandergheynst.
+\newblock Convolutional neural networks on graphs with fast localized spectral
+  filtering.
+\newblock In {\em Advances in Neural Information Processing Systems}, pages
+  3837--3845, 2016.
+
 \bibitem[\protect\citeauthoryear{Grover and Leskovec}{2016}]{node2vec}
 Aditya Grover and Jure Leskovec.
 \newblock node2vec: Scalable feature learning for networks.
@@ -61,6 +69,16 @@ Marcus Kaiser and Claus~C Hilgetag.
 \newblock Nonoptimal component placement, but short processing paths, due to
   long-distance projections in neural systems.
 \newblock {\em PLoS Comput Biol}, 2(7):e95, 2006.
+
+\bibitem[\protect\citeauthoryear{Kipf and Welling}{2016a}]{gcn}
+Thomas~N Kipf and Max Welling.
+\newblock Semi-supervised classification with graph convolutional networks.
+\newblock {\em arXiv preprint arXiv:1609.02907}, 2016.
+
+\bibitem[\protect\citeauthoryear{Kipf and Welling}{2016b}]{kipf2016variational}
+Thomas~N Kipf and Max Welling.
+\newblock Variational graph auto-encoders.
+\newblock {\em arXiv preprint arXiv:1611.07308}, 2016.
 
 \bibitem[\protect\citeauthoryear{Mangan and Alon}{2003}]{mangan2003structure}
 Shmoolik Mangan and Uri Alon.
@@ -92,6 +110,14 @@ Bryan Perozzi, Rami Al-Rfou, and Steven Skiena.
 \newblock Deepwalk: Online learning of social representations.
 \newblock In {\em Proceedings of the 20th ACM SIGKDD international conference
   on Knowledge discovery and data mining}, pages 701--710. ACM, 2014.
+
+\bibitem[\protect\citeauthoryear{Shuman \bgroup \em et al.\egroup
+  }{2013}]{shuman2013emerging}
+David~I Shuman, Sunil~K Narang, Pascal Frossard, Antonio Ortega, and Pierre
+  Vandergheynst.
+\newblock The emerging field of signal processing on graphs: Extending
+  high-dimensional data analysis to networks and other irregular domains.
+\newblock {\em IEEE Signal Processing Magazine}, 30(3):83--98, 2013.
 
 \bibitem[\protect\citeauthoryear{Tang \bgroup \em et al.\egroup
   }{2012}]{youtube}

@@ -16,27 +16,8 @@
 \usepackage{times}
 
 % the following package is optional:
-%\usepackage{latexsym} 
+%\usepackage{latexsym}
 
-% Following comment is from ijcai97-submit.tex:
-% The preparation of these files was supported by Schlumberger Palo Alto
-% Research, AT\&T Bell Laboratories, and Morgan Kaufmann Publishers.
-% Shirley Jowell, of Morgan Kaufmann Publishers, and Peter F.
-% Patel-Schneider, of AT\&T Bell Laboratories collaborated on their
-% preparation.
-
-% These instructions can be modified and used in other conferences as long
-% as credit to the authors and supporting agencies is retained, this notice
-% is not changed, and further modification or reuse is not restricted.
-% Neither Shirley Jowell nor Peter F. Patel-Schneider can be listed as
-% contacts for providing assistance without their prior permission.
-
-% To use for other conferences, change references to files and the
-% conference appropriate and use other authors, contacts, publishers, and
-% organizations.
-% Also change the deadline and address for returning papers and the length and
-% page charge instructions.
-% Put where the files are available in the appropriate places.
 
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}[section]
@@ -173,14 +154,16 @@ The convolution on a graph $G$ of the coefficient set $g_{\theta}$
 
 $$ g_{\theta} \ast x = U g_{\theta} U^{\top} x$$
 
-where $L = U \lambda U^{T}$. U is the Fourier basis
-and the triangle thing is the frequencies of the
-graph. The estimation of a signal input through
-a filter $g$ on a graph is essential to graph
-convolution as it affects performance and computational
-costs. The results from \cite{gcn} showed that
-for highly irregular graph, the renormalization
-trick worked particularly well in graph nodes labeling.
+where $L = U \Lambda U^{T}$, $U$ is the Fourier basis
+and $\Lambda$ is called the frequencies of the graph. 
+Graph convolution has been shown effective in processing
+graph-structured data, and also argued to be the generalization
+of convolutional networks \cite{shuman2013emerging,defferrard2016convolutional,gcn}.
+\citeauthor{kipf2016variational} applied the idea of graph convolution
+into the graph embedding task by adding graph convolution layers into a
+variational auto-encoder. 
+for highly irregular graph, the \emph{renormalization
+trick} worked particularly well in graph nodes labeling.
 The neural network architecture is depicted in figure 2.
 Intiutively, this nn architecture shows graph
 
