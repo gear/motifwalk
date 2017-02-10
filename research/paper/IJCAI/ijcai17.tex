@@ -12,6 +12,7 @@
 \usepackage{ijcai17}
 \usepackage{amsthm}
 \usepackage{amssymb}
+\usepackage{amsmath}
 % Use the postscript times font!
 \usepackage{times}
 
@@ -125,21 +126,24 @@ on graph data can yield possitive improvements.
 
 \section{Methods}
 
-In this section, we present the detail of our method. Firstly,
-we propose the use of motif co-occurence matrix and its Fourier basis.
-Secondly, we present the graph convolutional architecture. Lastly, the
-detail of each motif graph convolutional network architecture is
-presented for each classification task.
+In this section, we present the detail of our methods. Firstly,
+we propose the basis for the network motif selection from a network.
+Secondly, we present two approaches employing motif patterns to
+learn graph embeddings: \emph{motifwalk} and \emph{m-gcn}.
 
 \subsection{Motif laplacian}
 
-Present laplacian and power of laplacian of graph.
-Present motif types and laplacian for each type.
+The formal definition of the motif co-occurrence matrix for a
+motif $\mathcal{m}$ on an unweighted, directed graph $G$ is given by:
+$$M_{i,j} = \sum_{(v, \chi_{\mathcal{A}}), v \in \mathcal{V}_G}$$
+
+Present laplacian and power of laplacian of graph.  Present motif 
+types and laplacian for each type.
 Algorithms and estimation techniques. Discuss about
 the change in maximum eigenvalue due to the weighted 
 motif laplacian.
 
-\subsection{Biased random walk}
+\subsection{Biased random walk - motifwalk}
 
 Present the original motifwalk model.
 
@@ -169,23 +173,30 @@ y = g_\theta (U \Lambda U^\top) x = U (g_\theta(\Lambda) U^\top)x
 
 Computing equation \ref{eq:1} is computationally expensive
 due to the matrix multiplication and eigenvector decomposition operations.
-Therefore, fast estimation methods using Chebyshev polynomial was suggested
+Therefore, fast estimation methods such as Chebyshev polynomial was suggested
 in \cite{hammond2011wavelets}. Based on the further linear approximation
-of equation \ref{eq:1} proposed by \citeauthor{gcn}, we propose our motif
-convolution model as:
-
+proposed by \citeauthor{gcn}, we propose our two layers motif convolutional network
+model as:
+\begin{equation} \label{eq:2}
+    \begin{aligned}
+    Z_{\mbox{forward}} &= f(X,A,M) \\
+    &= \mbox{softmax}(\hat{M} \mbox{ReLU}(\hat{A}XW^{(0)})W^{(1)}),
+    \end{aligned}
+\end{equation}
+where $A$ and $M$ is a binary adjacency matrix and motif co-occurrence
+matrix respectively; $\hat{A}$ and $\hat{M}$ are constructed by the
+\emph{renormalization trick} as suggested in \cite{gcn}; $X$ contains
+the feature vectors for each graph node; $W^{(0)}$ and $W^{(1)}$ are
+learnable variables. With the backpropagation learning algorithm, the
+weight of layer $k$ is updated as follow: 
 \begin{equation}
-\label{eq:2}
-Z = f(X,A,M) = \mbox{softmax}(A ReLU(AXW^{(0)})
+\label{eq:3}
+\frac{\partial E}{\partial W^{(k)}_{i,j}} = \sum^S_{s=1} [x]^\top \frac{\partial E}{\partial y_{k,j}}
 \end{equation}
 
-for highly irregular graph, the \emph{renormalization
-trick} worked particularly well in graph nodes labeling.
-The neural network architecture is depicted in figure 2.
-Intiutively, this nn architecture shows graph
-
-
 \section{Experiments}
+
+
 
 \subsection{Datasets and observations}
 
