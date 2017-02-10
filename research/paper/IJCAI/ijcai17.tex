@@ -109,7 +109,8 @@ are called \emph{network motif} when they are statistically significant.
 \end{definition}
 
 Also refered as higher-order organization by \citeauthor{juremotif}, network motifs
-are believed to represent the underlying mechanism of a complex system \cite{netmotif,alon2006introduction,mangan2003structure}. 
+are believed to represent the underlying mechanism of a complex system 
+\cite{netmotif,alon2006introduction,mangan2003structure}. 
 For instance, the directional bi-fan motif TODO: figure
 and its simplified undirectional version TODO: figure are crucial in a citation network. 
 Beside having a statistical significance, bi-fan motif is also intuitively 
@@ -134,7 +135,9 @@ presented for each classification task.
 
 Present laplacian and power of laplacian of graph.
 Present motif types and laplacian for each type.
-Algorithms and estimation techniques.
+Algorithms and estimation techniques. Discuss about
+the change in maximum eigenvalue due to the weighted 
+motif laplacian.
 
 \subsection{Biased random walk}
 
@@ -142,38 +145,45 @@ Present the original motifwalk model.
 
 \subsection{Motif convolutional architecture}
 
-Present graph convolutional and estimation technique.
-Present renormalization trick and GCN.
-Present using motif types between graph layers.
-
-Graph convolution is a signal processing technique in which
+In this section we propose our motif convolutional deep
+neural network architecture for semi-supervised graph labeling
+tasks. Graph convolution is a signal processing technique in which
 a network of signals reside on nodes (e.g. sensor network) is
-processed in a spectral domain defined on the graph structure.
-The convolution on a graph $G$ of the coefficient set $g_{\theta}$ 
+processed in the graph spectral domain defined on the graph structure.
+The convolution on a graph $G$ of a function of the graph Laplacian $g_{\theta}$ 
 (also called a filter or a kernel) and a signal $x$ is defined as:
-
-$$ g_{\theta} \ast x = U g_{\theta} U^{\top} x$$
-
-where $L = U \Lambda U^{T}$, $U$ is the Fourier basis
+$$g_{\theta} \ast x = U g_{\theta} U^{\top} x,$$
+where $L = U \Lambda U^\top$, $U$ is the Fourier basis
 and $\Lambda$ is called the frequencies of the graph. 
 Graph convolution has been shown effective in processing
 graph-structured data, and also argued to be the generalization
 of convolutional networks \cite{shuman2013emerging,defferrard2016convolutional,gcn}.
-\citeauthor{kipf2016variational} applied the idea of graph convolution
-into the graph embedding task by adding graph convolution layers into a
-variational auto-encoder. 
+In practice, given a graph where each node has a feature vector,
+we can treat the feature vector of the graph as signals. The output $y$
+of these "signals" filtered by $g_\theta$ on the graph is given by
+the graph convolution and deconvolution operations: 
+\begin{equation}
+\label{eq:1}
+y = g_\theta (U \Lambda U^\top) x = U (g_\theta(\Lambda) U^\top)x
+\end{equation}
+
+Computing equation \ref{eq:1} is computationally expensive
+due to the matrix multiplication and eigenvector decomposition operations.
+Therefore, fast estimation methods using Chebyshev polynomial was suggested
+in \cite{hammond2011wavelets}. Based on the further linear approximation
+of equation \ref{eq:1} proposed by \citeauthor{gcn}, we propose our motif
+convolution model as:
+
+\begin{equation}
+\label{eq:2}
+Z = f(X,A,M) = \mbox{softmax}(A ReLU(AXW^{(0)})
+\end{equation}
+
 for highly irregular graph, the \emph{renormalization
 trick} worked particularly well in graph nodes labeling.
 The neural network architecture is depicted in figure 2.
 Intiutively, this nn architecture shows graph
 
-\subsection{Unsupervised graph motif auto-encoder}
-
-Architecture for auto-encoder.
-
-\subsection{Semi-supervised node labeling}
-
-Architecture for node labeling.
 
 \section{Experiments}
 
