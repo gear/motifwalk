@@ -55,6 +55,13 @@ Aditya Grover and Jure Leskovec.
 \newblock In {\em Proceedings of the 22nd ACM SIGKDD International Conference
   on Knowledge Discovery and Data Mining}, 2016.
 
+\bibitem[\protect\citeauthoryear{Hammond \bgroup \em et al.\egroup
+  }{2011}]{hammond2011wavelets}
+David~K Hammond, Pierre Vandergheynst, and R{\'e}mi Gribonval.
+\newblock Wavelets on graphs via spectral graph theory.
+\newblock {\em Applied and Computational Harmonic Analysis}, 30(2):129--150,
+  2011.
+
 \bibitem[\protect\citeauthoryear{Honey \bgroup \em et al.\egroup
   }{2007}]{honey2007network}
 Christopher~J Honey, Rolf K{\"o}tter, Michael Breakspear, and Olaf Sporns.
@@ -70,15 +77,10 @@ Marcus Kaiser and Claus~C Hilgetag.
   long-distance projections in neural systems.
 \newblock {\em PLoS Comput Biol}, 2(7):e95, 2006.
 
-\bibitem[\protect\citeauthoryear{Kipf and Welling}{2016a}]{gcn}
+\bibitem[\protect\citeauthoryear{Kipf and Welling}{2016}]{gcn}
 Thomas~N Kipf and Max Welling.
 \newblock Semi-supervised classification with graph convolutional networks.
 \newblock {\em arXiv preprint arXiv:1609.02907}, 2016.
-
-\bibitem[\protect\citeauthoryear{Kipf and Welling}{2016b}]{kipf2016variational}
-Thomas~N Kipf and Max Welling.
-\newblock Variational graph auto-encoders.
-\newblock {\em arXiv preprint arXiv:1611.07308}, 2016.
 
 \bibitem[\protect\citeauthoryear{Mangan and Alon}{2003}]{mangan2003structure}
 Shmoolik Mangan and Uri Alon.
