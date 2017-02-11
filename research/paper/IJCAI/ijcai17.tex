@@ -163,6 +163,11 @@ z\mbox{-score} = \frac{N_\mathbf{m}(G)-N_\mathbf{m}(G_{\scalebox{0.75}{random}})
 where $N_\mathbf{m}(G)$ is the count of motif $\mathbf{m}$ in the empirical
 network; $N_\mathbf{m}(G_{\scalebox{0.75}{random}})$ is the mean of the
 null model; and $\sigma_\mathbf{m}(G_{\scalebox{0.75}{random}})$ is the variance.
+The $z\mbox{-score}$'s values can range from $-\inf$ to $+\inf$. In practice,
+the most simple motifs (figure \ref{fig:motif3}-m2,3,4) often have the highest
+frequencies and negative $z\mbox{-score}$. We ignored such motifs in our analysis.
+We select motif which has the highest positive $z\mbox{-score}$ and the highest frequency
+as our motif of interest to construct the motif co-occurrence matrix.
 
 The formal definition of the motif co-occurrence matrix for a
 motif $\mathbf{m}$ on an unweighted, directed graph $G$ is given by:
@@ -174,13 +179,24 @@ counted toward the motif co-occurrence matrix $M$. Otherwise, only nodes in
 the anchor set will be counted. Figure \ref{fig:anchor} illustrates
 the bi-fan motif and an anchor set.
 
-TODO: Present laplacian and power of laplacian of graph. Present motif
-types and laplacian for each type.
-Algorithms and estimation techniques. Discuss about
+TODO: Algorithms and estimation techniques. Discuss about
 the change in maximum eigenvalue due to the weighted
 motif laplacian.
 
 \subsection{Biased Random Walk}
+
+Previous skipgram-based graph embedding models employ random
+walks for graph context generation. To improve the embedding results,
+structure-aware context generation methods were proposed in \cite{line,node2vec}.
+However, the limitation of \emph{LINE} lies at the fact that it only
+consider the second-order proximity, and \emph{node2vec} requires
+the costly cross-validation search for its hyperparameters $p$ and $q$.
+To solve the above mentioned problems, we propose a biased random walk
+algorithm for graph context generation which can be considered the 
+generalization of \emph{LINE} and \emph{deepwalk}. Since our algorithm
+decides the walk pattern by the most significant network motif before 
+performing context generation, we achieve the simplicity of \emph{deepwalk}
+while having the structure-aware context as of \emph{LINE} and \emph{deepwalk}.
 
 Present the original motifwalk model.
 
