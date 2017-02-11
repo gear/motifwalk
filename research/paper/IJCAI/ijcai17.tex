@@ -15,6 +15,7 @@
 \usepackage{amsmath}
 % Use the postscript times font!
 \usepackage{times}
+\usepackage{graphicx}
 
 % the following package is optional:
 %\usepackage{latexsym}
@@ -149,9 +150,19 @@ network motifs in network analysis. In this section, we present
 the metric for measuring network motif significance and the definition
 of motif laplacian.
 
-In order to test the significant of a network motif on the given
-network, we use Z-score as our metric. Given a network which structure
-can be described as a graph $G(V,E)$,
+In order to measure the importance of a network motif, we compare
+the given network against a null model. The null model of an empirical network 
+is an ensemble of randomly generated networks having the same number of nodes and
+edges as the network. For small networks with less than 10,000 edges, we
+generated 100 random networks as the ensemble of the null model. On the other
+hand, we generated 10 random networks for the null model of larger networks.
+The $z\mbox{-score}$ is given by:
+\begin{equation*}
+z\mbox{-score} = \frac{N_\mathbf{m}(G)-N_\mathbf{m}(G_{\scalebox{0.75}{random}})}{\sigma_\mathbf{m}(G_{\scalebox{0.75}{random}})}
+\end{equation*}
+where $N_\mathbf{m}(G)$ is the count of motif $\mathbf{m}$ in the empirical
+network; $N_\mathbf{m}(G_{\scalebox{0.75}{random}})$ is the mean of the
+null model; and $\sigma_\mathbf{m}(G_{\scalebox{0.75}{random}})$ is the variance.
 
 The formal definition of the motif co-occurrence matrix for a
 motif $\mathbf{m}$ on an unweighted, directed graph $G$ is given by:
@@ -163,10 +174,10 @@ counted toward the motif co-occurrence matrix $M$. Otherwise, only nodes in
 the anchor set will be counted. Figure \ref{fig:anchor} illustrates
 the bi-fan motif and an anchor set.
 
-TODO: Present laplacian and power of laplacian of graph. Present motif 
+TODO: Present laplacian and power of laplacian of graph. Present motif
 types and laplacian for each type.
 Algorithms and estimation techniques. Discuss about
-the change in maximum eigenvalue due to the weighted 
+the change in maximum eigenvalue due to the weighted
 motif laplacian.
 
 \subsection{Biased Random Walk}
