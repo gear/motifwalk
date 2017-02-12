@@ -15,7 +15,8 @@
 \usepackage{amsmath}
 % Use the postscript times font!
 \usepackage{times}
-\usepackage{graphicx}
+\usepackage{graphicx} 
+\usepackage[ruled,vlined]{algorithm2e}
 
 % the following package is optional:
 %\usepackage{latexsym}
@@ -179,6 +180,46 @@ counted toward the motif co-occurrence matrix $M$. Otherwise, only nodes in
 the anchor set will be counted. Figure \ref{fig:anchor} illustrates
 the bi-fan motif and an anchor set.
 
+Generally, in this paper we employ the motif co-occurrence matrix
+as: 1. An adjacency matrix describing a motif graph; 2. An adjacency
+matrix from which we computes the Fourier basis for the graph convolution
+operation. The first approach is straight forward as we want to generate
+a network context where nodes occur in the motif pattern. For such reason,
+we treat the motif co-occurence matrix as a binary matrix describing a new
+network. On the other hand, the graph convolution approximation methods 
+proposed in \cite{gcn,defferrard2016convolutional} only apply to symmetric 
+binary matrices. In our model, the motif co-occurence matrix is a symmetric 
+weighted matrix. The eigenvalue decomposition of such matrix is given by:
+\begin{equation} \label{eq:eigm}
+\mathcal{L}_{\mathbf{m}} = U_{\mathbf{m}} \Lambda_{\mathbf{m}} U^{\top}_{\mathbf{m}}
+\end{equation}
+where $\mathcal{L}_{\mathbf{m}} = D_{\mathbf{m}} - A_{\mathbf{m}}$; $U_{\mathbf{m}}$ is the
+orthogonal basis (also called the Fourier basis in graph convolutional context);
+and $\Lambda_{\mathbf{m}} = diag(\lambda_{\mathbf{m}})$.
+
+\begin{algorithm}[h] \label{al:madj}
+\KwData{Graph $G = (V,E)$}
+\KwIn{binary, $\mathbf{m}$, $\mathcal{A}$}
+\KwOut{context}
+\Begin{
+    context $\leftarrow$ [~]; \\
+    $V$ $\leftarrow$ G.nodes(); \\
+    nodes $\leftarrow$ Shuffle($V$); \\
+    \For{node $\in$ nodes} {
+        walks $\leftarrow$ [~]; \\
+        \For{i=0; i<nwalk; ++i} {
+            walks += RandomWalk(graph=$G$,start=node, len=length)
+        }
+        \For{i=0; i<nwalk; ++i} {
+            walks += RandomWalk(graph=$G_{\mathbf{m}}$start=node, len=length)
+        }
+        context += walks
+    }
+\KwRet{context}
+}
+\caption{Motif co-occurrence matrix generation}
+\end{algorithm}
+
 TODO: Algorithms and estimation techniques. Discuss about
 the change in maximum eigenvalue due to the weighted
 motif laplacian.
@@ -189,16 +230,47 @@ Previous skipgram-based graph embedding models employ random
 walks for graph context generation. To improve the embedding results,
 structure-aware context generation methods were proposed in \cite{line,node2vec}.
 However, the limitation of \emph{LINE} lies at the fact that it only
-consider the second-order proximity, and \emph{node2vec} requires
+consider the second-order proximity (bi-fan motif),  \emph{node2vec} requires
 the costly cross-validation search for its hyperparameters $p$ and $q$.
 To solve the above mentioned problems, we propose a biased random walk
 algorithm for graph context generation which can be considered the 
 generalization of \emph{LINE} and \emph{deepwalk}. Since our algorithm
-decides the walk pattern by the most significant network motif before 
+decides the walk pattern supported by the most significant network motif before 
 performing context generation, we achieve the simplicity of \emph{deepwalk}
-while having the structure-aware context as of \emph{LINE} and \emph{deepwalk}.
+while having the structure-aware context as of \emph{LINE} and \emph{node2vec}.
 
-Present the original motifwalk model.
+Our \emph{motifwalk} algorithm has two steps: motif adjacency matrix
+construction and context generation. Firstly, we construct a binary
+motif co-occurence matrix from the given network. We select the motif
+pattern as described in the previous section. Since the constructed matrix 
+accounts the co-occurrence of network node pairs in a motif, it is a symetric
+matrix. Secondly, after having a second adjacency matrix describing the
+motif structure, we run random walks on this new network for context generation. 
+The obtained context is used jointly with random walks context generated with 
+the original network to train an embedding skipgram model. Algorithm \ref{al:madj}
+and algorithm \ref{al:cgen} describle the \emph{motifwalk} algorithm.
+\begin{algorithm}[h] \label{al:cgen}
+\KwData{Graph $G = (V,E)$, Motif Graph $G_{\mathbf{m}} = (V,E)$}
+\KwIn{length, nwalk, nmwalk}
+\KwOut{context}
+\Begin{
+    context $\leftarrow$ [~]; \\
+    $V$ $\leftarrow$ G.nodes(); \\
+    nodes $\leftarrow$ Shuffle($V$); \\
+    \For{node $\in$ nodes} {
+        walks $\leftarrow$ [~]; \\
+        \For{i=0; i<nwalk; ++i} {
+            walks += RandomWalk(graph=$G$,start=node, len=length)
+        }
+        \For{i=0; i<nwalk; ++i} {
+            walks += RandomWalk(graph=$G_{\mathbf{m}}$start=node, len=length)
+        }
+        context += walks
+    }
+\KwRet{context}
+}
+\caption{Motif-aware graph context generation}
+\end{algorithm}
 
 \subsection{Motif Convolutional Architecture}
 
@@ -232,7 +304,7 @@ proposed by \citeauthor{gcn}, we propose our two layers motif convolutional netw
 model as:
 \begin{equation} \label{eq:2}
     \begin{aligned}
-    Z_{\mbox{forward}} &= f(X,A,M) \\
+    Z_{\scalebox{0.75}{forward}} &= f(X,A,M) \\
     &= \mbox{softmax}(\hat{M} \mbox{ReLU}(\hat{A}XW^{(0)})W^{(1)}),
     \end{aligned}
 \end{equation}
@@ -254,8 +326,6 @@ weight of layer $k$ is updated as follow:
 \subsection{Datasets and observations}
 
 \subsection{Motif significance}
-
-\subsection{Architectures}
 
 \section{Results}
 
