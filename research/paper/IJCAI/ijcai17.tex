@@ -195,7 +195,30 @@ weighted matrix. The eigenvalue decomposition of such matrix is given by:
 \end{equation}
 where $\mathcal{L}_{\mathbf{m}} = D_{\mathbf{m}} - A_{\mathbf{m}}$; $U_{\mathbf{m}}$ is the
 orthogonal basis (also called the Fourier basis in graph convolutional context);
-and $\Lambda_{\mathbf{m}} = diag(\lambda_{\mathbf{m}})$.
+and $\Lambda_{\mathbf{m}} = diag(\lambda_{\mathbf{m}})$. 
+
+The convolution on a graph $G$ of a function of the graph 
+Laplacian $g_{\theta}$ (also called a filter or a kernel) 
+and a signal $x$ is defined as:
+$$g_{\theta} \ast x = U g_{\theta} U^{\top} x,$$
+where $L = U \Lambda U^\top$, $U$ is the Fourier basis
+and $\Lambda$ is called the frequencies of the graph. 
+Graph convolution has been shown effective in processing
+graph-structured data, and also argued to be the generalization
+of convolutional networks \cite{shuman2013emerging,defferrard2016convolutional,gcn}.
+In practice, given a graph where each node has a feature vector,
+we can treat the feature vector of the graph as signals. The output $y$
+of these "signals" filtered by $g_\theta$ on the graph is given by
+the graph convolution and deconvolution operations: 
+\begin{equation}
+\label{eq:1}
+y = g_\theta (U \Lambda U^\top) x = U (g_\theta(\Lambda) U^\top)x
+\end{equation}
+
+Computing equation \ref{eq:1} is computationally expensive
+due to the matrix multiplication and eigenvector decomposition operations.
+Therefore, fast estimation methods such as Chebyshev polynomial was suggested
+in \cite{hammond2011wavelets}.
 
 \begin{algorithm}[h] \label{al:madj}
 \KwData{Graph $G = (V,E)$}
@@ -279,27 +302,7 @@ neural network architecture for semi-supervised graph labeling
 tasks. Graph convolution is a signal processing technique in which
 a network of signals reside on nodes (e.g. sensor network) is
 processed in the graph spectral domain defined on the graph structure.
-The convolution on a graph $G$ of a function of the graph Laplacian $g_{\theta}$ 
-(also called a filter or a kernel) and a signal $x$ is defined as:
-$$g_{\theta} \ast x = U g_{\theta} U^{\top} x,$$
-where $L = U \Lambda U^\top$, $U$ is the Fourier basis
-and $\Lambda$ is called the frequencies of the graph. 
-Graph convolution has been shown effective in processing
-graph-structured data, and also argued to be the generalization
-of convolutional networks \cite{shuman2013emerging,defferrard2016convolutional,gcn}.
-In practice, given a graph where each node has a feature vector,
-we can treat the feature vector of the graph as signals. The output $y$
-of these "signals" filtered by $g_\theta$ on the graph is given by
-the graph convolution and deconvolution operations: 
-\begin{equation}
-\label{eq:1}
-y = g_\theta (U \Lambda U^\top) x = U (g_\theta(\Lambda) U^\top)x
-\end{equation}
-
-Computing equation \ref{eq:1} is computationally expensive
-due to the matrix multiplication and eigenvector decomposition operations.
-Therefore, fast estimation methods such as Chebyshev polynomial was suggested
-in \cite{hammond2011wavelets}. Based on the further linear approximation
+ Based on the further linear approximation
 proposed by \citeauthor{gcn}, we propose our two layers motif convolutional network
 model as:
 \begin{equation} \label{eq:2}
