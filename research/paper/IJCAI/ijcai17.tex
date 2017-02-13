@@ -17,6 +17,7 @@
 \usepackage{times}
 \usepackage{graphicx} 
 \usepackage[ruled,vlined]{algorithm2e}
+\usepackage{multicol}
 
 % the following package is optional:
 %\usepackage{latexsym}
@@ -314,7 +315,7 @@ learns graph embedding through an optimization process. Since there is two
 network contexts generated in our algorithm, the objective function is given by:
 \begin{equation} \label{eq:mloss}
 \begin{aligned}
-&\mathcal{O} = \argmax_{W^{emb}}\ (\gamma \mathcal{L}_{\scalebox{0.75}{random walk}} + (1-\gamma) \mathcal{L}_{\scalebox{0.75}{motif walk}}) \\
+&\mathcal{O} = \argmax_{W^{\mbox{emb}}}\ (\gamma \mathcal{L}_{\scalebox{0.75}{random walk}} + (1-\gamma) \mathcal{L}_{\scalebox{0.75}{motif walk}}) \\
 \end{aligned}
 \end{equation}
 where $\mathcal{L}_{\scalebox{0.75}{random walk}}$ and $\mathcal{L}_{\scalebox{0.75}{motif walk}})$
@@ -369,20 +370,91 @@ softmax cross entropy loss, the weight of layer $k$ is updated as follow:
 
 \section{Experiments}
 
+\subsection{Datasets}
 
+To compare \emph{motifwalk} performance with other unsupervised graph
+embedding models, we have choosen the node labeling task on various
+type of networks (with ground-truth node labels). In this paper, we
+compare the performance of \emph{motifwalk} to \emph{Spectral Clustering}, 
+\emph{deepwalk} \cite{deepwalk}, \emph{node2vec} \cite{node2vec}. Table \ref{t:ungraph}
+gives the networks' statistic. The second model \emph{m-gcn} is a semi-supervised model for node
+lableing task. We present the comparision of our model to \emph{planetoid} and
+\emph{gcn} under the same experiemental setting in \cite{gcn}. Table \ref{t:segraph}
+shows details of each dataset.
 
-\subsection{Datasets and observations}
+\begin{table}
+\centering
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{c r r r}
+\textsc{Dataset} & \textsc{\#Classes} & \textsc{\#Nodes} & \textsc{\#Edges} \\
+\hline \\
+\textsc{BlogCatalog} & 39 & 10,312 & 333,983 \\
+\textsc{Citeseer} & 6 & 3,327 & 4,732 \\
+\textsc{PPI} & 50 & 3,890 & 76,584 \\ 
+\end{tabular}%
+}
+\caption{Datasets for unsupervised embeddings}
+\label{t:ungraph}
+\end{table}
+
+\begin{table}
+\centering
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{c r r r r}
+\textsc{Dataset} & \textsc{\#Classes} & \textsc{\#Nodes} & \textsc{\#Edges} & \textsc{\#Features} \\
+\hline \\
+\textsc{Citeseer} & 39 & 10,312 & 333,983 & 3,703 \\
+\textsc{Cora} & 6 & 2,708 & 4,732 & 1,433 \\
+\textsc{Pubmed} & 3 & 19,717 & 44,338 & 76,584 \\ 
+\textsc{NELL} & 210 & 65,755 & 266,144 & 5,414 \\
+\end{tabular}%
+}
+\caption{Datasets for semi-supervised embeddings}
+\label{t:ungraph}
+\end{table}
+
+\paragraph{Blogcatalog3} is a social network of bloggers. 
 
 \subsection{Motif significance}
 
+For each of the networks in experiment, we computes the z-scores for
+size-3 and size-4 directed motifs and report the motif significance
+in figure \ref{fig:sigm3} and \ref{fig:sigm4}. Based on these results, 
+we select the most significant motif of each network for our algorithms. 
+
+\begin{figure*} \label{fig:sigm3}
+    \centering
+    \includegraphics[draft,width=\linewidth]{foo_2col}
+    \caption{Significant graph for size-3 motifs}
+\end{figure*}
+
+For each of the networks in experiment, we computes the z-scores for
+size-3 and size-4 directed motifs and report the motif significance
+in figure \ref{fig:sigm3} and \ref{fig:sigm4}. Based on these results, 
+we select the most significant motif of each network for our algorithms. 
+
+
 \section{Results}
 
+For each of the networks in experiment, we computes the z-scores for
+size-3 and size-4 directed motifs and report the motif significance
+in figure \ref{fig:sigm3} and \ref{fig:sigm4}. Based on these results, 
+we select the most significant motif of each network for our algorithms. 
+For each of the networks in experiment, we computes the z-scores for
+size-3 and size-4 directed motifs and report the motif significance
+in figure \ref{fig:sigm3} and \ref{fig:sigm4}. Based on these results, 
+we select the most significant motif of each network for our algorithms. 
 \subsection{Unsupervised}
 
 Traditional task on blogcatalog and others.
 Link prediction.
 t-SNE.
 
+\begin{figure*} \label{fig:sigm4}
+    \centering
+    \includegraphics[draft,width=\linewidth]{foo_2col}
+    \caption{Significant graph for size-4 motifs}
+\end{figure*}
 \subsection{Semi-supervised}
 
 Task on featured networks.
