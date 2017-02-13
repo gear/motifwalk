@@ -36,23 +36,24 @@
 \begin{abstract}
   In this paper, we propose two motif-aware approaches for the unsupervised 
   and semi-supervised graph embedding task. Our first model applies the most
-  significant motif pattern on a graph as a guilding pattern for random walks.
+  significant motif pattern of a graph as the guilding pattern for random walks.
   We then use a skipgram model with noise contrastive estimation to learn the
   graph embedding from generated random walk context. The second model employs the 
-  higher-order organization (i.e. motifs organization) of complex networks, 
-  and injects the higher-order connectivity patterns into each layer in a deep 
-  graph convolutional networks. We demonstrate the effectiveness of our 
-  motif-aware approaches on node labels classification, link prediction, and t-SNE 
-  visuallization.
+  graph convolutional network model on motif Laplacian matrices to inject
+  the network structure information into the convolutional neural network.
+  Both of our models employ utilize the higher-order organization 
+  (i.e. motifs organization) of complex networks. We demonstrate the effectiveness of our 
+  in comparision with state of the art network embedding and node labeling
+  algorithms.
 \end{abstract}
 
 \section{Introduction}
 
 \subsection{Complex network and machine learning}
 
-Network modeling have been an essential tool for a wide
+Network modelings have been an essential tool for a wide
 range of scientific fields \cite{physicnet,molecule,youtube,motifblockmilo,juremotif}.
-The network science view usually reveals the underlying structure 
+The network science view reveals the underlying structure 
 of a complex system. Based on the system's network structure, 
 scientists can make predictions and explaination
 about the system's behavior. For example, in biology, the
@@ -61,52 +62,61 @@ that the component arrangement of a neural system is optimized
 for short processing paths rather than wiring lengths \cite{kaiser2006nonoptimal}. 
 Similarly, social networks analysis provides communities structures
 as well as social interaction patterns \cite{west2014exploiting,barabasi2014network}. 
-However, along with the information explosion, the large graph-structured
-data poses a great challenge for traditional network analysis methods
-in term of scalability and complexity. To deal with such challendges,
+However, along with the information explosion, analysing large network-structured
+datasets poses a great challenge for traditional network analysis methods
+in term of scalability and complexity. To deal with such challendge,
 one promising approach is to apply machine learning methods (especially
-deep learning) methods to network problems.
+deep learning) to network problems.
 
 Bridging the gap between network science and machine learning
 is also a challenging task. Due to the irregularity in network and 
 graph-structured data, it is desirable to have a \emph{meaningful}
-and structural network representation for machine learning application. 
-Traditionally, vector representation can be obtained via graph spectral methods.
-However, spectral methods are shown to be unscalable without estimation
-methods TODO: find theoretical citation \cite{deepwalk,node2vec}.
+network representation for machine learning applications. 
+Traditionally, vector representation can be obtained via graph factorization methods.
+However, matrix factorization methods such as Spectral Clustering are 
+shown to be unscalable due to the complexity of the algorithms \cite{deepwalk,line,node2vec}.
 Recently, inspired by the skipgram model in natural language processing
 \cite{skipgram}, \citeauthor{deepwalk} propsed their scalable graph
 embedding algorithm named DeepWalk. Their results node classification
 proved the effectiveness of their algorithm in learning a lower dimensionality 
 representation of a complex network. Subsequence works to DeepWalk
 further improved node classification accuracy by modifying graph 
-context generation process \cite{line,grarep,node2vec}. On the other
-hand, more direct (and more effective) approaches were proposed in
-\cite{planetoid,gcn}. Instead of learning the network representation
-using only network structure (e.g. adjacency matrix), \citeauthor{planetoid}
-proposed to injects the known labeling and node feature into the
-representation learning process. \citeauthor{gcn} further improved
-results from planetoid \cite{planetoid} by applying graph convolution
-technique in their deep network model. These aforementioned approaches 
-are similar in the sense that they all learn a latent representation 
+context generation process \cite{line,grarep,planetoid,node2vec}. 
+
+It is worthwhile to mention that \emph{planetoid}, proposed by \citeauthor{planetoid},
+works slightly different to other skipgram-based models. Instead of generating
+graph context only from the network structure, \emph{planetoid} samples
+nodes based on labels as well. Furthermore, \emph{planetoid} injects the network
+node's feature vectors for better embedding and node labeling results.
+Another similar model to \emph{planetoid} called Graph Convolutional Networks (GCN) 
+was proposed by \citeauthor{gcn}. GCN uses the graph convolutional
+operation as a transformation for feature vectors on a network. By stacking
+these convolutional operation into a neural network, the authors of
+GCN has been able to achieve remarkable node classification and link
+prediction results compared to the previous researches. Moreover, the
+running time for GCN was superior compared to other algorithms.
+
+These aforementioned approaches to graph embeddings
+are similar in the sense that they all learn latent representations
 of a complex network from data, then use this representation to solve 
-a network problem using various machine learning tools. 
+a network problem (e.g. link prediction, nodel labeling, communitiy detection)
+using various machine learning algorithms.
 
 \subsection{Motifs in complex network}
 
 There are three scale of network analysis: macroscopic, mesoscopic, 
-and microscopic. The macroscopic scale displays a network as a whole to
-study its robustness \cite{callaway2000network} or dynamics TODO: find citation \cite{barabasi2014network}.
+and microscopic. In the macroscopic scale, we consider a network as a whole to
+study its macro-properties such as robustness \cite{callaway2000network},
+or dynamics \cite{barabasi2014network}.
 In contrast, the microscopic scale studies the pair-wise interactions
-between nodes in a network which is specific to the given system
-TODO: find citation \cite{physicnet}. On the other hand, the mesoscopic
-scale is an intermediate in which we consider the network is a composition of
+between nodes in a network which is specific to the given system \cite{physicnet}. 
+In between macroscopic and microscopic, the mesoscopic scale considers the network is a composition of
 subgraphs. In many research, especially computational biology, the
 mesoscopic components are called \emph{motifs}, and it is common
-to think of them as building blocks for a complex system \cite{motifblockmilo}.
+to think of them as building blocks of a complex system \cite{motifblockmilo}.
 
 \begin{definition}{\emph{Network motif}}
-Given a graph $G = {V,E}$, define a subgraph $G' = {V', E'}$ with $V' \subseteq V$;
+Given a graph $G = (V,E)$, define a subgraph $G' = {V', E'}$ with $V' \subseteq V$;
 $E' \subset E$ s.t. $i,j \in V' \forall e_{ij} \in E'$ and $|V'| \ll |V|$. Recurring subgraphs
 are called \emph{network motif} when they are statistically significant.
 \end{definition}
@@ -114,11 +124,11 @@ are called \emph{network motif} when they are statistically significant.
 Also refered as higher-order organization by \citeauthor{juremotif}, network motifs
 are believed to represent the underlying mechanism of a complex system 
 \cite{netmotif,alon2006introduction,mangan2003structure}. 
-For instance, the directional bi-fan motif TODO: figure
-and its simplified undirectional version TODO: figure are crucial in a citation network. 
+For instance, the directional bi-fan motif (figure \ref{fig:m4})
+and its simplified undirectional version are crucial in a citation network. 
 Beside having a statistical significance, bi-fan motif is also intuitively 
-sensible in citation network as it represents the citation mechanism as an activity
-in a subgraph. The correlation of recurring subgraphs and system functionality has 
+sensible in citation network as it represents the citation mechanism. 
+The correlation of recurring subgraphs and system functionality has 
 been studied extensively in biological systems such as 
 transcription networks \cite{mangan2003structure} and brain 
 networks \cite{brainnetheuvel,honey2007network}. As networks motifs
@@ -170,15 +180,17 @@ frequencies and negative $z\mbox{-score}$. We ignored such motifs in our analysi
 We select motif which has the highest positive $z\mbox{-score}$ and the highest frequency
 as our motif of interest to construct the motif co-occurrence matrix.
 
-The formal definition of the motif co-occurrence matrix for a
-motif $\mathbf{m}$ on an unweighted, directed graph $G$ is given by:
+\begin{definition} \emph{Motif co-occurence matrix}
+Given a graph $G = (V,E)$, in which $v \in V$. The motif co-occurrence matrix
+is given by:
 $$M_{i,j} = \sum_{(v, \chi_{\mathcal{A}}(v)) \in \mathbf{m}} \mathbf{1}({i,j} \subset \chi_\mathcal{A}(v))$$
 In here, $\mathcal{A}$ represents the anchor set; $(v, \chi_{\mathcal{A}}(v))$ 
 represents pairs of node $v \in V_G$ and the other anchor nodes generated by $\chi_\mathcal{A}$.
 If the anchor node set $\mathcal{A}$ is empty, all motif co-occureence is
 counted toward the motif co-occurrence matrix $M$. Otherwise, only nodes in
 the anchor set will be counted. Figure \ref{fig:anchor} illustrates
-the bi-fan motif and an anchor set.
+the bi-fan motif and its anchor set.
+\end{definition}
 
 Generally, in this paper we employ the motif co-occurrence matrix
 as: 1. An adjacency matrix describing a motif graph; 2. An adjacency
@@ -222,29 +234,28 @@ in \cite{hammond2011wavelets}.
 
 \begin{algorithm}[h] \label{al:madj}
 \KwData{Graph $G = (V,E)$}
-\KwIn{binary, $\mathbf{m}$, $\mathcal{A}$}
-\KwOut{context}
+\KwIn{isBinary, $\mathbf{m}$, $\mathcal{A}$}
+\KwOut{$M^{\mathbf{m}}$}
 \Begin{
-    context $\leftarrow$ [~]; \\
+    diam $\leftarrow$ Diameter($\mathbf{m}$, $\mathcal{A}$); \\
     $V$ $\leftarrow$ G.nodes(); \\
-    nodes $\leftarrow$ Shuffle($V$); \\
     \For{node $\in$ nodes} {
-        walks $\leftarrow$ [~]; \\
-        \For{i=0; i<nwalk; ++i} {
-            walks += RandomWalk(graph=$G$,start=node, len=length)
+        $G'$ $\leftarrow$ induced graph from BFS(node, diam); \\
+        \For{otherNode $\in$ $G'$} {
+            \uIf{(node,otherNode) satisfies $\mathcal{A}$} {
+                $M_{\mbox{node,othernodes}}^{\mathbf{m}} = \mbox{count } \mathbf{m} \mbox{ in} G'$; \\
+            } \uElse {
+                continue; \\
+            }
         }
-        \For{i=0; i<nwalk; ++i} {
-            walks += RandomWalk(graph=$G_{\mathbf{m}}$start=node, len=length)
-        }
-        context += walks
     }
-\KwRet{context}
+    $M^{\mathbf{m}}$ = $M^{\mathbf{m}}$ / 2; \\
+\KwRet{$M^{\mathbf{m}}$}
 }
 \caption{Motif co-occurrence matrix generation}
 \end{algorithm}
 
-TODO: Algorithms and estimation techniques. Discuss about
-the change in maximum eigenvalue due to the weighted
+TODO: Discuss about the change in maximum eigenvalue due to the weighted
 motif laplacian.
 
 \subsection{Biased Random Walk}
@@ -299,7 +310,7 @@ and algorithm \ref{al:cgen} describle the \emph{motifwalk} algorithm.
 
 In this section we propose our motif convolutional deep
 neural network architecture for semi-supervised graph labeling
-tasks. Graph convolution is a signal processing technique in which
+tasks. As mentioned above, graph convolution is a signal processing technique in which
 a network of signals reside on nodes (e.g. sensor network) is
 processed in the graph spectral domain defined on the graph structure.
  Based on the further linear approximation
@@ -321,6 +332,9 @@ weight of layer $k$ is updated as follow:
 \label{eq:3}
 \frac{\partial E}{\partial W^{(k)}_{i,j}} = \sum^S_{s=1} [x]^\top \frac{\partial E}{\partial y_{k,j}}
 \end{equation}
+
+The objective function of our model is the softmax loss (also known
+as cross-entropy)
 
 \section{Experiments}
 
