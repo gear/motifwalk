@@ -179,7 +179,7 @@ where $N_\mathbf{m}(G)$ is the count of motif $\mathbf{m}$ in the empirical
 network; $N_\mathbf{m}(G_{\scalebox{0.75}{random}})$ is the mean of the
 null model; and $\sigma_\mathbf{m}(G_{\scalebox{0.75}{random}})$ is the variance.
 The $z\mbox{-score}$'s values can range from $-\inf$ to $+\inf$. In practice,
-the most simple motifs (figure \ref{fig:motif3}-m2,3,4) often have the highest
+the most simple motifs (figure \ref{fig:m3}-m2,3,4) often have the highest
 frequencies and negative $z\mbox{-score}$. We ignored such motifs in our analysis.
 We select motif which has the highest positive $z\mbox{-score}$ and the highest frequency
 as our motif of interest to construct the motif co-occurrence matrix.
@@ -382,9 +382,20 @@ lableing task. We present the comparision of our model to \emph{planetoid} and
 \emph{gcn} under the same experiemental setting in \cite{gcn}. Table \ref{t:segraph}
 shows details of each dataset.
 
+\textbf{Blogcatalog3} \cite{blogcatalog} is a blogger social network. Each node
+in the network represents an user. The node labels represent a blogger's interests and
+each node has at least one label. Since Blogcatalog is a social network, the results
+obtained from motif analysis agrees with the term "friends of friend are friends".
+
+\textbf{PPI} \cite{PPI} is a protein transcription network.
+
+\textbf{Citeseer, Cora, Pubmed} \cite{citeseer,cora,pubmed} are citation networks 
+consist of scientific papers and their citations represented by directed edges.
+
+\textbf{NELL} \cite{NELL} is a knowledge network with triplet description.
+
 \begin{table}
 \centering
-\resizebox{\columnwidth}{!}{%
 \begin{tabular}{c r r r}
 \textsc{Dataset} & \textsc{\#Classes} & \textsc{\#Nodes} & \textsc{\#Edges} \\
 \hline \\
@@ -392,7 +403,6 @@ shows details of each dataset.
 \textsc{Citeseer} & 6 & 3,327 & 4,732 \\
 \textsc{PPI} & 50 & 3,890 & 76,584 \\ 
 \end{tabular}%
-}
 \caption{Datasets for unsupervised embeddings}
 \label{t:ungraph}
 \end{table}
@@ -413,7 +423,6 @@ shows details of each dataset.
 \label{t:ungraph}
 \end{table}
 
-\paragraph{Blogcatalog3} is a social network of bloggers. 
 
 \subsection{Motif significance}
 
@@ -433,31 +442,38 @@ size-3 and size-4 directed motifs and report the motif significance
 in figure \ref{fig:sigm3} and \ref{fig:sigm4}. Based on these results, 
 we select the most significant motif of each network for our algorithms. 
 
-
-\section{Results}
-
-For each of the networks in experiment, we computes the z-scores for
-size-3 and size-4 directed motifs and report the motif significance
-in figure \ref{fig:sigm3} and \ref{fig:sigm4}. Based on these results, 
-we select the most significant motif of each network for our algorithms. 
-For each of the networks in experiment, we computes the z-scores for
-size-3 and size-4 directed motifs and report the motif significance
-in figure \ref{fig:sigm3} and \ref{fig:sigm4}. Based on these results, 
-we select the most significant motif of each network for our algorithms. 
-\subsection{Unsupervised}
-
-Traditional task on blogcatalog and others.
-Link prediction.
-t-SNE.
-
 \begin{figure*} \label{fig:sigm4}
     \centering
     \includegraphics[draft,width=\linewidth]{foo_2col}
     \caption{Significant graph for size-4 motifs}
 \end{figure*}
-\subsection{Semi-supervised}
 
-Task on featured networks.
+\begin{table}
+\centering
+\begin{tabular}{c c}
+\textsc{Dataset} & \textsc{Motif} \\
+\hline \\
+\textsc{Blogcatalog} & Figure \ref{fig:m3}-m2 \\
+\textsc{PPI} & Figure \ref{fig:m3}-m4 \\
+\textsc{Citeseer} & Figure \ref{fig:m4}-m7 \\
+\textsc{Cora} & Figure \ref{fig:m4}-m7 \\
+\textsc{Pubmed} & Figure \ref{fig:m4}-m7 \\
+\textsc{NELL} & Figure \ref{fig:m3}-m4 \\
+\end{tabular}%
+\caption{Target motifs for each network}
+\label{t:motifs}
+\end{table}
+
+\section{Results}
+
+We report the performance of each algorithm on graph node
+labeling task.
+
+\subsection{Unsupervised node labeling}
+
+
+
+\subsection{Semi-supervised node labeling}
 
 \section{Related work}
 
