@@ -396,13 +396,15 @@ consist of scientific papers and their citations represented by directed edges.
 
 \begin{table}
 \centering
-\begin{tabular}{c r r r}
-\textsc{Dataset} & \textsc{\#Classes} & \textsc{\#Nodes} & \textsc{\#Edges} \\
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{c r r r r}
+\textsc{Dataset} & \textsc{\#Classes} & \textsc{\#Nodes} & \textsc{\#Edges} & \textsc{Training ratio} \\
 \hline \\
-\textsc{BlogCatalog} & 39 & 10,312 & 333,983 \\
-\textsc{Citeseer} & 6 & 3,327 & 4,732 \\
-\textsc{PPI} & 50 & 3,890 & 76,584 \\ 
+\textsc{BlogCatalog} & 39 & 10,312 & 333,983 & 0.5 \\
+\textsc{Citeseer} & 6 & 3,327 & 4,732 & 0.5 \\
+\textsc{PPI} & 50 & 3,890 & 76,584 & 0.5 \\ 
 \end{tabular}%
+}
 \caption{Datasets for unsupervised embeddings}
 \label{t:ungraph}
 \end{table}
@@ -471,9 +473,40 @@ labeling task.
 
 \subsection{Unsupervised node labeling}
 
-
+\begin{table}
+\centering
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{c | c c c}
+\textbf{\textsc{Method}} & \textsc{BlogCatalog} & \textsc{Citeseer} & \textsc{PPI} \\
+\hline \\
+Spectral clustering & 0.23 & 0.30 & 0.14  \\
+Deepwalk & 0.22 & 0.65 & 0.18 \\
+Node2Vec & 0.22 & 0.66 & \textbf{0.18} \\
+\textbf{motifwalk} & \textbf{0.24} & \textbf{0.68} & 0.17 \\
+\end{tabular}%
+}
+\caption{F1-macro score for multiclass labeling}
+\label{t:re}
+\end{table}
 
 \subsection{Semi-supervised node labeling}
+
+\begin{table*}
+\centering
+\begin{tabular}{c | c c c c}
+\textbf{\textsc{Method}} & \textsc{Citeseer} & \textsc{Cora} & \textsc{Pubmed} & \textsc{NELL} \\
+\hline \\
+Deepwalk & 43.2 & 0.65 & 0.18 & 0.18  \\
+\textbf{motifwalk} & 45.7 & 0.68 & 0.17 & 0.18 \\
+Planetoid & 64.7 & 0.68 & 0.17 & 0.18 \\
+GCN & 70.3 & 81.5 & 79.0 & 66.0 \\
+\textbf{m-GCN} & \textbf{71.2} & \textbf{82.1} & \textbf{79.5} & \textbf{66.1} \\
+\hline \\
+m-GCN (rand. splits) & 70.2 $\pm$ 0.5 & 81.1 $\pm$ 0.5 & 79.3 $\pm$ 0.7 & 62.0 $\pm$ 1.4 \\
+\end{tabular}%
+\caption{Accuracy score for multiclass labeling}
+\label{t:re}
+\end{table*}
 
 \section{Related work}
 
