@@ -39,15 +39,15 @@
 
 \begin{abstract}
   In this paper, we propose two motif-aware approaches for the unsupervised 
-  and semi-supervised graph embedding task. Our first model applies the most
+  and semi-supervised graph embedding task. Our first model applies the most statistically
   significant motif pattern of a graph as the guilding pattern for random walks.
   We then use a skipgram model with noise contrastive estimation to learn the
   graph embedding from generated random walk context. The second model employs the 
   graph convolutional network model on motif Laplacian matrices to inject
-  the network structure information into the convolutional neural network.
-  Both of our models employ utilize the higher-order organization 
+  the network structure information into a neural network.
+  Both of our models utilize the higher-order organization 
   (i.e. motifs organization) of complex networks. We demonstrate the effectiveness of our 
-  in comparision with state of the art network embedding and node labeling
+  in comparison with state of the art network embedding and node labeling
   algorithms.
 \end{abstract}
 
@@ -259,9 +259,6 @@ in \cite{hammond2011wavelets}.
 \caption{Motif co-occurrence matrix generation}
 \end{algorithm}
 
-TODO: Discuss about the change in maximum eigenvalue due to the weighted
-motif laplacian.
-
 \subsection{Biased Random Walk}
 
 Previous skipgram-based graph embedding models employ random
@@ -328,7 +325,7 @@ of a vertex $v_c$, given a vertex $v_t$ is:
     \mbox{Pr} (v_c | v_t) = \frac{\exp{( \langle \omega_{v_c} ,  \omega_{v_t} \rangle )}}{\sum_{k \in V} \exp{( \langle \omega_{v_k} ,  \omega_{v_t} \rangle )}},
 \end{aligned}
 \end{equation}
-here, $\langle \dot , \rangle$ denotes the inner product; and $\omega_v$ denotes
+here, $\langle \cdot , \cdot \rangle$ denotes the inner product; and $\omega_v$ denotes
 the real vector representation of node $v$. Although the log-likehood given
 by equation \ref{eq:ll} is straight forward, the normalization factor will be
 a computational bottle neck in large graphs. Therefore, we use noise contrastive
@@ -439,11 +436,6 @@ we select the most significant motif of each network for our algorithms.
     \caption{Significant graph for size-3 motifs}
 \end{figure*}
 
-For each of the networks in experiment, we computes the z-scores for
-size-3 and size-4 directed motifs and report the motif significance
-in figure \ref{fig:sigm3} and \ref{fig:sigm4}. Based on these results, 
-we select the most significant motif of each network for our algorithms. 
-
 \begin{figure*} \label{fig:sigm4}
     \centering
     \includegraphics[draft,width=\linewidth]{foo_2col}
@@ -496,9 +488,9 @@ Node2Vec & 0.22 & 0.66 & \textbf{0.18} \\
 \begin{tabular}{c | c c c c}
 \textbf{\textsc{Method}} & \textsc{Citeseer} & \textsc{Cora} & \textsc{Pubmed} & \textsc{NELL} \\
 \hline \\
-Deepwalk & 43.2 & 0.65 & 0.18 & 0.18  \\
-\textbf{motifwalk} & 45.7 & 0.68 & 0.17 & 0.18 \\
-Planetoid & 64.7 & 0.68 & 0.17 & 0.18 \\
+Deepwalk & 43.2 & 67.2 & 65.3 & 58.1 \\
+\textbf{motifwalk} & 45.7 & 68.0 & 64.9 & 58.8 \\
+Planetoid & 64.7 & 75.7 & 77.2 & 61.9 \\
 GCN & 70.3 & 81.5 & 79.0 & 66.0 \\
 \textbf{m-GCN} & \textbf{71.2} & \textbf{82.1} & \textbf{79.5} & \textbf{66.1} \\
 \hline \\
