@@ -18,6 +18,7 @@
 \usepackage{graphicx} 
 \usepackage[ruled,vlined]{algorithm2e}
 \usepackage{multicol}
+\usepackage{float}
 
 % the following package is optional:
 %\usepackage{latexsym}
@@ -38,17 +39,17 @@
 \maketitle
 
 \begin{abstract}
-  In this paper, we propose two motif-aware approaches for the unsupervised 
-  and semi-supervised graph embedding task. Our first model applies the most statistically
-  significant motif pattern of a graph as the guilding pattern for random walks.
-  We then use a skipgram model with noise contrastive estimation to learn the
-  graph embedding from generated random walk context. The second model employs the 
-  graph convolutional network model on motif Laplacian matrices to inject
-  the network structure information into a neural network.
-  Both of our models utilize the higher-order organization 
-  (i.e. motifs organization) of complex networks. We demonstrate the effectiveness of our 
-  in comparison with state of the art network embedding and node labeling
-  algorithms.
+  In this paper, we propose two motif-aware approaches for the 
+  unsupervised and semi-supervised graph embedding task. Our first model 
+  applies the most statistically significant motif pattern of a graph as 
+  the guiding pattern for random walks. We then use a Skipgram neural 
+  network model with noise contrastive estimation to learn the graph 
+  embedding from generated random walk context. The second model employs 
+  the graph convolutional operation on motif Laplacian matrices to inject 
+  the network structure information into a neural network. Both of our 
+  models utilize the higher-order organization (i.e. motifs organization) 
+  of complex networks. We demonstrate the effectiveness of our models in 
+  comparison to other state of the art graph embedding models.
 \end{abstract}
 
 \section{Introduction}
@@ -56,68 +57,67 @@
 \subsection{Complex network and machine learning}
 
 Network modelings have been an essential tool for a wide
-range of scientific fields \cite{physicnet,molecule,youtube,motifblockmilo,juremotif}.
+range of scientific fields
+\cite{physicnet,molecule,youtube,motifblockmilo,juremotif}.
 The network science view reveals the underlying structure 
 of a complex system. Based on the system's network structure, 
-scientists can make predictions and explaination
+scientists can make predictions and explanation
 about the system's behavior. For example, in biology, the
 study on neuronal systems connectivity indicated
 that the component arrangement of a neural system is optimized
-for short processing paths rather than wiring lengths \cite{kaiser2006nonoptimal}. 
-Similarly, social networks analysis provides communities structures
-as well as social interaction patterns \cite{west2014exploiting,barabasi2014network}. 
-However, along with the information explosion, analysing large network-structured
-datasets poses a great challenge for traditional network analysis methods
-in term of scalability and complexity. To deal with such challendge,
-one promising approach is to apply machine learning methods (especially
-deep learning) to network problems.
+for short processing paths rather than wiring lengths
+\cite{kaiser2006nonoptimal}. Similarly, social networks 
+analysis provides communities structuresas well as 
+social interaction patterns 
+\cite{west2014exploiting,barabasi2014network}. 
+However, along with the information explosion, analyzing
+large network-structured datasets poses a great challenge 
+for traditional network analysis methods in term of 
+scalability and complexity. To deal with such challenge,
+one promising approach is to apply machine learning methods 
+(especially deep learning) to network problems.
 
-Bridging the gap between network science and machine learning
-is also a challenging task. Due to the irregularity in network and 
-graph-structured data, it is desirable to have a \emph{meaningful}
+Bridging the gap between network-structured data and typical
+data structure for machine learning is also a challenge. 
+Due to the irregularity in the network-structured data, 
+it is desirable to have a \emph{meaningful}
 network representation for machine learning applications. 
-Traditionally, vector representation can be obtained via graph factorization methods.
-However, matrix factorization methods such as Spectral Clustering are 
-shown to be unscalable due to the complexity of the algorithms \cite{deepwalk,line,node2vec}.
-Recently, inspired by the skipgram model in natural language processing
-\cite{skipgram}, \citeauthor{deepwalk} propsed their scalable graph
-embedding algorithm named DeepWalk. Their results node classification
-proved the effectiveness of their algorithm in learning a lower dimensionality 
-representation of a complex network. Subsequence works to DeepWalk
-further improved node classification accuracy by modifying graph 
-context generation process \cite{line,grarep,planetoid,node2vec}. 
+Learning network representation in real vector spaces can be
+viewed as manifold learning (non-linear dimensionality reduction),
+and commonly known as \emph{network embedding} in the literature.  
+Traditionally, network embedding can be obtained via graph 
+factorization methods.However, matrix factorization methods such as
+Spectral Clustering or Non-negative Matrix Factorization are 
+shown to be unscalable due to the complexity of the algorithms 
+\cite{deepwalk,eigmaps}. Recently, several feasible network
+embedding algorithms have been proposed such as \emph{Deepwalk}
+\cite{deepwalk} or \emph{GCN} \cite{gcn}. These network embeddings 
+algorithms utilize the state of the art machine learning models like
+Skipgram \cite{Skipgram} and Variational Auto-Encoder \cite{varauto}
+to achieve high quality node representation. In the context of graph
+embedding, we justify the \emph{quality} by how well a common
+machine learning model performs on the learned embeddings.
 
-It is worthwhile to mention that \emph{planetoid}, proposed by \citeauthor{planetoid},
-works slightly different to other skipgram-based models. Instead of generating
-graph context only from the network structure, \emph{planetoid} samples
-nodes based on labels as well. Furthermore, \emph{planetoid} injects the network
-node's feature vectors for better embedding and node labeling results.
-Another similar model to \emph{planetoid} called Graph Convolutional Networks (GCN) 
-was proposed by \citeauthor{gcn}. GCN uses the graph convolutional
-operation as a transformation for feature vectors on a network. By stacking
-these convolutional operation into a neural network, the authors of
-GCN has been able to achieve remarkable node classification and link
-prediction results compared to the previous researches. Moreover, the
-running time for GCN was superior compared to other algorithms.
-
-These aforementioned approaches to graph embeddings
-are similar in the sense that they all learn latent representations
-of a complex network from data, then use this representation to solve 
-a network problem (e.g. link prediction, nodel labeling, communitiy detection)
-using various machine learning algorithms.
+\begin{figure} \label{fig:cartoon}
+    \centering
+    \includegraphics[width=0.8\linewidth]{cartoon_emb}
+    \caption{Learning a latent representation of nodes from the network structure. In this figure, the example network is embedded to a 3-dimensional real vector space.}
+\end{figure}
 
 \subsection{Motifs in complex network}
 
 There are three scale of network analysis: macroscopic, mesoscopic, 
-and microscopic. In the macroscopic scale, we consider a network as a whole to
-study its macro-properties such as robustness \cite{callaway2000network},
-or dynamics \cite{barabasi2014network}.
+and microscopic. In the macroscopic scale, we consider a network as a 
+whole to study its macro-properties such as robustness 
+\cite{callaway2000network}, or dynamics \cite{barabasi2014network}.
 In contrast, the microscopic scale studies the pair-wise interactions
-between nodes in a network which is specific to the given system \cite{physicnet}. 
-In between macroscopic and microscopic, the mesoscopic scale considers the network is a composition of
-subgraphs. In many research, especially computational biology, the
+between nodes in a network which is specific to the given system 
+\cite{physicnet}. In between macroscopic and microscopic, the mesoscopic 
+scale considers the network is a composition of subgraphs. 
+In many research, especially computational biology, the
 mesoscopic components are called \emph{motifs}, and it is common
-to think of them as building blocks of a complex system \cite{motifblockmilo}.
+to think of them as building blocks of a complex system 
+\cite{motifblockmilo}.
 
 \begin{definition}{\emph{Network motif}}
 Given a graph $G = (V,E)$, define a subgraph $G' = {V', E'}$ with $V' \subseteq V$;
@@ -125,31 +125,74 @@ $E' \subset E$ s.t. $i,j \in V' \forall e_{ij} \in E'$ and $|V'| \ll |V|$. Recur
 are called \emph{network motif} when they are statistically significant.
 \end{definition}
 
-Also refered as higher-order organization by \citeauthor{juremotif}, network motifs
-are believed to represent the underlying mechanism of a complex system 
+\section{Related work}
+
+\subsection{Unsupervised graph embedding}
+
+Based on the Skipgram model \cite{skipgram} in natural language 
+processing, \citeauthor{Deepwalk} proposed their
+scalable graph embedding algorithm named DeepWalk. Their results on node 
+classification proved the effectiveness of \emph{Deepwalk} in learning a 
+lower dimensionality representation of a complex network. Subsequence 
+work to DeepWalk further improved node classification accuracy by 
+modifying graph context generation process
+\cite{line,grarep,planetoid,node2vec}. 
+
+It is worthwhile to mention that \emph{planetoid}, proposed by 
+\citeauthor{planetoid}, works slightly different to other skipgram-based 
+models. Instead of generating graph context only from the network 
+structure, \emph{planetoid} samples nodes based on labels as well. 
+Furthermore, \emph{planetoid} injects the network
+node's feature vectors for better embedding and node labeling results.
+
+\subsection{Semi-supervised graph labeling}
+
+Another similar model to \emph{planetoid} called Graph Convolutional 
+Networks (GCN) 
+was proposed by \citeauthor{gcn}. GCN uses the graph convolutional
+operation as a transformation for feature vectors on a network. By stacking
+these convolutional operation into a neural network, the authors of
+GCN has been able to achieve remarkable node classification and link
+prediction results compared to the previous researches. Moreover, the
+running time for GCN was superior compared to other algorithms.
+
+
+These aforementioned approaches to graph embeddings
+are similar in the sense that they all learn latent representations
+of a complex network from data, then use this representation to solve 
+a network problem (e.g. link prediction, node labeling, community
+detection) using various machine learning algorithms.
+
+\subsection{Motif Conductance}
+
+Also referred as higher-order organization by \citeauthor{juremotif}, 
+network motifs are believed to represent the underlying mechanism of a 
+complex system 
 \cite{netmotif,alon2006introduction,mangan2003structure}. 
 For instance, the directional bi-fan motif (figure \ref{fig:m4})
-and its simplified undirectional version are crucial in a citation network. 
-Beside having a statistical significance, bi-fan motif is also intuitively 
-sensible in citation network as it represents the citation mechanism. 
-The correlation of recurring subgraphs and system functionality has 
-been studied extensively in biological systems such as 
+and its simplified unidirectional version are crucial in a citation 
+network. Beside having a statistical significance, bi-fan motif is also 
+intuitively sensible in citation network as it represents the citation 
+mechanism. The correlation of recurring subgraphs and system 
+functionality has been studied extensively in biological systems such as 
 transcription networks \cite{mangan2003structure} and brain 
 networks \cite{brainnetheuvel,honey2007network}. As networks motifs
 have been recognized as the fundamental building block of a complex
-systems, using them as a strucutural guidance for machine learning
-on graph data can yield possitive improvements.
+systems, using them as a structural guidance for machine learning
+on graph data can yield positive improvements.
 
 Generally, algorithms involving network motifs have to deal with
 the problem of graph isomorphism. For such reason, in most analysis,
 only motifs of size 5 or smaller are considered. In this paper,
 we only consider motif of size 4 at most. This limitation is due to
 the large size of networks that we experimented. Although limited 
-by the motif size, we have been able to practically show the effectiveness of
-the motif-aware methods. On the other hand, as mentioned in \cite{juremotif},
+by the motif size, we have been able to practically show the 
+effectiveness of the motif-aware methods. On the other hand, as mentioned 
+in \cite{juremotif},
 motif algorithms can be easily parallelized. Therefore, the extension to
 larger size motifs can be made possible by parallelize the motif
-analysis procedures. Further discussion will be provided in later sections.
+analysis procedures. Further discussion will be provided in later 
+sections.
 
 \section{Methods}
 
@@ -166,7 +209,8 @@ the metric for measuring network motif significance and the definition
 of motif laplacian.
 
 In order to measure the importance of a network motif, we compare
-the given network against a null model. The null model of an empirical network 
+the given network against a null model. The null model of an empirical 
+network 
 is an ensemble of randomly generated networks having the same number of nodes and
 edges as the network. For small networks with less than 10,000 edges, we
 generated 100 random networks as the ensemble of the null model. On the other
@@ -201,10 +245,10 @@ as: 1. An adjacency matrix describing a motif graph; 2. An adjacency
 matrix from which we computes the Fourier basis for the graph convolution
 operation. The first approach is straight forward as we want to generate
 a network context where nodes occur in the motif pattern. For such reason,
-we treat the motif co-occurence matrix as a binary matrix describing a new
+we treat the motif co-occurrence matrix as a binary matrix describing a new
 network. On the other hand, the graph convolution approximation methods 
 proposed in \cite{gcn,defferrard2016convolutional} only apply to symmetric 
-binary matrices. In our model, the motif co-occurence matrix is a symmetric 
+binary matrices. In our model, the motif co-occurrence matrix is a symmetric 
 weighted matrix. The eigenvalue decomposition of such matrix is given by:
 \begin{equation} \label{eq:eigm}
 \mathcal{L}_{\mathbf{m}} = U_{\mathbf{m}} \Lambda_{\mathbf{m}} U^{\top}_{\mathbf{m}}
@@ -261,12 +305,12 @@ in \cite{hammond2011wavelets}.
 
 \subsection{Biased Random Walk}
 
-Previous skipgram-based graph embedding models employ random
+Previous Skipgram-based graph embedding models employ random
 walks for graph context generation. To improve the embedding results,
 structure-aware context generation methods were proposed in \cite{line,node2vec}.
 However, the limitation of \emph{LINE} lies at the fact that it only
 consider the second-order proximity (bi-fan motif),  \emph{node2vec} requires
-the costly cross-validation search for its hyperparameters $p$ and $q$.
+the costly cross-validation search for its hyper-parameters $p$ and $q$.
 To solve the above mentioned problems, we propose a biased random walk
 algorithm for graph context generation which can be considered the 
 generalization of \emph{LINE} and \emph{deepwalk}. Since our algorithm
@@ -276,9 +320,9 @@ while having the structure-aware context as of \emph{LINE} and \emph{node2vec}.
 
 Our \emph{motifwalk} algorithm has two steps: motif adjacency matrix
 construction and context generation. Firstly, we construct a binary
-motif co-occurence matrix from the given network. We select the motif
+motif co-occurrence matrix from the given network. We select the motif
 pattern as described in the previous section. Since the constructed matrix 
-accounts the co-occurrence of network node pairs in a motif, it is a symetric
+accounts the co-occurrence of network node pairs in a motif, it is a symmetric
 matrix. Secondly, after having a second adjacency matrix describing the
 motif structure, we run random walks on this new network for context generation. 
 The obtained context is used jointly with random walks context generated with 
@@ -307,7 +351,7 @@ and algorithm \ref{al:cgen} describle the \emph{motifwalk} algorithm.
 \caption{Motif-aware graph context generation}
 \end{algorithm}
 
-Similar to skipgram-based models, \emph{motifwalk} is an unsupervised algorithm which 
+Similar to Skipgram-based models, \emph{motifwalk} is an unsupervised algorithm which 
 learns graph embedding through an optimization process. Since there is two 
 network contexts generated in our algorithm, the objective function is given by:
 \begin{equation} \label{eq:mloss}
@@ -391,7 +435,7 @@ consist of scientific papers and their citations represented by directed edges.
 
 \textbf{NELL} \cite{NELL} is a knowledge network with triplet description.
 
-\begin{table}
+\begin{table}[H]
 \centering
 \resizebox{\columnwidth}{!}{%
 \begin{tabular}{c r r r r}

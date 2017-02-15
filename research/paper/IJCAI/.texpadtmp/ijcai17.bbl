@@ -1,0 +1,169 @@
+\begin{thebibliography}{}
+
+\bibitem[\protect\citeauthoryear{Alon}{2006}]{alon2006introduction}
+Uri Alon.
+\newblock {\em An introduction to systems biology: design principles of
+  biological circuits}.
+\newblock CRC press, 2006.
+
+\bibitem[\protect\citeauthoryear{Alon}{2007}]{netmotif}
+Uri Alon.
+\newblock Network motifs: theory and experimental approaches.
+\newblock {\em Nature Reviews Genetics}, 8(6):450--461, 2007.
+
+\bibitem[\protect\citeauthoryear{Bader \bgroup \em et al.\egroup
+  }{2003}]{molecule}
+Gary~D Bader, Doron Betel, and Christopher~WV Hogue.
+\newblock Bind: the biomolecular interaction network database.
+\newblock {\em Nucleic acids research}, 31(1):248--250, 2003.
+
+\bibitem[\protect\citeauthoryear{Barab{\'a}si}{2014}]{barabasi2014network}
+Albert-L{\'a}szl{\'o} Barab{\'a}si.
+\newblock Network science book.
+\newblock {\em Network Science}, 2014.
+
+\bibitem[\protect\citeauthoryear{Belkin and Niyogi}{2001}]{eigmaps}
+Mikhail Belkin and Partha Niyogi.
+\newblock Laplacian eigenmaps and spectral techniques for embedding and
+  clustering.
+\newblock In {\em NIPS}, volume~14, pages 585--591, 2001.
+
+\bibitem[\protect\citeauthoryear{Benson \bgroup \em et al.\egroup
+  }{2016}]{juremotif}
+Austin~R Benson, David~F Gleich, and Jure Leskovec.
+\newblock Higher-order organization of complex networks.
+\newblock {\em Science}, 353(6295):163--166, 2016.
+
+\bibitem[\protect\citeauthoryear{Callaway \bgroup \em et al.\egroup
+  }{2000}]{callaway2000network}
+Duncan~S Callaway, Mark~EJ Newman, Steven~H Strogatz, and Duncan~J Watts.
+\newblock Network robustness and fragility: Percolation on random graphs.
+\newblock {\em Physical review letters}, 85(25):5468, 2000.
+
+\bibitem[\protect\citeauthoryear{Cao \bgroup \em et al.\egroup }{2015}]{grarep}
+Shaosheng Cao, Wei Lu, and Qiongkai Xu.
+\newblock Grarep: Learning graph representations with global structural
+  information.
+\newblock In {\em Proceedings of the 24th ACM International on Conference on
+  Information and Knowledge Management}, pages 891--900. ACM, 2015.
+
+\bibitem[\protect\citeauthoryear{Defferrard \bgroup \em et al.\egroup
+  }{2016}]{defferrard2016convolutional}
+Micha{\"e}l Defferrard, Xavier Bresson, and Pierre Vandergheynst.
+\newblock Convolutional neural networks on graphs with fast localized spectral
+  filtering.
+\newblock In {\em Advances in Neural Information Processing Systems}, pages
+  3837--3845, 2016.
+
+\bibitem[\protect\citeauthoryear{Grover and Leskovec}{2016}]{node2vec}
+Aditya Grover and Jure Leskovec.
+\newblock node2vec: Scalable feature learning for networks.
+\newblock In {\em Proceedings of the 22nd ACM SIGKDD International Conference
+  on Knowledge Discovery and Data Mining}, 2016.
+
+\bibitem[\protect\citeauthoryear{Hammond \bgroup \em et al.\egroup
+  }{2011}]{hammond2011wavelets}
+David~K Hammond, Pierre Vandergheynst, and R{\'e}mi Gribonval.
+\newblock Wavelets on graphs via spectral graph theory.
+\newblock {\em Applied and Computational Harmonic Analysis}, 30(2):129--150,
+  2011.
+
+\bibitem[\protect\citeauthoryear{Honey \bgroup \em et al.\egroup
+  }{2007}]{honey2007network}
+Christopher~J Honey, Rolf K{\"o}tter, Michael Breakspear, and Olaf Sporns.
+\newblock Network structure of cerebral cortex shapes functional connectivity
+  on multiple time scales.
+\newblock {\em Proceedings of the National Academy of Sciences},
+  104(24):10240--10245, 2007.
+
+\bibitem[\protect\citeauthoryear{Kaiser and
+  Hilgetag}{2006}]{kaiser2006nonoptimal}
+Marcus Kaiser and Claus~C Hilgetag.
+\newblock Nonoptimal component placement, but short processing paths, due to
+  long-distance projections in neural systems.
+\newblock {\em PLoS Comput Biol}, 2(7):e95, 2006.
+
+\bibitem[\protect\citeauthoryear{Kipf and Welling}{2016}]{gcn}
+Thomas~N Kipf and Max Welling.
+\newblock Semi-supervised classification with graph convolutional networks.
+\newblock {\em arXiv preprint arXiv:1609.02907}, 2016.
+
+\bibitem[\protect\citeauthoryear{Mangan and Alon}{2003}]{mangan2003structure}
+Shmoolik Mangan and Uri Alon.
+\newblock Structure and function of the feed-forward loop network motif.
+\newblock {\em Proceedings of the National Academy of Sciences},
+  100(21):11980--11985, 2003.
+
+\bibitem[\protect\citeauthoryear{Mikolov and Dean}{2013}]{Skipgram}
+T~Mikolov and J~Dean.
+\newblock Distributed representations of words and phrases and their
+  compositionality.
+\newblock {\em Advances in neural information processing systems}, 2013.
+
+\bibitem[\protect\citeauthoryear{Milo \bgroup \em et al.\egroup
+  }{2002}]{motifblockmilo}
+Ron Milo, Shai Shen-Orr, Shalev Itzkovitz, Nadav Kashtan, Dmitri Chklovskii,
+  and Uri Alon.
+\newblock Network motifs: simple building blocks of complex networks.
+\newblock {\em Science}, 298(5594):824--827, 2002.
+
+\bibitem[\protect\citeauthoryear{Newman}{2010}]{physicnet}
+Mark Newman.
+\newblock {\em Networks: an introduction}.
+\newblock Oxford university press, 2010.
+
+\bibitem[\protect\citeauthoryear{Perozzi \bgroup \em et al.\egroup
+  }{2014}]{deepwalk}
+Bryan Perozzi, Rami Al-Rfou, and Steven Skiena.
+\newblock Deepwalk: Online learning of social representations.
+\newblock In {\em Proceedings of the 20th ACM SIGKDD international conference
+  on Knowledge discovery and data mining}, pages 701--710. ACM, 2014.
+
+\bibitem[\protect\citeauthoryear{Shuman \bgroup \em et al.\egroup
+  }{2013}]{shuman2013emerging}
+David~I Shuman, Sunil~K Narang, Pascal Frossard, Antonio Ortega, and Pierre
+  Vandergheynst.
+\newblock The emerging field of signal processing on graphs: Extending
+  high-dimensional data analysis to networks and other irregular domains.
+\newblock {\em IEEE Signal Processing Magazine}, 30(3):83--98, 2013.
+
+\bibitem[\protect\citeauthoryear{Tang and Liu}{2009}]{blogcatalog}
+Lei Tang and Huan Liu.
+\newblock Relational learning via latent social dimensions.
+\newblock In {\em Proceedings of the 15th ACM SIGKDD international conference
+  on Knowledge discovery and data mining}, pages 817--826. ACM, 2009.
+
+\bibitem[\protect\citeauthoryear{Tang \bgroup \em et al.\egroup
+  }{2012}]{youtube}
+Lei Tang, Xufei Wang, and Huan Liu.
+\newblock Scalable learning of collective behavior.
+\newblock {\em IEEE Transactions on Knowledge and Data Engineering},
+  24(6):1080--1091, 2012.
+
+\bibitem[\protect\citeauthoryear{Tang \bgroup \em et al.\egroup }{2015}]{line}
+Jian Tang, Meng Qu, Mingzhe Wang, Ming Zhang, Jun Yan, and Qiaozhu Mei.
+\newblock Line: Large-scale information network embedding.
+\newblock In {\em Proceedings of the 24th International Conference on World
+  Wide Web}, pages 1067--1077, 2015.
+
+\bibitem[\protect\citeauthoryear{Van Den~Heuvel and Pol}{2010}]{brainnetheuvel}
+Martijn~P Van Den~Heuvel and Hilleke E~Hulshoff Pol.
+\newblock Exploring the brain network: a review on resting-state fmri
+  functional connectivity.
+\newblock {\em European Neuropsychopharmacology}, 20(8):519--534, 2010.
+
+\bibitem[\protect\citeauthoryear{West \bgroup \em et al.\egroup
+  }{2014}]{west2014exploiting}
+Robert West, Hristo~S Paskov, Jure Leskovec, and Christopher Potts.
+\newblock Exploiting social network structure for person-to-person sentiment
+  analysis.
+\newblock {\em arXiv preprint arXiv:1409.2450}, 2014.
+
+\bibitem[\protect\citeauthoryear{Yang \bgroup \em et al.\egroup
+  }{2016}]{planetoid}
+Zhilin Yang, William~W. Cohen, and Ruslan Salakhutdinov.
+\newblock Revisiting semi-supervised learning with graph embeddings.
+\newblock In {\em Proceedings of the 33rd International Conference on Machine
+  Learning}. ICML, 2016.
+
+\end{thebibliography}

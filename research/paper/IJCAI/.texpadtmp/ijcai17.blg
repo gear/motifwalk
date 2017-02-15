@@ -1,0 +1,63 @@
+This is BibTeX, Version 0.99d (TeX Live 2015)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: /Users/hoangnt/Dropbox/WorkingFiles/motifwalk/research/paper/IJCAI/.texpadtmp/ijcai17.aux
+Case mismatch error between cite keys skipgram and Skipgram
+---line 33 of file /Users/hoangnt/Dropbox/WorkingFiles/motifwalk/research/paper/IJCAI/.texpadtmp/ijcai17.aux
+ : \citation{skipgram
+ :                   }
+I'm skipping whatever remains of this command
+Case mismatch error between cite keys skipgram and Skipgram
+---line 62 of file /Users/hoangnt/Dropbox/WorkingFiles/motifwalk/research/paper/IJCAI/.texpadtmp/ijcai17.aux
+ : \citation{skipgram
+ :                   }
+I'm skipping whatever remains of this command
+The style file: ../named.bst
+Database file #1: ../ijcai17.bib
+Warning--I didn't find a database entry for "varauto"
+Warning--I didn't find a database entry for "PPI"
+Warning--I didn't find a database entry for "citeseer"
+Warning--I didn't find a database entry for "cora"
+Warning--I didn't find a database entry for "pubmed"
+Warning--I didn't find a database entry for "NELL"
+You've used 26 entries,
+            2439 wiz_defined-function locations,
+            720 strings with 9359 characters,
+and the built_in function-call counts, 10949 in all, are:
+= -- 1146
+> -- 439
+< -- 7
++ -- 148
+- -- 146
+* -- 878
+:= -- 1726
+add.period$ -- 82
+call.type$ -- 26
+change.case$ -- 175
+chr.to.int$ -- 26
+cite$ -- 26
+duplicate$ -- 444
+empty$ -- 824
+format.name$ -- 180
+if$ -- 2285
+int.to.chr$ -- 1
+int.to.str$ -- 0
+missing$ -- 28
+newline$ -- 133
+num.names$ -- 78
+pop$ -- 160
+preamble$ -- 1
+purify$ -- 203
+quote$ -- 0
+skip$ -- 368
+stack$ -- 0
+substring$ -- 635
+swap$ -- 119
+text.length$ -- 7
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 200
+warning$ -- 0
+while$ -- 92
+width$ -- 29
+write$ -- 337
+(There were 2 error messages)
