@@ -6,18 +6,8 @@ Case mismatch error between cite keys skipgram and Skipgram
  : \citation{skipgram
  :                   }
 I'm skipping whatever remains of this command
-Case mismatch error between cite keys Deepwalk and deepwalk
----line 33 of file /Users/hoangnt/Dropbox/WorkingFiles/motifwalk/research/paper/IJCAI/.texpadtmp/ijcai17.aux
- : \citation{Deepwalk
- :                   }
-I'm skipping whatever remains of this command
-Case mismatch error between cite keys GCN and gcn
----line 39 of file /Users/hoangnt/Dropbox/WorkingFiles/motifwalk/research/paper/IJCAI/.texpadtmp/ijcai17.aux
- : \citation{GCN
- :              }
-I'm skipping whatever remains of this command
 Case mismatch error between cite keys skipgram and Skipgram
----line 64 of file /Users/hoangnt/Dropbox/WorkingFiles/motifwalk/research/paper/IJCAI/.texpadtmp/ijcai17.aux
+---line 65 of file /Users/hoangnt/Dropbox/WorkingFiles/motifwalk/research/paper/IJCAI/.texpadtmp/ijcai17.aux
  : \citation{skipgram
  :                   }
 I'm skipping whatever remains of this command
@@ -70,4 +60,4 @@ warning$ -- 0
 while$ -- 92
 width$ -- 29
 write$ -- 337
-(There were 4 error messages)
+(There were 2 error messages)
