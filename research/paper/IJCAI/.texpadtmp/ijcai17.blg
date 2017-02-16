@@ -2,17 +2,22 @@ This is BibTeX, Version 0.99d (TeX Live 2015)
 Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
 The top-level auxiliary file: /Users/hoangnt/Dropbox/WorkingFiles/motifwalk/research/paper/IJCAI/.texpadtmp/ijcai17.aux
 Case mismatch error between cite keys skipgram and Skipgram
----line 25 of file /Users/hoangnt/Dropbox/WorkingFiles/motifwalk/research/paper/IJCAI/.texpadtmp/ijcai17.aux
+---line 32 of file /Users/hoangnt/Dropbox/WorkingFiles/motifwalk/research/paper/IJCAI/.texpadtmp/ijcai17.aux
  : \citation{skipgram
  :                   }
 I'm skipping whatever remains of this command
 Case mismatch error between cite keys Deepwalk and deepwalk
----line 26 of file /Users/hoangnt/Dropbox/WorkingFiles/motifwalk/research/paper/IJCAI/.texpadtmp/ijcai17.aux
+---line 33 of file /Users/hoangnt/Dropbox/WorkingFiles/motifwalk/research/paper/IJCAI/.texpadtmp/ijcai17.aux
  : \citation{Deepwalk
  :                   }
 I'm skipping whatever remains of this command
+Case mismatch error between cite keys GCN and gcn
+---line 39 of file /Users/hoangnt/Dropbox/WorkingFiles/motifwalk/research/paper/IJCAI/.texpadtmp/ijcai17.aux
+ : \citation{GCN
+ :              }
+I'm skipping whatever remains of this command
 Case mismatch error between cite keys skipgram and Skipgram
----line 62 of file /Users/hoangnt/Dropbox/WorkingFiles/motifwalk/research/paper/IJCAI/.texpadtmp/ijcai17.aux
+---line 64 of file /Users/hoangnt/Dropbox/WorkingFiles/motifwalk/research/paper/IJCAI/.texpadtmp/ijcai17.aux
  : \citation{skipgram
  :                   }
 I'm skipping whatever remains of this command
@@ -65,4 +70,4 @@ warning$ -- 0
 while$ -- 92
 width$ -- 29
 write$ -- 337
-(There were 3 error messages)
+(There were 4 error messages)

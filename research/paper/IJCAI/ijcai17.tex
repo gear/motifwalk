@@ -123,10 +123,12 @@ mesoscopic components are called \emph{motifs}, and it is common
 to think of them as building blocks of a complex system 
 \cite{motifblockmilo}.
 
-\begin{definition}{\emph{Network motif}}
-Given a graph $G = (V,E)$, define a subgraph $G' = {V', E'}$ with $V' \subseteq V$;
-$E' \subset E$ s.t. $i,j \in V' \forall e_{ij} \in E'$ and $|V'| \ll |V|$. Recurring subgraphs
-are called \emph{network motif} when they are statistically significant.
+\begin{definition}{\emph{Network motif}}:
+Given a graph $G = (V,E)$, define a subgraph $G' = {V', E'}$ with $V' 
+\subseteq V$;
+$E' \subset E$ s.t. $i,j \in V' \forall e_{ij} \in E'$ and $|V'| \ll |V|$. 
+Recurring subgraphs are called \emph{network motif} when they are 
+statistically significant.
 \end{definition}
 
 Also referred as higher-order organization by \citeauthor{juremotif}, 
@@ -145,39 +147,45 @@ have been recognized as the fundamental building block of a complex
 systems, using them as a structural guidance for machine learning
 on graph data can yield positive improvements.
 
-In here, we propose the motif-aware approaches to improve the 
-performance of  
+Our main idea in this paper is to use the motif co-occurrence matrix as: 
+1. An adjacency matrix describing a motif network for random walks; 2. A 
+mean to compute motif Laplacian and Fourier basis for the graph 
+convolution operation. Section 2 describes the related work on network
+motif conductance and network embedding. We give detail of our algorithms
+in section. The experimental setup and results are given in section 4 and 
+5 respectively. We discuss the relationship between our two proposed
+algorithms and their limitations in section 6.
 
 \section{Related work}
 
 \subsection{Unsupervised Network Embedding}
 
 Based on the Skipgram model \cite{skipgram} in natural language 
-processing, \citeauthor{Deepwalk} proposed their
-scalable graph embedding algorithm named DeepWalk. Their results on node 
-classification proved the effectiveness of \emph{Deepwalk} in learning a 
-lower dimensionality representation of a complex network. Subsequence 
-work to DeepWalk further improved node classification accuracy by 
-modifying graph context generation process
-\cite{line,grarep,planetoid,node2vec}. 
+processing, \citeauthor{Deepwalk} proposed their scalable graph embedding 
+algorithm named DeepWalk. Their results on node classification proved the 
+effectiveness of \emph{Deepwalk} in learning a lower dimensionality 
+representation of a complex network. Subsequence work to DeepWalk further 
+improved node classification accuracy by modifying graph context 
+generation process \cite{line,grarep,planetoid,node2vec}. 
 
-It is worthwhile to mention that \emph{planetoid}, proposed by 
+It is worthwhile to mention that \emph{Planetoid}, proposed by 
 \citeauthor{planetoid}, works slightly different to other skipgram-based 
 models. Instead of generating graph context only from the network 
-structure, \emph{planetoid} samples nodes based on labels as well. 
-Furthermore, \emph{planetoid} injects the network
+structure, \emph{Planetoid} also samples nodes based on training labels. 
+Furthermore, \emph{Planetoid} injects the network
 node's feature vectors for better embedding and node labeling results.
+
 
 \subsection{Semi-supervised Network Labeling}
 
-Another similar model to \emph{planetoid} called Graph Convolutional 
-Networks (GCN) 
-was proposed by \citeauthor{gcn}. GCN uses the graph convolutional
-operation as a transformation for feature vectors on a network. By stacking
-these convolutional operation into a neural network, the authors of
-GCN has been able to achieve remarkable node classification and link
-prediction results compared to the previous researches. Moreover, the
-running time for GCN was superior compared to other algorithms.
+Another semi-supervised learning model similar to the aforementioned
+\emph{Planetoid} is Graph Convolutional Networks (GCN) \cite{GCN}. 
+GCN uses the graph convolutional operation as a transformation for 
+feature vectors on a network. By stacking these convolutional operation 
+into a neural network, the authors of GCN has been able to achieve 
+remarkable node classification and link prediction results compared to the 
+previous researches. Moreover, the running time for GCN was superior 
+compared to other algorithms such as \emph{Deepwalk} or \emph{Planetoid}.
 
 
 These aforementioned approaches to graph embeddings
@@ -188,20 +196,60 @@ detection) using various machine learning algorithms.
 
 \subsection{Motif Conductance}
 
+As an generalization of \emph{network conductance} (also graph conductance 
+or Cheeger constant of a graph), \citeauthor{juremotif} proposed
+the concept of \emph{motif conductance} in \cite{juremotif}. Similar to
+network conductance, motif conductance is a \emph{score} for a cut 
+$(S, \bar{S})$ targeting a motif $\mathbf{m}$:
+\begin{equation*}
+	\phi_{\mathbf{m}}(S) = \frac{\mbox{cut}_{\mathbf{m}}(S,\bar{S})}{\min[\mbox{vol}_{\mathbf{m}}(S), \mbox{vol}_{\mathbf{m}}(\bar{S})]},
+\end{equation*}
+where $S$ is a node set in a network $G$; $\bar{S}$ is the complement
+of $S$; $\mbox{vol}_{\mathbf{m}(S)}$ is the number of motif instance
+end points in $S$. Intuitively, minimizing the motif conductance is
+equivalent with minimizing the number of motif $\mathbf{m}$ gets 
+\emph{split} by the cut. A motif is split when there is at least one
+anchor node in $S$ and at least one in $\bar{S}$. \citeauthor{juremotif}
+then perform motif analysis and graph clustering based on this
+definition of motif conductance. Their result further confirms the
+structural role of motifs in a complex network. 
 
+\begin{definition} \emph{Motif co-occurrence matrix}:
+Given a graph $G = (V,E)$, in which $v \in V$. The motif co-occurrence 
+matrix of a motif $\mathbf{m}$ is given by:
+$$M_{i,j}^{\mathbf{m}} = \sum_{(v, \chi_{\mathcal{A}}(v)) \in \mathbf{m}} \mathbf{1}({i,j} \subset \chi_\mathcal{A}(v))$$
+In here, $\mathcal{A}$ represents the anchor set; 
+$(v, \chi_{\mathcal{A}}(v))$ represents pairs of node $v \in V_G$ and the 
+other anchor nodes generated by $\chi_\mathcal{A}$. If the anchor node set 
+$\mathcal{A}$ is empty, all motif co-occurrence is counted toward the 
+motif co-occurrence matrix $M$. Otherwise, only nodes in the anchor set 
+will be counted. Figure \ref{fig:anchor} illustrates the bi-fan motif and 
+its anchor set. Algorithm \ref{al:madj} provides detail for constructing
+a motif co-occurrence matrix.
+\end{definition}
 
-Generally, algorithms involving network motifs have to deal with
-the problem of graph isomorphism. For such reason, in most analysis,
-only motifs of size 5 or smaller are considered. In this paper,
-we only consider motif of size 4 at most. This limitation is due to
-the large size of networks that we experimented. Although limited 
-by the motif size, we have been able to practically show the 
-effectiveness of the motif-aware methods. On the other hand, as mentioned 
-in \cite{juremotif},
-motif algorithms can be easily parallelized. Therefore, the extension to
-larger size motifs can be made possible by parallelize the motif
-analysis procedures. Further discussion will be provided in later 
+Algorithms involving network motifs have high time complexity due to
+the problem of graph isomorphism. For such reason, in most large graph
+analysis, only motifs of size 5 or smaller are considered. In our 
+experiments, we only consider motif of size 4 at most. This limitation is 
+due to the large size of networks that we experimented. Although the
+analysis is limited by the motif size, we have been able to empirically 
+show the effectiveness of the motif-aware methods. Furthermore, as 
+mentioned in \cite{juremotif}, motif algorithms can be easily 
+parallelized. Therefore, the extension to larger size motifs can be made 
+possible by parallelize the motif analysis procedures. Further discussion 
+on parallelizing the motif analysis process be provided in later 
 sections.
+
+Our main idea in this paper is to use the motif co-occurrence matrix as: 
+1. An adjacency matrix describing a motif network for random walks; 2. A 
+mean to compute motif Laplacian and Fourier basis for the graph 
+convolution operation. The first approach is straight forward as we want 
+to generate a network context emphasized on nodes occur in the motif 
+pattern. For such reason, we treat the motif co-occurrence matrix as a 
+binary matrix describing a new network on which we generate network 
+context using random walks. Further detail of our \emph{motifwalk} context 
+generation algorithm is given in algorithm \ref{al:cgen}.
 
 \section{Methods}
 
@@ -210,7 +258,7 @@ we propose the basis for the network motif selection from a network.
 Secondly, we present two approaches employing motif patterns to
 learn graph embeddings: \emph{motifwalk} and \emph{m-gcn}.
 
-\subsection{Motifs Adjacency Matrix}
+\subsection{Motifs Analysis}
 
 In the previous section, we have introduced the importance of
 network motifs in network analysis. In this section, we present
@@ -219,52 +267,59 @@ of motif laplacian.
 
 In order to measure the importance of a network motif, we compare
 the given network against a null model. The null model of an empirical 
-network 
-is an ensemble of randomly generated networks having the same number of nodes and
-edges as the network. For small networks with less than 10,000 edges, we
-generated 100 random networks as the ensemble of the null model. On the other
-hand, we generated 10 random networks for the null model of larger networks.
-The $z\mbox{-score}$ is given by:
+network is an ensemble of randomly generated networks having the same 
+number of nodes and edges as the network. For small networks with less 
+than 10,000 edges, we generated 100 random networks as the ensemble of the 
+null model. On the other hand, we generated 10 random networks for the 
+null model of larger networks. The $z\mbox{-score}$ is given by:
 \begin{equation*}
 z\mbox{-score} = \frac{N_\mathbf{m}(G)-N_\mathbf{m}(G_{\scalebox{0.75}{random}})}{\sigma_\mathbf{m}(G_{\scalebox{0.75}{random}})}
 \end{equation*}
-where $N_\mathbf{m}(G)$ is the count of motif $\mathbf{m}$ in the empirical
-network; $N_\mathbf{m}(G_{\scalebox{0.75}{random}})$ is the mean of the
-null model; and $\sigma_\mathbf{m}(G_{\scalebox{0.75}{random}})$ is the variance.
-The $z\mbox{-score}$'s values can range from $-\inf$ to $+\inf$. In practice,
-the most simple motifs (figure \ref{fig:m3}-m2,3,4) often have the highest
-frequencies and negative $z\mbox{-score}$. We ignored such motifs in our analysis.
-We select motif which has the highest positive $z\mbox{-score}$ and the highest frequency
-as our motif of interest to construct the motif co-occurrence matrix.
+where $N_\mathbf{m}(G)$ is the count of motif $\mathbf{m}$ in the 
+empirical network; $N_\mathbf{m}(G_{\scalebox{0.75}{random}})$ is the mean 
+of the null model; and $\sigma_\mathbf{m}(G_{\scalebox{0.75}{random}})$ is
+the variance. The $z\mbox{-score}$'s values can range from 
+$-\infty$ to $+\infty$. In practice, the most simple motifs (figure 
+\ref{fig:m3}-m2,3,4) often have the highest frequencies and negative $z
+\mbox{-score}$. We ignored such motifs in our analysis. We select motif 
+which has the highest positive $z\mbox{-score}$ because these motifs
+highlight the difference between the empirical network and random 
+networks. 
 
-\begin{definition} \emph{Motif co-occurence matrix}
-Given a graph $G = (V,E)$, in which $v \in V$. The motif co-occurrence matrix
-is given by:
-$$M_{i,j} = \sum_{(v, \chi_{\mathcal{A}}(v)) \in \mathbf{m}} \mathbf{1}({i,j} \subset \chi_\mathcal{A}(v))$$
-In here, $\mathcal{A}$ represents the anchor set; $(v, \chi_{\mathcal{A}}(v))$ 
-represents pairs of node $v \in V_G$ and the other anchor nodes generated by $\chi_\mathcal{A}$.
-If the anchor node set $\mathcal{A}$ is empty, all motif co-occureence is
-counted toward the motif co-occurrence matrix $M$. Otherwise, only nodes in
-the anchor set will be counted. Figure \ref{fig:anchor} illustrates
-the bi-fan motif and its anchor set.
-\end{definition}
 
-Generally, in this paper we employ the motif co-occurrence matrix
-as: 1. An adjacency matrix describing a motif graph; 2. An adjacency
-matrix from which we computes the Fourier basis for the graph convolution
-operation. The first approach is straight forward as we want to generate
-a network context where nodes occur in the motif pattern. For such reason,
-we treat the motif co-occurrence matrix as a binary matrix describing a new
-network. On the other hand, the graph convolution approximation methods 
-proposed in \cite{gcn,defferrard2016convolutional} only apply to symmetric 
-binary matrices. In our model, the motif co-occurrence matrix is a symmetric 
-weighted matrix. The eigenvalue decomposition of such matrix is given by:
+
+Convolution operations on a network can be viewed as a method to
+incorporate the nodes' information (e.g. feature vectors) 
+and the network structure. The Fourier basis and network frequencies of
+a motif co-occurrence matrix is obtained through the eigenvalue
+decomposition of the motif Laplacian matrix $\mathcal{L}_{\mathbf{m}}$:
 \begin{equation} \label{eq:eigm}
 \mathcal{L}_{\mathbf{m}} = U_{\mathbf{m}} \Lambda_{\mathbf{m}} U^{\top}_{\mathbf{m}}
 \end{equation}
-where $\mathcal{L}_{\mathbf{m}} = D_{\mathbf{m}} - A_{\mathbf{m}}$; $U_{\mathbf{m}}$ is the
-orthogonal basis (also called the Fourier basis in graph convolutional context);
-and $\Lambda_{\mathbf{m}} = diag(\lambda_{\mathbf{m}})$. 
+In here, $\mathcal{L}_{\mathbf{m}}$ is the normalized motif Laplacian:
+\begin{equation} \label{eq:eigm}
+\begin{aligned}
+\mathcal{L}_{\mathbf{m}} &= D_{\mathbf{m}}^{-1/2} L_{\mathbf{m}} D_{\mathbf{m}}^{-1/2} \\
+&= I - D_{\mathbf{m}}^{-1/2} M^{\mathbf{m}} D_{\mathbf{m}}^{-1/2}
+\end{aligned}
+\end{equation}
+where $L{\mathbf{m}} = D_{\mathbf{m}} - M^{\mathbf{m}}$; 
+
+
+
+$U_{\mathbf{m}}$ is the Fourier basis of the network motif structure;
+and $\Lambda_{\mathbf{m}} = diag(\lambda_{\mathbf{m}})$ is called the 
+frequencies of the motif network. The 
+
+
+On the other hand, the graph convolution approximation methods 
+proposed in \cite{gcn,defferrard2016convolutional} only apply to symmetric 
+binary matrices. In our model, the motif co-occurrence matrix is a 
+symmetric weighted matrix. The eigenvalue decomposition of such matrix is 
+given by:
+
+
+
 
 The convolution on a graph $G$ of a function of the graph 
 Laplacian $g_{\theta}$ (also called a filter or a kernel) 
@@ -296,18 +351,22 @@ in \cite{hammond2011wavelets}.
 \KwOut{$M^{\mathbf{m}}$}
 \Begin{
     diam $\leftarrow$ Diameter($\mathbf{m}$, $\mathcal{A}$); \\
-    $V$ $\leftarrow$ G.nodes(); \\
-    \For{node $\in$ nodes} {
+    $V$ $\leftarrow$ $G$.nodes(); \\
+    \For{$i$ $\in$ nodes} {
         $G'$ $\leftarrow$ induced graph from BFS(node, diam); \\
-        \For{otherNode $\in$ $G'$} {
-            \uIf{(node,otherNode) satisfies $\mathcal{A}$} {
-                $M_{\mbox{node,othernodes}}^{\mathbf{m}} = \mbox{count } \mathbf{m} \mbox{ in} G'$; \\
+        \For{$j$ $\in$ $G'$.nodes()} {
+            \uIf{(i,j) satisfies $\mathcal{A}$} {
+                $c \leftarrow \mbox{count } \mathbf{m} \mbox{ in } G'$; \\
+                \uIf{isBinary} {
+                	$M_{i,j}^{\mathbf{m}} \leftarrow 1$ if $c > 0$ else $0$
+                } \uElse {
+                	$M_{i,j}^{\mathbf{m}} \leftarrow c$
+                }
             } \uElse {
-                continue; \\
+                $M_{i,j}^{\mathbf{m}} \leftarrow 0$ \\
             }
         }
     }
-    $M^{\mathbf{m}}$ = $M^{\mathbf{m}}$ / 2; \\
 \KwRet{$M^{\mathbf{m}}$}
 }
 \caption{Motif co-occurrence matrix generation}
@@ -317,16 +376,17 @@ in \cite{hammond2011wavelets}.
 
 Previous Skipgram-based graph embedding models employ random
 walks for graph context generation. To improve the embedding results,
-structure-aware context generation methods were proposed in \cite{line,node2vec}.
-However, the limitation of \emph{LINE} lies at the fact that it only
-consider the second-order proximity (bi-fan motif),  \emph{node2vec} requires
-the costly cross-validation search for its hyper-parameters $p$ and $q$.
-To solve the above mentioned problems, we propose a biased random walk
-algorithm for graph context generation which can be considered the 
-generalization of \emph{LINE} and \emph{deepwalk}. Since our algorithm
-decides the walk pattern supported by the most significant network motif before 
-performing context generation, we achieve the simplicity of \emph{deepwalk}
-while having the structure-aware context as of \emph{LINE} and \emph{node2vec}.
+structure-aware context generation methods were proposed in 
+\cite{line,node2vec}. However, the limitation of \emph{LINE} lies at the 
+fact that it only consider the second-order proximity (bi-fan motif),  
+\emph{node2vec} requires the costly cross-validation search for its hyper-
+parameters $p$ and $q$. To solve the above mentioned problems, we propose 
+a biased random walk algorithm for graph context generation which can be 
+considered the generalization of \emph{LINE} and \emph{deepwalk}. Since 
+our algorithm decides the walk pattern supported by the most significant 
+network motif before performing context generation, we achieve the 
+simplicity of \emph{deepwalk} while having the structure-aware context as 
+of \emph{LINE} and \emph{node2vec}.
 
 Our \emph{motifwalk} algorithm has two steps: motif adjacency matrix
 construction and context generation. Firstly, we construct a binary
@@ -554,14 +614,6 @@ m-GCN (rand. splits) & 70.2 $\pm$ 0.5 & 81.1 $\pm$ 0.5 & 79.3 $\pm$ 0.7 & 62.0 $
 \caption{Accuracy score for multiclass labeling}
 \label{t:re}
 \end{table*}
-
-\section{Related work}
-
-\subsection{Spectral approaches}
-
-\subsection{Skipgram-based approaches }
-
-\subsection{Deep neural network approaches}
 
 \section{Discussion}
 
