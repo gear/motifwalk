@@ -132,6 +132,12 @@ Recurring subgraphs are called \emph{network motif} when they are
 statistically significant.
 \end{definition}
 
+\begin{figure} \label{fig:m3}
+    \centering
+    \includegraphics[width=0.9\linewidth]{m3}
+    \caption{Size-3 motifs}
+\end{figure}
+
 Also referred as higher-order organization by \citeauthor{juremotif}, 
 network motifs are believed to represent the underlying mechanism of a 
 complex system 
@@ -350,16 +356,10 @@ M^{\mathbf{m}}D^{-1/2}_{\mathbf{m}} \right)
 \end{aligned}
 \end{equation} 
 
-
-
-On the other hand, the graph convolution approximation methods 
-proposed in \cite{gcn,defferrard2016convolutional} only apply to symmetric 
-binary matrices. In our model, the motif co-occurrence matrix is a 
-symmetric weighted matrix. The eigenvalue decomposition of such matrix is 
-given by:
-
-
-
+The motif Laplacian is a positive semi-definite matrix
+similar to the matrices used in previous graph convolution researches 
+\cite{hammond2011wavelets,defferrard2016convolutional,gcn}. However,
+the difference is that motif Laplacian 
 
 
 \begin{algorithm}[h] \label{al:madj}
@@ -439,9 +439,10 @@ embedding skipgram model. Algorithm \ref{al:madj} and algorithm
 \caption{Motif-aware graph context generation}
 \end{algorithm}
 
-Similar to Skipgram-based models, \emph{motifwalk} is an unsupervised algorithm which 
-learns graph embedding through an optimization process. Since there is two 
-network contexts generated in our algorithm, the objective function is given by:
+Similar to Skipgram-based models, \emph{motifwalk} is an unsupervised
+algorithm which learns graph embedding through an optimization process. 
+Since there is two network contexts generated in our algorithm, the 
+objective function is given by:
 \begin{equation} \label{eq:mloss}
 \begin{aligned}
 &\mathcal{O} = \argmax_{W^{\scalebox{0.75}{emb}}}\ (\gamma 
@@ -622,7 +623,7 @@ Node2Vec & 0.22 & 0.66 & \textbf{0.18} \\
 
 \subsection{Semi-supervised node labeling}
 
-\begin{table*}[H]
+\begin{table*}
 \centering
 \begin{tabular}{c | c c c c}
 \textbf{\textsc{Method}} & \textsc{Citeseer} & \textsc{Cora} & \textsc{Pubmed} & \textsc{NELL} \\
