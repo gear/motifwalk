@@ -3,50 +3,44 @@ Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
 The top-level auxiliary file: /Users/hoangnt/Dropbox/WorkingFiles/motifwalk/research/paper/IJCAI/.texpadtmp/ijcai17.aux
 The style file: ../named.bst
 Database file #1: ../ijcai17.bib
-Warning--I didn't find a database entry for "PPI"
-Warning--I didn't find a database entry for "citeseer"
-Warning--I didn't find a database entry for "cora"
-Warning--I didn't find a database entry for "pubmed"
-Warning--I didn't find a database entry for "NELL"
-You've used 30 entries,
+You've used 34 entries,
             2439 wiz_defined-function locations,
-            736 strings with 9848 characters,
-and the built_in function-call counts, 12477 in all, are:
-= -- 1301
-> -- 495
-< -- 10
-+ -- 166
-- -- 164
-* -- 985
-:= -- 1966
-add.period$ -- 95
-call.type$ -- 30
-change.case$ -- 199
-chr.to.int$ -- 30
-cite$ -- 30
-duplicate$ -- 519
-empty$ -- 946
-format.name$ -- 204
-if$ -- 2614
+            755 strings with 10629 characters,
+and the built_in function-call counts, 14721 in all, are:
+= -- 1518
+> -- 637
+< -- 15
++ -- 219
+- -- 216
+* -- 1174
+:= -- 2322
+add.period$ -- 108
+call.type$ -- 34
+change.case$ -- 240
+chr.to.int$ -- 34
+cite$ -- 34
+duplicate$ -- 606
+empty$ -- 1077
+format.name$ -- 261
+if$ -- 3082
 int.to.chr$ -- 1
 int.to.str$ -- 0
-missing$ -- 33
-newline$ -- 153
-num.names$ -- 90
-pop$ -- 191
+missing$ -- 37
+newline$ -- 173
+num.names$ -- 102
+pop$ -- 232
 preamble$ -- 1
-purify$ -- 232
+purify$ -- 277
 quote$ -- 0
-skip$ -- 427
+skip$ -- 505
 stack$ -- 0
-substring$ -- 689
-swap$ -- 141
-text.length$ -- 10
+substring$ -- 762
+swap$ -- 178
+text.length$ -- 15
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 228
+type$ -- 260
 warning$ -- 0
-while$ -- 104
-width$ -- 34
-write$ -- 389
-(There were 5 warnings)
+while$ -- 118
+width$ -- 39
+write$ -- 444

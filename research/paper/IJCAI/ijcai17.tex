@@ -63,11 +63,11 @@
 
 Network modelings have been an essential tool for a wide
 range of scientific fields
-\cite{physicnet,molecule,youtube,motifblockmilo,juremotif}. 
+\cite{physicnet,molecule,motifblockmilo,juremotif}. 
 Based on the system's network structure, 
 scientists can make predictions and explanation
 about the system's behavior. For example, in biology, the
-study on neuronal systems connectivityri indicated
+study of neuronal systems connectivity indicated
 that the component arrangement of a neural system is optimized
 for short processing paths rather than wiring lengths
 \cite{kaiser2006nonoptimal}. Similarly, social network
@@ -90,7 +90,7 @@ Learning network representation in real vector spaces can be
 viewed as manifold learning (non-linear dimensionality reduction),
 and commonly known as \emph{network embedding} in the literature.
 In this report, we propose the use of network motifs into learning
-a high quality network embedding. The \emph{embedding quality} in this
+a high-quality network embedding. The \emph{embedding quality} in this
 context is justified by how well a common machine learning model performs 
 on the learned embeddings.
 
@@ -102,7 +102,7 @@ on the learned embeddings.
 
 \subsection{Motifs in complex network}
 
-There are three scale of network analysis: macroscopic, mesoscopic, 
+There are three scales of network analysis: macroscopic, mesoscopic, 
 and microscopic. In the macroscopic scale, we consider a network as a 
 whole to study its macro-properties such as robustness 
 \cite{callaway2000network}, or dynamics \cite{barabasi2014network}.
@@ -110,7 +110,7 @@ In contrast, the microscopic scale studies the pair-wise interactions
 between nodes in a network which is specific to a given system 
 \cite{physicnet}. In between macroscopic and microscopic, the mesoscopic 
 scale considers the network is a composition of subgraphs. 
-In many research, especially computational biology, the
+In many fields of research, especially computational biology, the
 mesoscopic components are called \emph{motifs}, and it is common
 to think of them as building blocks of a complex system 
 \cite{motifblockmilo}.
@@ -130,7 +130,7 @@ statistically significant.
     \label{fig:m3}
 \end{figure}
 
-Also referred as higher-order organization by \citeauthor{juremotif}, 
+Also referred as the higher-order organization by \citeauthor{juremotif}, 
 network motifs are believed to represent the underlying mechanism of a 
 complex system 
 \cite{netmotif,alon2006introduction,mangan2003structure}. 
@@ -176,7 +176,7 @@ shown to be unscalable due to the complexity of the algorithms
 \cite{deepwalk,eigmaps,pca}. Recently, several feasible network
 embedding algorithms have been proposed such as \emph{Deepwalk}
 \cite{deepwalk} or \emph{Node2Vec} \cite{node2vec}. These network embeddings 
-algorithms learn high quality node representation while having low time
+algorithms learn high-quality node representation while having low time
 complexity compared to traditional methods. In the context of graph embedding, we 
 justify the \emph{embedding quality} by how well a common machine learning model 
 performs on the learned embeddings. 
@@ -211,7 +211,7 @@ denotes the real vector representation of node $v$; and $W^{\scalebox{0.75}{emb}
 is the output matrix containing all real vector representations. Although the 
 log-likehood given by equation \ref{eq:deepwalkobj} is tractable, computing the
 normalization factor still remains an intractable task. Therefore, several 
-approximation methods such as hierarchical softmax \cite{deepwalk} or noise
+approximation methods such as hierarchical softmax \cite{hs,deepwalk} or noise
 contrastive estimation \cite{nce,node2vec} were used to further boost the
 computational speed of the algorithms of this category. The obtained embedding
 matrix will be used as a feature matrix for various machine learning algorithms
@@ -328,8 +328,8 @@ $(S, \bar{S})$ targeting a motif $\mathbf{m}$:
 \end{equation*}
 where $S$ is a node set in a network $G$; $\bar{S}$ is the complement
 of $S$; $\mbox{vol}_{\mathbf{m}(S)}$ is the number of motif instance
-end points in $S$. Intuitively, minimizing the motif conductance is
-equivalent with minimizing the number of motif $\mathbf{m}$ gets 
+endpoints in $S$. Intuitively, minimizing the motif conductance is
+equivalent to minimizing the number of motifs $\mathbf{m}$ gets 
 \emph{split} by the cut. A motif is split when there is at least one
 anchor node in $S$ and at least one in $\bar{S}$. \citeauthor{juremotif}
 then perform motif analysis and graph clustering based on this
@@ -360,7 +360,7 @@ we propose the basis for the network motif selection from a network.
 Secondly, we present two approaches employing motif patterns to
 learn graph embeddings: \emph{motifwalk} and \emph{m-gcn}.
 
-\subsection{Motifs Analysis}
+\subsection{Motif Analysis and Motif Convolution}
 
 In the previous section, we have explained the importance of
 network motifs in network analysis. In this section, we present
@@ -438,7 +438,7 @@ M^{\mathbf{m}}D^{-1/2}_{\mathbf{m}} \\
 &\approx \theta \left( I + D^{-1/2}_{\mathbf{m}}
 M^{\mathbf{m}}D^{-1/2}_{\mathbf{m}} \right)
 \end{aligned}
-\end{equation} w
+\end{equation}
 
 \subsection{Biased Random Walk}
 
@@ -448,10 +448,10 @@ structure-aware context generation methods were proposed in
 \cite{line,node2vec}. However, the limitation of \emph{LINE} lies at the 
 fact that it only consider the second-order proximity (bi-fan motif), and  
 \emph{node2vec} requires the costly cross-validation grid search for its hyper-
-parameters $p$ and $q$. To solve the above mentioned problems, we propose 
+parameters $p$ and $q$. To solve the above-mentioned problems, we propose 
 a biased random walk algorithm for graph context generation which can be 
 considered the generalization of \emph{LINE} and \emph{Deepwalk}. Since 
-our algorithm decides the walk pattern supported by the most significant 
+our algorithm decides the walking pattern supported by the most significant 
 network motif before performing context generation, our method has the 
 simplicity of \emph{Deepwalk} while having the structure-aware context as 
 of \emph{LINE} and \emph{node2vec}.
@@ -507,24 +507,15 @@ where $\ell_{\scalebox{0.75}{random walk}}$ and $\ell_{\scalebox{0.75}
 are the log-likelihoods of the network contexts generated by
 random walk and motif walk respectively; $\gamma$ is a hyper-parameter
 controlling the ratio between random walk. $\gamma$ is selected 
-empirically based on the z-score of the targeted motif. The likelihood
-of a \emph{context} vertex $v_c$, given a \emph{target} vertex $v_t$ is:
-\begin{equation} \label{eq:ll}
-\begin{aligned}
-    \mbox{Pr} (v_c | v_t) = \frac{\exp{( \langle \omega_{v_c} ,  \omega_{v_t} \rangle )}}{\sum_{k \in V} \exp{( \langle \omega_{v_k} ,  \omega_{v_t} \rangle )}},
-\end{aligned}
-\end{equation}
-here, $\langle \cdot , \cdot \rangle$ denotes the inner product; and $\omega_v$ denotes
-the real vector representation of node $v$. Although the log-likehood given
-by equation \ref{eq:ll} is straight forward, the normalization factor will be
-a computational bottle neck in large graphs. Therefore, we use noise contrastive
-estimation as suggested in \cite{skipgram,node2vec} for estimating the 
-normalization
-factor of our model. The final output of \emph{motifwalk} is a set of real 
+empirically based on the ratio between edges in the motif network and edges
+in the given network. The likelihood
+of a \emph{target} vertex $v_t$ in the context of vertex $v_c$ is given
+in equation \ref{eq:deepwalkprob}. We use negative sampling with noise
+contrastive estimation loss as suggested in \cite{skipgram} for normalization
+factor estimation. The output of \emph{motifwalk} is a set of real 
 vectors representing each node in the given network. These vectors encode 
-the underlying
-structural relationship between network nodes and can be used as feature vectors
-for link prediction and node classification.
+the underlying structural relationship between network nodes and can be used as 
+feature vectors for link prediction and node classification.
 
 \subsection{Motif Convolutional Architecture}
 
@@ -533,7 +524,7 @@ operation on motif co-occurrence matrix. We use the motif convolution
 as the second layer in our motif convolutional network (m-gcn). Based on the 
 linear approximation proposed by \citeauthor{gcn}, we define the forward
 computation of our model as:
-\begin{equation} \label{eq:2}
+\begin{equation} \label{eq:mforward}
     \begin{aligned}
     Z_{\scalebox{0.75}{forward}} &= f(X,A,M) \\
     &= \mbox{softmax}(\hat{M} \mbox{ReLU}(\hat{A}XW^{(0)})W^{(1)}),
@@ -543,56 +534,53 @@ where $A$ and $M$ is a binary adjacency matrix and motif co-occurrence
 matrix respectively; $\hat{A}$ and $\hat{M}$ are constructed by the
 \emph{renormalization trick} as suggested in \cite{gcn}; $X$ contains
 the feature vectors for each graph node; $W^{(0)}$ and $W^{(1)}$ are
-learnable variables. With the backpropagation learning algorithm and the
-softmax cross entropy loss, the weight of layer $k$ is updated as follow: 
+learnable variables. We use Adam \cite{adam} with back-propagation 
+to optimize the cross-entropy loss $E$:
 \begin{equation}
-\label{eq:3}
-\frac{\partial E}{\partial W^{(k)}_{i,j}} = \sum^S_{s=1} [x]^\top \frac{\partial E}{\partial y_{k,j}}
+	E = -\sum_{l \in \mathcal{Y}_L} \sum^F_{f=1} Y_{lf}\mbox{ln} Z_{lf}
+	\label{eq:mloss}
 \end{equation}
-
-\begin{table}
-\centering
-\resizebox{\columnwidth}{!}{%
-\begin{tabular}{c | c c c c}
-\textbf{\textsc{Method}} & \textsc{Citeseer} & \textsc{Cora} & \textsc{Pubmed} & \textsc{NELL} \\
-\hline \\
-Deepwalk & 43.2 & 67.2 & 65.3 & 58.1 \\
-\textbf{motifwalk} & 45.7 & 68.0 & 64.9 & 58.8 \\
-Planetoid & 64.7 & 75.7 & 77.2 & 61.9 \\
-GCN & 70.3 & 81.5 & 79.0 & 66.0 \\
-\textbf{m-GCN} & \textbf{71.2} & \textbf{82.1} & \textbf{79.5} & \textbf{66.1} \\
-\hline \\
-m-GCN (rand. splits) & 70.2 $\pm$ 0.5 & 81.1 $\pm$ 0.5 & 79.3 $\pm$ 0.7 & 62.0 $\pm$ 1.4 \\
-\end{tabular}%
-}
-\caption{Accuracy score for multi-class labeling}
-\label{t:re}
-\end{table}
+This formulation is the same as equation \ref{eq:gcnnn}. The weight $W$ is updated
+by the following rule:
+\begin{equation}
+	\frac{\partial E}{\partial W^{(k)}_{i,j}} = \sum^S_{s=1} [x]^\top \frac{\partial E}{\partial y_{k,j}},
+	\label{eq:mback}
+\end{equation}
+where $W^{(k)}$ is the weight matrix of layer $k$; $y_{k,j}$ is the 
+$j^{\scalebox{0.75}{th}}$ output feature map of the sample $s$. 
 
 \section{Experiments}
 
 To compare \emph{motifwalk} performance with other unsupervised graph
 embedding models, we have chosen the node labeling task on various
 type of networks (with ground-truth node labels). In this paper, we
-compare the performance of \emph{motifwalk} to 
-\emph{Spectral Clustering}, 
-\emph{Deepwalk} \cite{deepwalk}, \emph{node2vec} \cite{node2vec}. Table \ref{t:ungraph}
-gives the networks' statistics. The second model \emph{m-gcn} is a semi-supervised model for node
-labeling task. We present the comparison of our model to \emph{planetoid} and
-\emph{gcn} under the same experimental setting in \cite{gcn}. Table \ref{t:segraph}
-shows details of each dataset.
+compare the performance of \emph{motifwalk} to \emph{Spectral Clustering}, 
+\emph{Deepwalk} \cite{deepwalk}, \emph{node2vec} \cite{node2vec}. 
+Table \ref{t:ungraph} gives the networks' statistics. The second model 
+\emph{m-gcn} is a semi-supervised model for node labeling task. 
+We present the comparison of our model to \emph{planetoid} and
+\emph{gcn} under the same experimental setting in \cite{gcn}. 
+Table \ref{t:segraph} shows details of each dataset.
 
-\textbf{Blogcatalog3} \cite{blogcatalog} is a blogger social network. Each node
-in the network represents an user. The node labels represent a blogger's interests and
-each node has at least one label. Since Blogcatalog is a social network, the results
-obtained from motif analysis agrees with the term "friends of friend are friends".
+\textbf{Blogcatalog3} \cite{blogcatalog}: This network is a blogger social network.
+Each node in the network represents an user. The node labels represent a blogger's 
+interests, each node has at least one label. Since Blogcatalog is a social network, 
+the results obtained from motif analysis agrees with the term "friends of a friend 
+are friends".
 
-\textbf{PPI} \cite{PPI} is a protein transcription network.
+\textbf{PPI} \cite{PPI}: We use the subgraph of PPI network for Homo Sapiens
+as suggested in \cite{node2vec}. The network has 50 different labels for each
+node, obtained from the hallmark gene sets.
 
-\textbf{Citeseer, Cora, Pubmed} \cite{citeseer,cora,pubmed} are citation networks 
-consist of scientific papers and their citations represented by directed edges.
+\textbf{Citeseer, Cora, Pubmed} \cite{crp}: These are citation 
+networks consist of scientific papers and their citations represented by directed 
+edges. Each node in these networks represents a scientific paper, associated
+with a tf-idf feature vector describing the content of the paper. Each paper
+also has exactly one label.
 
-\textbf{NELL} \cite{NELL} is a knowledge network with triplet description.
+\textbf{NELL} \cite{nell}: This is a knowledge network where entities are connected
+by directed, labeled edges (relations). We use the preprocessing procedure as
+suggested in \cite{gcn} and \cite{planetoid}.
 
 \begin{table}[H]
 \centering
@@ -622,10 +610,10 @@ consist of scientific papers and their citations represented by directed edges.
 \end{tabular}%
 }
 \caption{Datasets for semi-supervised embeddings}
-\label{t:ungraph}
+\label{t:segraph}
 \end{table}
 
-For each of the networks in experiment, we computes the z-scores for
+For each of the networks in our experiment, we compute the z-scores for
 size-3 and size-4 directed motifs and report the motif significance
 in figure \ref{fig:sigm}. Based on these results, 
 we select the most significant motif of each network for our algorithms
@@ -652,8 +640,6 @@ we select the most significant motif of each network for our algorithms
 We report the performance of each algorithm on graph node
 labeling task.
 
-\subsection{Unsupervised node labeling}
-
 \begin{table}[H]
 \centering
 \resizebox{\columnwidth}{!}{%
@@ -670,8 +656,24 @@ Node2Vec & 0.22 & 0.66 & \textbf{0.18} \\
 \label{t:re}
 \end{table}
 
-\subsection{Semi-supervised node labeling}
-
+\begin{table}
+\centering
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{c | c c c c}
+\textbf{\textsc{Method}} & \textsc{Citeseer} & \textsc{Cora} & \textsc{Pubmed} & \textsc{NELL} \\
+\hline \\
+Deepwalk & 43.2 & 67.2 & 65.3 & 58.1 \\
+\textbf{motifwalk} & 45.7 & 68.0 & 64.9 & 58.8 \\
+Planetoid & 64.7 & 75.7 & 77.2 & 61.9 \\
+GCN & 70.3 & 81.5 & 79.0 & 66.0 \\
+\textbf{m-GCN} & \textbf{71.2} & \textbf{82.1} & \textbf{79.5} & \textbf{66.1} \\
+\hline \\
+m-GCN (rand. splits) & 70.2 $\pm$ 0.5 & 81.1 $\pm$ 0.5 & 79.3 $\pm$ 0.7 & 62.0 $\pm$ 1.4 \\
+\end{tabular}%
+}
+\caption{Accuracy score for multi-class labeling}
+\label{t:re}
+\end{table}
 
 \section{Discussion}
 
@@ -680,7 +682,8 @@ architecture; proposing the uses and demonstrate the importance of motifs in
 real world networks.
 
 Algorithms involving network motifs have high time complexity due to
-the problem of graph isomorphism. For such reason, in most large graph
+the problem of graph isomorphism \cite{motifdecrev}. 
+For such reason, in most large graph
 analysis, only motifs of size 5 or smaller are considered. In our 
 experiments, we only consider motif of size 4 at most. This limitation is 
 due to the large size of networks that we experimented. Although the

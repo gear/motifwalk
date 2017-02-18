@@ -34,6 +34,14 @@ Austin~R Benson, David~F Gleich, and Jure Leskovec.
 \newblock Higher-order organization of complex networks.
 \newblock {\em Science}, 353(6295):163--166, 2016.
 
+\bibitem[\protect\citeauthoryear{Breitkreutz \bgroup \em et al.\egroup
+  }{2008}]{PPI}
+Bobby-Joe Breitkreutz, Chris Stark, Teresa Reguly, Lorrie Boucher, Ashton
+  Breitkreutz, Michael Livstone, Rose Oughtred, Daniel~H Lackner, J{\"u}rg
+  B{\"a}hler, Valerie Wood, et~al.
+\newblock The biogrid interaction database: 2008 update.
+\newblock {\em Nucleic acids research}, 36(suppl 1):D637--D640, 2008.
+
 \bibitem[\protect\citeauthoryear{Callaway \bgroup \em et al.\egroup
   }{2000}]{callaway2000network}
 Duncan~S Callaway, Mark~EJ Newman, Steven~H Strogatz, and Duncan~J Watts.
@@ -46,6 +54,13 @@ Shaosheng Cao, Wei Lu, and Qiongkai Xu.
   information.
 \newblock In {\em Proceedings of the 24th ACM International on Conference on
   Information and Knowledge Management}, pages 891--900. ACM, 2015.
+
+\bibitem[\protect\citeauthoryear{Carlson \bgroup \em et al.\egroup
+  }{2010}]{nell}
+Andrew Carlson, Justin Betteridge, Bryan Kisiel, Burr Settles, Estevam~R
+  Hruschka~Jr, and Tom~M Mitchell.
+\newblock Toward an architecture for never-ending language learning.
+\newblock In {\em AAAI}, volume~5, page~3, 2010.
 
 \bibitem[\protect\citeauthoryear{Defferrard \bgroup \em et al.\egroup
   }{2016}]{defferrard2016convolutional}
@@ -123,6 +138,11 @@ Ron Milo, Shai Shen-Orr, Shalev Itzkovitz, Nadav Kashtan, Dmitri Chklovskii,
 \newblock Network motifs: simple building blocks of complex networks.
 \newblock {\em Science}, 298(5594):824--827, 2002.
 
+\bibitem[\protect\citeauthoryear{Morin and Bengio}{2005}]{hs}
+Frederic Morin and Yoshua Bengio.
+\newblock Hierarchical probabilistic neural network language model.
+\newblock In {\em Aistats}, volume~5, pages 246--252. Citeseer, 2005.
+
 \bibitem[\protect\citeauthoryear{Newman}{2010}]{physicnet}
 Mark Newman.
 \newblock {\em Networks: an introduction}.
@@ -134,6 +154,12 @@ Bryan Perozzi, Rami Al-Rfou, and Steven Skiena.
 \newblock Deepwalk: Online learning of social representations.
 \newblock In {\em Proceedings of the 20th ACM SIGKDD international conference
   on Knowledge discovery and data mining}, pages 701--710. ACM, 2014.
+
+\bibitem[\protect\citeauthoryear{Sen \bgroup \em et al.\egroup }{2008}]{crp}
+Prithviraj Sen, Galileo Namata, Mustafa Bilgic, Lise Getoor, Brian Galligher,
+  and Tina Eliassi-Rad.
+\newblock Collective classification in network data.
+\newblock {\em AI magazine}, 29(3):93, 2008.
 
 \bibitem[\protect\citeauthoryear{Shuman \bgroup \em et al.\egroup
   }{2013}]{shuman2013emerging}
@@ -149,18 +175,17 @@ Lei Tang and Huan Liu.
 \newblock In {\em Proceedings of the 15th ACM SIGKDD international conference
   on Knowledge discovery and data mining}, pages 817--826. ACM, 2009.
 
-\bibitem[\protect\citeauthoryear{Tang \bgroup \em et al.\egroup
-  }{2012}]{youtube}
-Lei Tang, Xufei Wang, and Huan Liu.
-\newblock Scalable learning of collective behavior.
-\newblock {\em IEEE Transactions on Knowledge and Data Engineering},
-  24(6):1080--1091, 2012.
-
 \bibitem[\protect\citeauthoryear{Tang \bgroup \em et al.\egroup }{2015}]{line}
 Jian Tang, Meng Qu, Mingzhe Wang, Ming Zhang, Jun Yan, and Qiaozhu Mei.
 \newblock Line: Large-scale information network embedding.
 \newblock In {\em Proceedings of the 24th International Conference on World
   Wide Web}, pages 1067--1077, 2015.
+
+\bibitem[\protect\citeauthoryear{Tran \bgroup \em et al.\egroup
+  }{2014}]{motifdecrev}
+Ngoc Tam~L Tran, Sominder Mohan, Zhuoqing Xu, and Chun-Hsi Huang.
+\newblock Current innovations and future challenges of network motif detection.
+\newblock {\em Briefings in bioinformatics}, page bbu021, 2014.
 
 \bibitem[\protect\citeauthoryear{Van Den~Heuvel and Pol}{2010}]{brainnetheuvel}
 Martijn~P Van Den~Heuvel and Hilleke E~Hulshoff Pol.
