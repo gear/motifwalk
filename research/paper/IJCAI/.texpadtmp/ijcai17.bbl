@@ -61,6 +61,12 @@ Aditya Grover and Jure Leskovec.
 \newblock In {\em Proceedings of the 22nd ACM SIGKDD International Conference
   on Knowledge Discovery and Data Mining}, 2016.
 
+\bibitem[\protect\citeauthoryear{Gutmann and Hyv{\"a}rinen}{2010}]{nce}
+Michael Gutmann and Aapo Hyv{\"a}rinen.
+\newblock Noise-contrastive estimation: A new estimation principle for
+  unnormalized statistical models.
+\newblock In {\em AISTATS}, volume~1, page~6, 2010.
+
 \bibitem[\protect\citeauthoryear{Hammond \bgroup \em et al.\egroup
   }{2011}]{hammond2011wavelets}
 David~K Hammond, Pierre Vandergheynst, and R{\'e}mi Gribonval.
@@ -76,12 +82,22 @@ Christopher~J Honey, Rolf K{\"o}tter, Michael Breakspear, and Olaf Sporns.
 \newblock {\em Proceedings of the National Academy of Sciences},
   104(24):10240--10245, 2007.
 
+\bibitem[\protect\citeauthoryear{Jolliffe}{2002}]{pca}
+Ian Jolliffe.
+\newblock {\em Principal component analysis}.
+\newblock Wiley Online Library, 2002.
+
 \bibitem[\protect\citeauthoryear{Kaiser and
   Hilgetag}{2006}]{kaiser2006nonoptimal}
 Marcus Kaiser and Claus~C Hilgetag.
 \newblock Nonoptimal component placement, but short processing paths, due to
   long-distance projections in neural systems.
 \newblock {\em PLoS Comput Biol}, 2(7):e95, 2006.
+
+\bibitem[\protect\citeauthoryear{Kingma and Ba}{2014}]{adam}
+Diederik Kingma and Jimmy Ba.
+\newblock Adam: A method for stochastic optimization.
+\newblock {\em arXiv preprint arXiv:1412.6980}, 2014.
 
 \bibitem[\protect\citeauthoryear{Kipf and Welling}{2016}]{gcn}
 Thomas~N Kipf and Max Welling.
@@ -94,7 +110,7 @@ Shmoolik Mangan and Uri Alon.
 \newblock {\em Proceedings of the National Academy of Sciences},
   100(21):11980--11985, 2003.
 
-\bibitem[\protect\citeauthoryear{Mikolov and Dean}{2013}]{Skipgram}
+\bibitem[\protect\citeauthoryear{Mikolov and Dean}{2013}]{skipgram}
 T~Mikolov and J~Dean.
 \newblock Distributed representations of words and phrases and their
   compositionality.
@@ -158,6 +174,13 @@ Robert West, Hristo~S Paskov, Jure Leskovec, and Christopher Potts.
 \newblock Exploiting social network structure for person-to-person sentiment
   analysis.
 \newblock {\em arXiv preprint arXiv:1409.2450}, 2014.
+
+\bibitem[\protect\citeauthoryear{Weston \bgroup \em et al.\egroup
+  }{2012}]{weston2012deep}
+Jason Weston, Fr{\'e}d{\'e}ric Ratle, Hossein Mobahi, and Ronan Collobert.
+\newblock Deep learning via semi-supervised embedding.
+\newblock In {\em Neural Networks: Tricks of the Trade}, pages 639--655.
+  Springer, 2012.
 
 \bibitem[\protect\citeauthoryear{Yang \bgroup \em et al.\egroup
   }{2016}]{planetoid}

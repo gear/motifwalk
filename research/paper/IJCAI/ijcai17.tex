@@ -63,15 +63,14 @@
 
 Network modelings have been an essential tool for a wide
 range of scientific fields
-\cite{physicnet,molecule,youtube,motifblockmilo,juremotif}.
-The network science view reveals the underlying structure 
-of a complex system. Based on the system's network structure, 
+\cite{physicnet,molecule,youtube,motifblockmilo,juremotif}. 
+Based on the system's network structure, 
 scientists can make predictions and explanation
 about the system's behavior. For example, in biology, the
-study on neuronal systems connectivity indicated
+study on neuronal systems connectivityri indicated
 that the component arrangement of a neural system is optimized
 for short processing paths rather than wiring lengths
-\cite{kaiser2006nonoptimal}. Similarly, social networks 
+\cite{kaiser2006nonoptimal}. Similarly, social network
 analysis provides communities structures well as 
 social interaction patterns 
 \cite{west2014exploiting,barabasi2014network}. 
@@ -89,19 +88,11 @@ it is desirable to have a \emph{meaningful}
 network representation for machine learning applications. 
 Learning network representation in real vector spaces can be
 viewed as manifold learning (non-linear dimensionality reduction),
-and commonly known as \emph{network embedding} in the literature.  
-Traditionally, network embedding can be obtained via graph 
-factorization methods.However, matrix factorization methods such as
-Spectral Clustering or Non-negative Matrix Factorization are 
-shown to be unscalable due to the complexity of the algorithms 
-\cite{deepwalk,eigmaps}. Recently, several feasible network
-embedding algorithms have been proposed such as \emph{Deepwalk}
-\cite{deepwalk} or \emph{GCN} \cite{gcn}. These network embeddings 
-algorithms utilize the state of the art machine learning models like
-Skipgram \cite{Skipgram} and Variational Auto-Encoder \cite{varauto}
-to achieve high quality node representation. In the context of graph
-embedding, we justify the \emph{quality} by how well a common
-machine learning model performs on the learned embeddings.
+and commonly known as \emph{network embedding} in the literature.
+In this report, we propose the use of network motifs into learning
+a high quality network embedding. The \emph{embedding quality} in this
+context is justified by how well a common machine learning model performs 
+on the learned embeddings.
 
 \begin{figure} \label{fig:cartoon}
     \centering
@@ -132,81 +123,125 @@ Recurring subgraphs are called \emph{network motif} when they are
 statistically significant.
 \end{definition}
 
-\begin{figure} \label{fig:m3}
+\begin{figure} 
     \centering
     \includegraphics[width=0.9\linewidth]{m3}
     \caption{Size-3 motifs}
+    \label{fig:m3}
 \end{figure}
 
 Also referred as higher-order organization by \citeauthor{juremotif}, 
 network motifs are believed to represent the underlying mechanism of a 
 complex system 
 \cite{netmotif,alon2006introduction,mangan2003structure}. 
-For instance, the directional bi-fan motif (figure \ref{fig:m4})
-and its simplified unidirectional version are crucial in a citation 
-network. Beside having a statistical significance, bi-fan motif is also 
-intuitively sensible in citation network as it represents the citation 
-mechanism. The correlation of recurring subgraphs and system 
+For instance, the directional bi-fan motif (figure \ref{fig:m4}: m4-1)
+and its simplified unidirectional version (m4u-3) are crucial in a citation 
+network. This bi-fan motif is also intuitively sensible in citation network 
+as it represents the citation mechanism. 
+The correlation of recurring subgraphs and system 
 functionality has been studied extensively in biological systems such as 
 transcription networks \cite{mangan2003structure} and brain 
 networks \cite{brainnetheuvel,honey2007network}. As networks motifs
 have been recognized as the fundamental building block of a complex
 systems, using them as a structural guidance for machine learning
-on graph data can yield positive improvements.
+on network data can yield positive improvements.
 
 Our main idea in this paper is to construct the motif co-occurrence matrix
 from a given network, and use it as: 1. An adjacency matrix describing a 
 motif network for random walks; 2. A mean to compute motif Laplacian and 
 Fourier basis for the graph convolution operation. Section 2 describes the 
 related work on network motif conductance and network embedding. We give 
-detail of our algorithms in section. The experimental setup and results 
+detail of our algorithms in section 3. The experimental setup and results 
 are given in section 4 and 5 respectively. We discuss the relationship 
 between our two proposed algorithms and their limitations in section 6.
 
-\begin{figure} \label{fig:m4}
+\section{Related work}
+
+In this section, we introduce the recent developments regarding unsupervised 
+network embeddings, semi-supervised node labeling, and motif analysis.
+
+\begin{figure} 
     \centering
     \includegraphics[width=0.9\linewidth]{m4}
     \caption{Size-4 motifs and anchor set example}
+    \label{fig:m4}
 \end{figure}
-
-
-\section{Related work}
 
 \subsection{Unsupervised Network Embedding}
 
+Traditionally, network embedding can be obtained via graph 
+factorization methods. However, matrix factorization methods such as
+Spectral Clustering or Non-negative Matrix Factorization are 
+shown to be unscalable due to the complexity of the algorithms 
+\cite{deepwalk,eigmaps,pca}. Recently, several feasible network
+embedding algorithms have been proposed such as \emph{Deepwalk}
+\cite{deepwalk} or \emph{Node2Vec} \cite{node2vec}. These network embeddings 
+algorithms learn high quality node representation while having low time
+complexity compared to traditional methods. In the context of graph embedding, we 
+justify the \emph{embedding quality} by how well a common machine learning model 
+performs on the learned embeddings. 
+
 Based on the Skipgram model \cite{skipgram} in natural language 
 processing, \citeauthor{deepwalk} proposed their scalable graph embedding 
-algorithm named DeepWalk. Their results on node classification proved the 
+algorithm named \emph{Deepwalk}. Their results on node classification proved the 
 effectiveness of \emph{Deepwalk} in learning a lower dimensionality 
-representation of a complex network. Subsequent  work to DeepWalk further 
+representation of a complex network. Subsequent work to DeepWalk further 
 improved node classification accuracy by modifying graph context 
-generation process \cite{line,grarep,planetoid,node2vec}. 
-
-It is worthwhile to mention that \emph{Planetoid}, proposed by 
-\citeauthor{planetoid}, works slightly different to other skipgram-based 
-models. Instead of generating graph context only from the network 
-structure, \emph{Planetoid} also samples nodes based on training labels. 
-Furthermore, \emph{Planetoid} injects the network
-node's feature vectors for better embedding and node labeling results.
+generation process \cite{line,grarep,planetoid,node2vec}. Generally, these
+algorithms optimize the following objective:
+\begin{equation} 
+\mathcal{O} = \argmax_{W^{\scalebox{0.75}{emb}}}\ ( 
+\ell_{\scalebox{0.75}{random walk}}),
+\label{eq:deepwalkobj}
+\end{equation}
+where $\ell_{\scalebox{0.75}{random walk}}$ represents the log-likelihood
+of the network context generated by random walks on the given network. We have
+the pairwise potential between a \emph{context} vertex $v_c$ and a \emph{target}
+vertex $v_t$ as follow:
+\begin{equation}
+\begin{aligned}
+	\phi_{v_t,v_c} &= \exp{( \langle \omega_{v_c} ,  \omega_{v_t} \rangle )} \\
+	\ell_{\scalebox{0.75}{random walk}} &= \sum_{v_t,v_c}
+	\log{(\frac{\phi_{v_t,v_c}}{\sum_{k \in V} \phi_{v_k,v_t}})}
+\end{aligned}
+\label{eq:deepwalkprob}
+\end{equation}
+In here, $\langle \cdot , \cdot \rangle$ denotes the inner product; $\omega_v$ 
+denotes the real vector representation of node $v$; and $W^{\scalebox{0.75}{emb}}$
+is the output matrix containing all real vector representations. Although the 
+log-likehood given by equation \ref{eq:deepwalkobj} is tractable, computing the
+normalization factor still remains an intractable task. Therefore, several 
+approximation methods such as hierarchical softmax \cite{deepwalk} or noise
+contrastive estimation \cite{nce,node2vec} were used to further boost the
+computational speed of the algorithms of this category. The obtained embedding
+matrix will be used as a feature matrix for various machine learning algorithms
+such as node classification (Multi-class Linear Regression model) or link 
+prediction.
 
 \subsection{Semi-supervised Network Labeling}
 
-Another semi-supervised learning model similar to the aforementioned
-\emph{Planetoid} is Graph Convolutional Networks (GCN) \cite{gcn}. 
-GCN uses the graph convolutional operation as a transformation for 
-feature vectors on a network. By stacking these convolutional operation 
-into a neural network, the authors of GCN has been able to achieve 
+\emph{Planetoid}, proposed by \citeauthor{planetoid}, works slightly different to 
+other Skipgram-based models. Instead of generating graph context only from the
+network structure, \emph{Planetoid} also samples nodes based on training labels. 
+Furthermore, \emph{Planetoid} injects the network node's feature vectors for better 
+embedding and node labeling results. \emph{Planetoid} can be considered an
+improvement of \emph{SemiEmb}, proposed in \cite{weston2012deep}. Another semi-
+supervised learning model similar to \emph{Planetoid} is Graph Convolutional 
+Networks (GCN) \cite{gcn}. GCN uses the graph convolutional operation as a 
+transformation for feature vectors on a network. By stacking these convolutional 
+operation into a neural network, the authors of GCN has been able to achieve 
 remarkable accuracy in node classification and link prediction results 
-compared to the previous researches. Moreover, the running time for GCN 
-was superior compared to other algorithms such as \emph{Deepwalk} or 
-\emph{Planetoid}.
+compared to the previous unsupervised and semi-supervised algorithms. Moreover, the
+running time for GCN was superior compared to other algorithms such as 
+\emph{Deepwalk} or \emph{Planetoid}. In the following paragraphs, we present 
+the details for \emph{GCN}.
 
 The convolution on a graph $G$ of a function of the graph 
 Laplacian $g_{\theta}$ (also called a filter or a kernel) 
 and a signal $x$ is defined as:
-$$g_{\theta} \ast x = U g_{\theta} U^{\top} x,$$
-where $L = U \Lambda U^\top$, $U$ is the Fourier basis
-and $\Lambda$ is called the frequencies of the graph. 
+$$g_{\theta} \ast x = g_{\theta}(\mathcal{L}) x,$$
+where the normalized Laplacian $\mathcal{L} = U \Lambda U^\top$; 
+$U$ is the Fourier basis and $\Lambda$ is called the frequencies of the graph. 
 Graph convolution has been shown effective in processing
 graph-structured data, and also argued to be the generalization
 of convolutional networks
@@ -214,31 +249,74 @@ of convolutional networks
 In practice, given a graph where each node has a feature vector,
 we can treat the feature vector of the graph as signals. The output $y$
 of these "signals" filtered by $g_\theta$ on the graph is given by
-the graph convolution and deconvolution operations: 
+the graph convolution and its inverse: 
 \begin{equation}
-\label{eq:1}
+\label{eq:graphconv}
 y = g_\theta (U \Lambda U^\top) x = U (g_\theta(\Lambda) U^\top)x
 \end{equation}
-
-\begin{figure*} \label{fig:sigm3}
-    \centering
-    \includegraphics[width=0.9\linewidth]{foo_2col}
-    \caption{Significant graph for size-3 motifs}
-\end{figure*}
-
-
-Computing equation \ref{eq:1} is computationally expensive
+Computing equation \ref{eq:graphconv} is computationally expensive
 due to the matrix multiplication and eigenvector decomposition operations.
 Therefore, fast estimation methods such as Chebyshev polynomial was suggested
-in \cite{hammond2011wavelets}.
+in \cite{hammond2011wavelets}. Under the assumption
+$\lambda_{\scalebox{0.75}{max}} \approx 2$, \citeauthor{gcn} further
+proposed the linear approximation for filtering signals $X$ on a graph:
+\begin{equation}
+\label{eq:gcnapprox}
+y \approx \theta \left( I + D^{-1/2}
+A D^{-1/2} \right)
+\end{equation}
+Following the graph convolution approximation above, the \emph{GCN} neural network
+model can be described by the forward computation and the loss function:
+\begin{equation}
+\label{eq:gcnnn}
+\begin{aligned}
+	Z_{\scalebox{0.75}{forward}} &=
+\mbox{softmax}\left(\hat{A} \mbox{ ReLU}(\hat{A}XW^{(0)})W^{(1)}\right) \\
+	loss &= -\sum_{l \in \mathcal{Y}_L} \sum^F_{f=1} Y_{lf}\mbox{ln} Z_{lf} \\
+\end{aligned}
+\end{equation}
+where $W$ is the weight matrix for hidden layer (0) and output layer (1);
+$\hat{A} = \tilde{D}^{-1/2} \tilde{A} \tilde{D}^{-1/2}$ is called the
+\emph{Renormalization Trick} by the authors \cite{gcn}. The loss function here
+is the cross-entropy error over all labeled samples similar to the model proposed
+in \cite{planetoid}. The neural network is trained using Adam \cite{adam} with
+back-propagation. 
 
-These aforementioned approaches to graph embeddings
-are similar in the sense that they all learn latent representations
-of a complex network from data, then use this representation to solve 
-a network problem (e.g. link prediction, node labeling, community
-detection) using various machine learning algorithms.
+\begin{figure*}
+    \centering
+    \includegraphics[width=0.9\linewidth]{sigm}
+    \caption{Significant graph for selected motifs (size-3 and size-4)}
+    \label{fig:sigm}
+\end{figure*}
 
 \subsection{Motif Conductance}
+
+\begin{algorithm}[h] \label{al:madj}
+\KwData{Graph $G = (V,E)$}
+\KwIn{isBinary, $\mathbf{m}$, $\mathcal{A}$}
+\KwOut{$M^{\mathbf{m}}$}
+\Begin{
+    diam $\leftarrow$ Diameter($\mathbf{m}$, $\mathcal{A}$); \\
+    $V$ $\leftarrow$ $G$.nodes(); \\
+    \For{$i$ $\in$ nodes} {
+        $G'$ $\leftarrow$ induced graph from BFS(node, diam); \\
+        \For{$j$ $\in$ $G'$.nodes()} {
+            \uIf{(i,j) satisfies $\mathcal{A}$} {
+                $c \leftarrow \mbox{count } \mathbf{m} \mbox{ in } G'$; \\
+                \uIf{isBinary} {
+                	$M_{i,j}^{\mathbf{m}} \leftarrow 1$ if $c > 0$ else $0$;\\
+                } \uElse {
+                	$M_{i,j}^{\mathbf{m}} \leftarrow c$;\\
+                }
+            } \uElse {
+                $M_{i,j}^{\mathbf{m}} \leftarrow 0$; \\
+            }
+        }
+    }
+\KwRet{$M^{\mathbf{m}}$}
+}
+\caption{Motif co-occurrence matrix generation}
+\end{algorithm}
 
 As an generalization of \emph{network conductance} (also graph conductance 
 or Cheeger constant of a graph), \citeauthor{juremotif} proposed
@@ -256,7 +334,9 @@ equivalent with minimizing the number of motif $\mathbf{m}$ gets
 anchor node in $S$ and at least one in $\bar{S}$. \citeauthor{juremotif}
 then perform motif analysis and graph clustering based on this
 definition of motif conductance. Their result further confirms the
-structural role of motifs in a complex network. 
+structural role of motifs in a complex network. It also hinted that there
+is a strong motif structure within a community, which we can use as
+prior knowledge for solving problems on networks.
 
 \begin{definition} \emph{Motif co-occurrence matrix}:
 Given a graph $G = (V,E)$, in which $v \in V$. The motif co-occurrence 
@@ -272,18 +352,6 @@ its anchor set. Algorithm \ref{al:madj} provides detail for constructing
 a motif co-occurrence matrix.
 \end{definition}
 
-Algorithms involving network motifs have high time complexity due to
-the problem of graph isomorphism. For such reason, in most large graph
-analysis, only motifs of size 5 or smaller are considered. In our 
-experiments, we only consider motif of size 4 at most. This limitation is 
-due to the large size of networks that we experimented. Although the
-analysis is limited by the motif size, we have been able to empirically 
-show the effectiveness of the motif-aware methods. Furthermore, as 
-mentioned in \cite{juremotif}, motif algorithms can be easily 
-parallelized. Therefore, the extension to larger size motifs can be made 
-possible by parallelizing the motif analysis procedures. Further 
-discussion on parallelizing the motif analysis process be provided in 
-later sections.
 
 \section{Methods}
 
@@ -293,12 +361,6 @@ Secondly, we present two approaches employing motif patterns to
 learn graph embeddings: \emph{motifwalk} and \emph{m-gcn}.
 
 \subsection{Motifs Analysis}
-
-\begin{figure*} \label{fig:sigm4}
-    \centering
-    \includegraphics[width=0.9\linewidth]{foo_2col}
-    \caption{Significant graph for size-4 motifs}
-\end{figure*}
 
 In the previous section, we have explained the importance of
 network motifs in network analysis. In this section, we present
@@ -321,7 +383,7 @@ of the null model; and $\sigma_\mathbf{m}(G_{\scalebox{0.75}{random}})$ is
 the variance. The $z\mbox{-score}$'s values can range from 
 $-\infty$ to $+\infty$. In practice, the most simple motifs (figure 
 \ref{fig:m3}-m2,3,4) often have the highest frequencies and negative $z
-\mbox{-score}$. We ignored such motifs in our analysis. We select motif 
+\mbox{-score}$. We ignored such motifs in our analysis. We select the motif 
 which has the highest positive $z\mbox{-score}$ because these motifs
 highlight the difference between the empirical network and random 
 networks. 
@@ -338,12 +400,13 @@ U^{\top}_{\mathbf{m}}
 In here, $\Lambda_{\mathbf{m}} = diag(\lambda_{\mathbf{m}})$ is called the 
 frequencies of the motif network; $\mathcal{L}_{\mathbf{m}}$ is the 
 normalized motif Laplacian given by:
-\begin{equation} \label{eq:eigm}
+\begin{equation} 
 \begin{aligned}
 \mathcal{L}_{\mathbf{m}} &= D_{\mathbf{m}}^{-1/2} L_{\mathbf{m}} 
 D_{\mathbf{m}}^{-1/2} \\
 &= I - D_{\mathbf{m}}^{-1/2} M^{\mathbf{m}} D_{\mathbf{m}}^{-1/2}
 \end{aligned}
+\label{eq:eigm}
 \end{equation}
 where $L_{\mathbf{m}} = D_{\mathbf{m}} - M^{\mathbf{m}}$; $M^{\mathbf{m}}$
 is the motif co-occurrence matrix; and $D_{\mathbf{m}} = \mbox{diag} 
@@ -356,11 +419,12 @@ as $\hat{x} = U_{\mathbf{m}}^{\top}x$, and its inverse as
 $x = U_{\mathbf{m}}\hat{x}$. It follows that the output of signal $x$
 filtered by a function of graph Laplacian $g_{\theta}(L)$ parameterized
 by a set of coefficient $\theta$ is given by:
-\begin{equation} \label{eq:filter}
+\begin{equation}
 \begin{aligned}
 y &= g_{\theta} \ast x =  g_\theta (U_{\mathbf{m}} \Lambda_{\mathbf{m}} U_{\mathbf{m}}^\top) x \\
 &= U_{\mathbf{m}} (g_\theta(\Lambda_{\mathbf{m}}) U^\top_{\mathbf{m}})x
 \end{aligned}
+\label{eq:filter}
 \end{equation}   
 
 Due to the complexity of eigenvector decomposition and matrix 
@@ -374,42 +438,7 @@ M^{\mathbf{m}}D^{-1/2}_{\mathbf{m}} \\
 &\approx \theta \left( I + D^{-1/2}_{\mathbf{m}}
 M^{\mathbf{m}}D^{-1/2}_{\mathbf{m}} \right)
 \end{aligned}
-\end{equation} 
-
-The motif Laplacian is a positive semi-definite matrix
-similar to the matrices used in previous graph convolution researches 
-\cite{hammond2011wavelets,defferrard2016convolutional,gcn}. However,
-the difference is that motif Laplacian 
-
-
-
-
-\begin{algorithm}[h] \label{al:madj}
-\KwData{Graph $G = (V,E)$}
-\KwIn{isBinary, $\mathbf{m}$, $\mathcal{A}$}
-\KwOut{$M^{\mathbf{m}}$}
-\Begin{
-    diam $\leftarrow$ Diameter($\mathbf{m}$, $\mathcal{A}$); \\
-    $V$ $\leftarrow$ $G$.nodes(); \\
-    \For{$i$ $\in$ nodes} {
-        $G'$ $\leftarrow$ induced graph from BFS(node, diam); \\
-        \For{$j$ $\in$ $G'$.nodes()} {
-            \uIf{(i,j) satisfies $\mathcal{A}$} {
-                $c \leftarrow \mbox{count } \mathbf{m} \mbox{ in } G'$; \\
-                \uIf{isBinary} {
-                	$M_{i,j}^{\mathbf{m}} \leftarrow 1$ if $c > 0$ else $0$
-                } \uElse {
-                	$M_{i,j}^{\mathbf{m}} \leftarrow c$
-                }
-            } \uElse {
-                $M_{i,j}^{\mathbf{m}} \leftarrow 0$ \\
-            }
-        }
-    }
-\KwRet{$M^{\mathbf{m}}$}
-}
-\caption{Motif co-occurrence matrix generation}
-\end{algorithm}
+\end{equation} w
 
 \subsection{Biased Random Walk}
 
@@ -417,14 +446,14 @@ Previous Skipgram-based graph embedding models employ random
 walks for graph context generation. To improve the embedding results,
 structure-aware context generation methods were proposed in 
 \cite{line,node2vec}. However, the limitation of \emph{LINE} lies at the 
-fact that it only consider the second-order proximity (bi-fan motif),  
-\emph{node2vec} requires the costly cross-validation search for its hyper-
+fact that it only consider the second-order proximity (bi-fan motif), and  
+\emph{node2vec} requires the costly cross-validation grid search for its hyper-
 parameters $p$ and $q$. To solve the above mentioned problems, we propose 
 a biased random walk algorithm for graph context generation which can be 
-considered the generalization of \emph{LINE} and \emph{deepwalk}. Since 
+considered the generalization of \emph{LINE} and \emph{Deepwalk}. Since 
 our algorithm decides the walk pattern supported by the most significant 
-network motif before performing context generation, we achieve the 
-simplicity of \emph{deepwalk} while having the structure-aware context as 
+network motif before performing context generation, our method has the 
+simplicity of \emph{Deepwalk} while having the structure-aware context as 
 of \emph{LINE} and \emph{node2vec}.
 
 Our \emph{motifwalk} algorithm has two steps: motif adjacency matrix
@@ -449,28 +478,29 @@ embedding skipgram model. Algorithm \ref{al:madj} and algorithm
     \For{node $\in$ nodes} {
         walks $\leftarrow$ [~]; \\
         \For{i=0; i $<$ nwalk; ++i} {
-            walks += RandomWalk(graph=$G$,start=node, len=length)
+            walks += RandomWalk(graph=$G$, \mbox{~~}start=node, len=length);
         }
-        \For{i=0; i<nwalk; ++i} {
-            walks += RandomWalk(graph=$G_{\mathbf{m}}$start=node, len=length)
+        \For{i=0; i $<$ nwalk; ++i} {
+            walks += RandomWalk(graph=$G_{\mathbf{m}}$, \mbox{~~}start=node, len=length);
         }
-        context += walks
+        context += walks;
     }
 \KwRet{context}
 }
 \caption{Motif-aware graph context generation}
 \end{algorithm}
 
-Similar to Skipgram-based models, \emph{motifwalk} is an unsupervised
+Similar to other Skipgram-based models, \emph{motifwalk} is an unsupervised
 algorithm which learns graph embedding through an optimization process. 
 Since there is two network contexts generated in our algorithm, the 
 objective function is given by:
-\begin{equation} \label{eq:mloss}
+\begin{equation} 
 \begin{aligned}
 &\mathcal{O} = \argmax_{W^{\scalebox{0.75}{emb}}}\ (\gamma 
 \ell_{\scalebox{0.75}{random walk}} + (1-\gamma) \ell_{\scalebox{0.75}
 {motif walk}}) \\
 \end{aligned}
+\label{eq:mloss}
 \end{equation}
 where $\ell_{\scalebox{0.75}{random walk}}$ and $\ell_{\scalebox{0.75}
 {motif walk}}$
@@ -498,12 +528,6 @@ for link prediction and node classification.
 
 \subsection{Motif Convolutional Architecture}
 
-In this section we propose our motif convolutional deep
-neural network architecture for semi-supervised graph labeling
-tasks. As mentioned above, graph convolution is a signal processing technique in which
-a network of signals reside on nodes (e.g. sensor network) is
-processed in the graph spectral domain defined on the graph structure.
-
 In the previous section, we have defined the graph convolution
 operation on motif co-occurrence matrix. We use the motif convolution
 as the second layer in our motif convolutional network (m-gcn). Based on the 
@@ -526,8 +550,9 @@ softmax cross entropy loss, the weight of layer $k$ is updated as follow:
 \frac{\partial E}{\partial W^{(k)}_{i,j}} = \sum^S_{s=1} [x]^\top \frac{\partial E}{\partial y_{k,j}}
 \end{equation}
 
-\begin{table*}
+\begin{table}
 \centering
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{c | c c c c}
 \textbf{\textsc{Method}} & \textsc{Citeseer} & \textsc{Cora} & \textsc{Pubmed} & \textsc{NELL} \\
 \hline \\
@@ -539,20 +564,19 @@ GCN & 70.3 & 81.5 & 79.0 & 66.0 \\
 \hline \\
 m-GCN (rand. splits) & 70.2 $\pm$ 0.5 & 81.1 $\pm$ 0.5 & 79.3 $\pm$ 0.7 & 62.0 $\pm$ 1.4 \\
 \end{tabular}%
+}
 \caption{Accuracy score for multi-class labeling}
 \label{t:re}
-\end{table*}
+\end{table}
 
 \section{Experiments}
-
-\subsection{Datasets}
 
 To compare \emph{motifwalk} performance with other unsupervised graph
 embedding models, we have chosen the node labeling task on various
 type of networks (with ground-truth node labels). In this paper, we
 compare the performance of \emph{motifwalk} to 
 \emph{Spectral Clustering}, 
-\emph{deepwalk} \cite{deepwalk}, \emph{node2vec} \cite{node2vec}. Table \ref{t:ungraph}
+\emph{Deepwalk} \cite{deepwalk}, \emph{node2vec} \cite{node2vec}. Table \ref{t:ungraph}
 gives the networks' statistics. The second model \emph{m-gcn} is a semi-supervised model for node
 labeling task. We present the comparison of our model to \emph{planetoid} and
 \emph{gcn} under the same experimental setting in \cite{gcn}. Table \ref{t:segraph}
@@ -601,13 +625,11 @@ consist of scientific papers and their citations represented by directed edges.
 \label{t:ungraph}
 \end{table}
 
-
-\subsection{Motif significance}
-
 For each of the networks in experiment, we computes the z-scores for
 size-3 and size-4 directed motifs and report the motif significance
-in figure \ref{fig:sigm3} and \ref{fig:sigm4}. Based on these results, 
-we select the most significant motif of each network for our algorithms. 
+in figure \ref{fig:sigm}. Based on these results, 
+we select the most significant motif of each network for our algorithms
+(figure \ref{t:motifs}. 
 
 \begin{table}
 \centering
@@ -657,12 +679,16 @@ Our paper's contributions are proposing an extension to the graph convolutional
 architecture; proposing the uses and demonstrate the importance of motifs in
 real world networks.
 
-Limitation: 
-
-
-\section*{Acknowledgments}
-
-I would like to thank.
+Algorithms involving network motifs have high time complexity due to
+the problem of graph isomorphism. For such reason, in most large graph
+analysis, only motifs of size 5 or smaller are considered. In our 
+experiments, we only consider motif of size 4 at most. This limitation is 
+due to the large size of networks that we experimented. Although the
+analysis is limited by the motif size, we have been able to empirically 
+show the effectiveness of the motif-aware methods. Furthermore, as 
+mentioned in \cite{juremotif}, motif algorithms can be easily 
+parallelized. Therefore, the extension to larger size motifs can be made 
+possible by parallelizing the motif analysis procedures.
 
 %% The file named.bst is a bibliography style file for BibTeX 0.99c
 \bibliographystyle{named}
