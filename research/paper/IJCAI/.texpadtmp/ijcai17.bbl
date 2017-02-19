@@ -1,15 +1,9 @@
 \begin{thebibliography}{}
 
-\bibitem[\protect\citeauthoryear{Alon}{2006}]{alon2006introduction}
-Uri Alon.
-\newblock {\em An introduction to systems biology: design principles of
-  biological circuits}.
-\newblock CRC press, 2006.
-
 \bibitem[\protect\citeauthoryear{Alon}{2007}]{netmotif}
 Uri Alon.
 \newblock Network motifs: theory and experimental approaches.
-\newblock {\em Nature Reviews Genetics}, 8(6):450--461, 2007.
+\newblock {\em Nat. Rev. Genetics}, 8(6):450--461, 2007.
 
 \bibitem[\protect\citeauthoryear{Bader \bgroup \em et al.\egroup
   }{2003}]{molecule}
@@ -34,26 +28,18 @@ Austin~R Benson, David~F Gleich, and Jure Leskovec.
 \newblock Higher-order organization of complex networks.
 \newblock {\em Science}, 353(6295):163--166, 2016.
 
-\bibitem[\protect\citeauthoryear{Breitkreutz \bgroup \em et al.\egroup
-  }{2008}]{PPI}
-Bobby-Joe Breitkreutz, Chris Stark, Teresa Reguly, Lorrie Boucher, Ashton
-  Breitkreutz, Michael Livstone, Rose Oughtred, Daniel~H Lackner, J{\"u}rg
-  B{\"a}hler, Valerie Wood, et~al.
-\newblock The biogrid interaction database: 2008 update.
-\newblock {\em Nucleic acids research}, 36(suppl 1):D637--D640, 2008.
-
 \bibitem[\protect\citeauthoryear{Callaway \bgroup \em et al.\egroup
   }{2000}]{callaway2000network}
 Duncan~S Callaway, Mark~EJ Newman, Steven~H Strogatz, and Duncan~J Watts.
 \newblock Network robustness and fragility: Percolation on random graphs.
-\newblock {\em Physical review letters}, 85(25):5468, 2000.
+\newblock {\em Phys. Rev. Let.}, 85(25):5468, 2000.
 
 \bibitem[\protect\citeauthoryear{Cao \bgroup \em et al.\egroup }{2015}]{grarep}
 Shaosheng Cao, Wei Lu, and Qiongkai Xu.
 \newblock Grarep: Learning graph representations with global structural
   information.
-\newblock In {\em Proceedings of the 24th ACM International on Conference on
-  Information and Knowledge Management}, pages 891--900. ACM, 2015.
+\newblock In {\em Procs. of the 24th ACM Int. Conf. on Information and
+  Knowledge Management}, pages 891--900. ACM, 2015.
 
 \bibitem[\protect\citeauthoryear{Carlson \bgroup \em et al.\egroup
   }{2010}]{nell}
@@ -73,8 +59,8 @@ Micha{\"e}l Defferrard, Xavier Bresson, and Pierre Vandergheynst.
 \bibitem[\protect\citeauthoryear{Grover and Leskovec}{2016}]{node2vec}
 Aditya Grover and Jure Leskovec.
 \newblock node2vec: Scalable feature learning for networks.
-\newblock In {\em Proceedings of the 22nd ACM SIGKDD International Conference
-  on Knowledge Discovery and Data Mining}, 2016.
+\newblock In {\em Proceedings of the 22nd ACM SIGKDD Int. Conf. on Knowledge
+  Discovery and Data Mining}, 2016.
 
 \bibitem[\protect\citeauthoryear{Gutmann and Hyv{\"a}rinen}{2010}]{nce}
 Michael Gutmann and Aapo Hyv{\"a}rinen.
@@ -94,13 +80,7 @@ David~K Hammond, Pierre Vandergheynst, and R{\'e}mi Gribonval.
 Christopher~J Honey, Rolf K{\"o}tter, Michael Breakspear, and Olaf Sporns.
 \newblock Network structure of cerebral cortex shapes functional connectivity
   on multiple time scales.
-\newblock {\em Proceedings of the National Academy of Sciences},
-  104(24):10240--10245, 2007.
-
-\bibitem[\protect\citeauthoryear{Jolliffe}{2002}]{pca}
-Ian Jolliffe.
-\newblock {\em Principal component analysis}.
-\newblock Wiley Online Library, 2002.
+\newblock {\em Procs. of the Nat. Acad. of Sci.}, 104(24):10240--10245, 2007.
 
 \bibitem[\protect\citeauthoryear{Kaiser and
   Hilgetag}{2006}]{kaiser2006nonoptimal}
@@ -117,13 +97,12 @@ Diederik Kingma and Jimmy Ba.
 \bibitem[\protect\citeauthoryear{Kipf and Welling}{2016}]{gcn}
 Thomas~N Kipf and Max Welling.
 \newblock Semi-supervised classification with graph convolutional networks.
-\newblock {\em arXiv preprint arXiv:1609.02907}, 2016.
+\newblock {\em arXiv:1609.02907}, 2016.
 
 \bibitem[\protect\citeauthoryear{Mangan and Alon}{2003}]{mangan2003structure}
 Shmoolik Mangan and Uri Alon.
 \newblock Structure and function of the feed-forward loop network motif.
-\newblock {\em Proceedings of the National Academy of Sciences},
-  100(21):11980--11985, 2003.
+\newblock {\em Procs. of the Nat. Acad. of Sci.}, 100(21):11980--11985, 2003.
 
 \bibitem[\protect\citeauthoryear{Mikolov and Dean}{2013}]{skipgram}
 T~Mikolov and J~Dean.
@@ -139,7 +118,7 @@ Ron Milo, Shai Shen-Orr, Shalev Itzkovitz, Nadav Kashtan, Dmitri Chklovskii,
 \newblock {\em Science}, 298(5594):824--827, 2002.
 
 \bibitem[\protect\citeauthoryear{Morin and Bengio}{2005}]{hs}
-Frederic Morin and Yoshua Bengio.
+F.~Morin and Y.~Bengio.
 \newblock Hierarchical probabilistic neural network language model.
 \newblock In {\em Aistats}, volume~5, pages 246--252. Citeseer, 2005.
 
@@ -152,8 +131,8 @@ Mark Newman.
   }{2014}]{deepwalk}
 Bryan Perozzi, Rami Al-Rfou, and Steven Skiena.
 \newblock Deepwalk: Online learning of social representations.
-\newblock In {\em Proceedings of the 20th ACM SIGKDD international conference
-  on Knowledge discovery and data mining}, pages 701--710. ACM, 2014.
+\newblock In {\em Procs. of the 20th ACM SIGKDD Int. Conf. on Knowledge
+  discovery and data mining}, pages 701--710. ACM, 2014.
 
 \bibitem[\protect\citeauthoryear{Sen \bgroup \em et al.\egroup }{2008}]{crp}
 Prithviraj Sen, Galileo Namata, Mustafa Bilgic, Lise Getoor, Brian Galligher,
@@ -172,14 +151,14 @@ David~I Shuman, Sunil~K Narang, Pascal Frossard, Antonio Ortega, and Pierre
 \bibitem[\protect\citeauthoryear{Tang and Liu}{2009}]{blogcatalog}
 Lei Tang and Huan Liu.
 \newblock Relational learning via latent social dimensions.
-\newblock In {\em Proceedings of the 15th ACM SIGKDD international conference
-  on Knowledge discovery and data mining}, pages 817--826. ACM, 2009.
+\newblock In {\em Proceedings of the 15th ACM SIGKDD Int. Conf. on Knowledge
+  discovery and data mining}, pages 817--826. ACM, 2009.
 
 \bibitem[\protect\citeauthoryear{Tang \bgroup \em et al.\egroup }{2015}]{line}
 Jian Tang, Meng Qu, Mingzhe Wang, Ming Zhang, Jun Yan, and Qiaozhu Mei.
 \newblock Line: Large-scale information network embedding.
-\newblock In {\em Proceedings of the 24th International Conference on World
-  Wide Web}, pages 1067--1077, 2015.
+\newblock In {\em Procs. of the 24th Int. Conf. on WWW}, pages 1067--1077,
+  2015.
 
 \bibitem[\protect\citeauthoryear{Tran \bgroup \em et al.\egroup
   }{2014}]{motifdecrev}
@@ -211,7 +190,7 @@ Jason Weston, Fr{\'e}d{\'e}ric Ratle, Hossein Mobahi, and Ronan Collobert.
   }{2016}]{planetoid}
 Zhilin Yang, William~W. Cohen, and Ruslan Salakhutdinov.
 \newblock Revisiting semi-supervised learning with graph embeddings.
-\newblock In {\em Proceedings of the 33rd International Conference on Machine
-  Learning}. ICML, 2016.
+\newblock In {\em Proc. of the 33rd Int. Conf. on Machine Learning}. ICML,
+  2016.
 
 \end{thebibliography}

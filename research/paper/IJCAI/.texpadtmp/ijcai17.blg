@@ -3,44 +3,44 @@ Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
 The top-level auxiliary file: /Users/hoangnt/Dropbox/WorkingFiles/motifwalk/research/paper/IJCAI/.texpadtmp/ijcai17.aux
 The style file: ../named.bst
 Database file #1: ../ijcai17.bib
-You've used 34 entries,
+You've used 31 entries,
             2439 wiz_defined-function locations,
-            755 strings with 10629 characters,
-and the built_in function-call counts, 14721 in all, are:
-= -- 1518
-> -- 637
+            741 strings with 9991 characters,
+and the built_in function-call counts, 13506 in all, are:
+= -- 1407
+> -- 565
 < -- 15
-+ -- 219
-- -- 216
-* -- 1174
-:= -- 2322
-add.period$ -- 108
-call.type$ -- 34
-change.case$ -- 240
-chr.to.int$ -- 34
-cite$ -- 34
-duplicate$ -- 606
-empty$ -- 1077
-format.name$ -- 261
-if$ -- 3082
++ -- 191
+- -- 190
+* -- 1070
+:= -- 2112
+add.period$ -- 99
+call.type$ -- 31
+change.case$ -- 218
+chr.to.int$ -- 31
+cite$ -- 31
+duplicate$ -- 562
+empty$ -- 995
+format.name$ -- 232
+if$ -- 2846
 int.to.chr$ -- 1
 int.to.str$ -- 0
-missing$ -- 37
-newline$ -- 173
-num.names$ -- 102
-pop$ -- 232
+missing$ -- 32
+newline$ -- 158
+num.names$ -- 93
+pop$ -- 205
 preamble$ -- 1
-purify$ -- 277
+purify$ -- 250
 quote$ -- 0
-skip$ -- 505
+skip$ -- 474
 stack$ -- 0
-substring$ -- 762
-swap$ -- 178
+substring$ -- 714
+swap$ -- 172
 text.length$ -- 15
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 260
+type$ -- 244
 warning$ -- 0
-while$ -- 118
-width$ -- 39
-write$ -- 444
+while$ -- 110
+width$ -- 35
+write$ -- 407
