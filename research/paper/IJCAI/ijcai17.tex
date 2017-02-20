@@ -482,7 +482,7 @@ embedding Skipgram model. Algorithm \ref{al:madj} and algorithm
         \For{i=0; i $<$ nwalk; ++i} {
             walks += RandomWalk(graph=$G$, \mbox{~~}start=node, len=length);
         }
-        \For{i=0; i $<$ nwalk; ++i} {
+        \For{i=0; i $<$ nmwalk; ++i} {
             walks += RandomWalk(graph=$G_{\mathbf{m}}$, \mbox{~~}start=node, len=length);
         }
         context += walks;
@@ -639,7 +639,6 @@ the f1-macro score for comparison.
 
 \begin{table}
 \centering
-\resizebox{\columnwidth}{!}{%
 \begin{tabular}{c | c c}
 \textbf{\textsc{Method}} & \textsc{BlogCatalog} & \textsc{Citeseer} \\
 \hline \\
@@ -648,7 +647,6 @@ Deepwalk & 0.22 & 0.66\\
 Node2Vec & 0.22 & 0.66\\
 \textbf{motifwalk} & \textbf{0.24} & \textbf{0.68}\\
 \end{tabular}%
-}
 \caption{F1-macro score for multi-class labeling}
 \label{t:re}
 \end{table}
@@ -689,7 +687,7 @@ This graph context
 generation algorithm can be seen as the generalization of \emph{Deepwalk} and
 \emph{LINE}. On the other hand, \emph{m-gcn} uses the motif network as a Fourier 
 basis for graph convolution. As a result, both approaches yields improvements 
-compared to state-of-the-art algorithms on benchmark datasets. Furthermore, based 
+compared with state-of-the-art algorithms on benchmark datasets. Furthermore, based 
 on the result here, we believe the \emph{m-gcn} model can also be used as mean to 
 measure a motif's significant similar to motif conductance metric proposed by 
 \citeauthor{juremotif}.
