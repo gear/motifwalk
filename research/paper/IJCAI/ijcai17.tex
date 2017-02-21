@@ -449,9 +449,9 @@ walks for graph context generation. To improve the embedding results,
 structure-aware context generation methods were proposed in 
 \cite{line,node2vec}. However, the limitation of \emph{LINE} lies at the 
 fact that it only consider the second-order proximity (bi-fan motif), and  
-\emph{node2vec} requires the costly cross-validation grid search for its hyper-
-parameters $p$ and $q$. To solve the above-mentioned problems, we propose 
-a biased random walk algorithm for graph context generation which can be 
+\emph{node2vec} requires the costly cross-validation grid search 
+for its hyper-parameters $p$ and $q$. To solve the above-mentioned problems, we 
+propose a biased random walk algorithm for graph context generation which can be 
 considered the generalization of \emph{LINE} and \emph{Deepwalk}. Since 
 our algorithm decides the walking pattern supported by the most significant 
 network motif before performing context generation, our method has the 
@@ -556,7 +556,7 @@ $j^{\scalebox{0.75}{th}}$ output feature map of the sample $s$.
 
 To compare \emph{motifwalk} performance with other unsupervised graph
 embedding models, we have chosen the node labeling task on various
-type of networks (with ground-truth node labels).We
+type of networks (with ground-truth node labels). We
 compare the performance of \emph{motifwalk} to \emph{Spectral Clustering}, 
 \emph{Deepwalk} \cite{deepwalk}, \emph{node2vec} \cite{node2vec}. 
 Table \ref{t:ungraph} gives the networks' statistics. The second model 
@@ -631,8 +631,8 @@ in Figure \ref{fig:sigm}. The motif used for each graph is given in Table
 \end{table}
 \section{Results}
 \textbf{Motifwalk} algorithm is performed with following parameters: Number of
-walks per node ($nwalk$): 8; Walk length ($length$): 80; Skip-gram window size: 1
-0; Samples per target: 4;  Number of motif walks per node ($nmwalk$): 2. The
+walks per node ($nwalk$): 8; Walk length ($length$): 80; Skip-gram window size: 
+10; Samples per target: 4;  Number of motif walks per node ($nmwalk$): 2. The
 learned embeddings are used to train a Multi-class Linear Regression model with
 train-test split ratio of 0.5 (for all dataset in table \ref{t:ungraph}). We report
 the f1-macro score for comparison.
@@ -680,8 +680,8 @@ m-GCN (rand. splits) & 70.2 $\pm$ 0.5 & 81.1 $\pm$ 0.5 & 79.3 $\pm$ 0.7 & 62.0 $
 
 Our results in Table \ref{t:resem} have shown the effectiveness of using network 
 motifs in learning network embeddings and classifying network nodes. The connection 
-between two of our approaches is that both of them utilizes the network co-
-occurrence matrix. \emph{Motifwalk} performs random walks on the induced motif 
+between two of our approaches is that both of them utilizes the network 
+co-occurrence matrix. \emph{Motifwalk} performs random walks on the induced motif 
 network to generate a network context that is biased toward the targeted motif. 
 This graph context
 generation algorithm can be seen as the generalization of \emph{Deepwalk} and
