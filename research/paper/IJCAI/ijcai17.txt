@@ -1,6 +1,6 @@
 Reply to Review #26292
 
-Thank you very much for your comprehensive comments for our paper. The main idea of our paper is to show that some knowledge about a complex network (the main motif) can be exploited to improve various machine learning algorithms. To be clear, our pipeline in this paper contains two steps: Motif discovery -> Machine learning applications on networks. As we addressed in our paper, the main bottle-neck is the process of motif discovery, which can be much faster by random sampling. For the running time of motifwalk and m-GCN (given a motif), our running time is the same as other state-of-the-art algorithms, while the performance is better. About your comments on our experimental network size, we admit that the network size is not particularly large. However, these networks are the standard benchmark (used in Deepwalk, GCN, node2vec). Further experiment on truly large network (several millions of nodes, billions of edges) is desirable, but it is more of an implementation challenge (memory management for m-GCN and distributed computation for motifwalk) than a new idea. Besides, please understand that because of the limited number of pages, we cannot contain all related concepts in our paper.
+Thank you very much for your comprehensive comments for our paper. The main idea of our paper is to show that some knowledge about a complex network (the main motif) can be exploited to improve various machine learning algorithms. To be clear, our pipeline in this paper contains two steps: Motif discovery -> Machine learning applications on networks. As we addressed in our paper, the main bottle-neck is the process of motif discovery, which can be much faster by random sampling. For the running time of motifwalk and m-GCN (given a motif), our running time is the same as other state-of-the-art algorithms, while the performance is better. About your comments on our experimental network size, we admit that the network size is not particularly large. However, these networks are the standard benchmark (used in Deepwalk, GCN, node2vec). A further experiment on truly large network (several millions of nodes, billions of edges) is desirable, but it is more of an implementation challenge (memory management for m-GCN and distributed computation for motifwalk) than a new idea. Besides, please understand that because of the limited number of pages, we cannot contain all related concepts in our paper.
 
 To answer your further remarks:
 
@@ -14,13 +14,13 @@ P1C2 "is a composition" => "as a composition"
 - Thank you very much for pointing out the typo.
 
 P1C2 "Recurring subgraph ... when they are statistically significant." This is a sloppy formulation: what means statistically significant for a subgraph (we need to talk about a null model and about counting the number of subgraphs). Most network motif algorithms actually search for motifs that are "induced" subgraphs (i.e. only induced subgraphs of the network and the random model are counted). Can you comment on why you are considering all subgraphs?
-- The term "statistically significant" refers to the statistical test of a motif on a network. The reason we are considering all subgraphs instead of induced subgraphs is structures that do not appear in the network can also be tested. Let's say graph G1 has induced subgraph M, while M does not appear in another graph G2. In this case, if we only consider induced subgraphs, we perform the statistical test of M on G1, but we don't perform the same test on G2. In practice, if M is significant in network G1 (large z-score) and M is also has large z-score on G2, we can argue about the structural and functional similarity between G1 and G2. The absence of a certain subgraph is also valuable information in motif analysis.
+- The term "statistically significant" refers to the statistical test of a motif on a network. The reason we are considering all subgraphs instead of induced subgraphs is: structures that do not appear in the network can also be tested. Let's say graph G1 has induced subgraph M, while M does not appear in another graph G2. In this case, if we only consider induced subgraphs, we perform the statistical test of M on G1, but we don't perform the same test on G2. In practice, if M is significant in network G1 (large z-score) and M also has large z-score on G2, we can argue about the structural and functional similarity between G1 and G2. The absence of a certain subgraph is also valuable information in motif analysis.
 
 P2C1 "Spectral Clustering .... shown to be unscalable" These are very strong claims and spectral clustering has been applied to networks that are much larger than the ones used in this work. I would probably be a bit more cautious here.
-- We understand the fact that our experiments haven't shown the advantage of our algorithms in term of run time. However, the runtime of our algorithms is comparable to the state-of-the-art algorithms and far below spectral clustering. Besides, the fact that spectral clustering runs in O(n^3) (and O(m*n^2) using k-means) is well-known, and the scalability problem of spectral methods as well as matrix factorization methods has been addressed in many recent researches (Perozzi, 2014). As a matter of fact, most of the published techniques on graph embedding which base on matrix factorization only runs on several thousand of nodes at most.
+- We understand the fact that our experiments haven't shown the advantage of our algorithms in term of run time. However, the runtime of our algorithms is comparable to the state-of-the-art algorithms and far below spectral clustering. Besides, the fact that spectral clustering runs in O(n^3) (and O(m*n^2) using k-means) is well-known, and the scalability problem of spectral methods, as well as matrix factorization methods, has been addressed in many recent researches (Perozzi, 2014). As a matter of fact, most of the published techniques on graph embedding which base on matrix factorization only runs on several thousand of nodes at most.
 
 P2C2 Explain what the Skip-gram model is.
-- Skip-gram model (Mikolov, 2013), or commonly known by its implementation word2vec, is an auto-encoder to learn the vector representation of words from text.
+- Skip-gram model (Mikolov, 2013), or commonly known by its implementation word2vec, is an auto-encoder to learn the vector representation of words from the text.
 
 P2C2 "Computing the normalization factor remains intractable" Could you be more specific here?
 - The pair-wise potential is easy to compute as it is a dot product of two vectors, but to compute the dot product of a vector with all other vectors (normalization) requires a large number of computation. I have cited the papers (Pereozzi, 2014) and (Grover, 2016) that addressed this problem.
@@ -35,19 +35,19 @@ P3C1 What is "X"?
 - In this context, X is a matrix contains the features of each node. For example, in a citation network, there are connections between papers (citation) and a tf-idf feature matrix X of each node. In graph information processing context, X is a matrix containing discrete signal vector on each node.
 
 P3C2 What does it mean that "(i,j) satisfies A"?
-- A is a set of anchor nodes. Please look at Figure 3, we demonstrated the rule to select anchor nodes. Basically, what we want to say here is: if node i and node j belongs to the motif M, and their positions satisfies description in A, the value of motif matrix index (i,j) is set to 1.
+- A is a set of anchor nodes. Please look at Figure 3, we demonstrated the rule to select anchor nodes. Basically, what we want to say here is: if node i and node j belongs to the motif M, and their positions satisfy description in A, the value of motif matrix index (i,j) is set to 1.
 
 P3C2 Please define cut. What is an anchor node? What is \chi_A?
 - We will include the definition of graph cut and \chi_A if possible. Basically, \chi_A is the anchor nodes.
 
-P4C1 The null model used here is different from the common ones that do not only assume that the number of edges and nodes are the same but they also assume that the degree distribution is the same.
+P4C1 The null model used here is different from the common ones that do not only assume that the number of edges and nodes are the same, but they also assume that the degree distribution is the same.
 - Thank you for your note here. Experiments with different null models are one of our future work.
 
 P4C1 Figure 2 has only "m3-8" and "m3-9"
 - Many other uninteresting motifs having low z-score are omitted from Figure 4.
 
 P4C1 What are the "frequencies" of the "motif network"?
-- This is an analogue to the frequency domain in the context of Fourier transformation. What we mean here is the wavelet basis defined by our constructed motif network.
+- This is an analog to the frequency domain in the context of Fourier transformation. What we mean here is the wavelet basis defined by our constructed motif network.
 
 P4C2 What is "theta'"?
 - We have answered this question above at the first P3C1 question.
@@ -59,10 +59,10 @@ P5C2 "In the previous section" Section 3.2 does not talk about graph convolution
 - Thank you for your comment here. Since we want to define the convolutional using a basis defined by network motif, we have to put two sections next to each other.
 
 P6C1 What is the skip-gram window size?
-- Skip-gram window size is one hyperparamter of a skip-gram models. This hyperparameter controls the context scope. Please check (Mikolov, 2013) or (Perozzi, 2014) for more detail. We omitted the detail of such parameter because of the limited number of pages.
+- Skip-gram window size is one hyperparameter of a skip-gram model. This hyperparameter controls the context scope. Please check (Mikolov, 2013) or (Perozzi, 2014) for more detail. We omitted the detail of such parameter because of the limited number of pages.
 
 P6C2 "This limitation is due to the large networks that we experimented" The networks are really not that large, I would rephrase this sentence.
-- Thank you for your comment. We will provide possible rephrase for the future. On a side note, for full motif analysis (computing z-score), our experimented networks are substantial. (Benson, 2016) (published in Science) is an reference to the current limit of motif analysis. In practice, the step of analyzing motifs can be replaced by a much faster random sampling process. However, as mentioned above, our main objective of this paper isn't motif analysis.
+- Thank you for your comment. We will provide possible rephrase for the future. On a side note, for full motif analysis (computing z-score), our experimented networks are substantial. (Benson, 2016) (published in Science) is a reference to the current limit of motif analysis. In practice, the step of analyzing motifs can be replaced by a much faster random sampling process. However, as mentioned above, our main objective of this paper isn't motif analysis.
 
 Lastly, we would like to sincerely thank you for your time reviewing our paper and all of your thoughtful comments above.
 
@@ -73,18 +73,18 @@ Reply to Review #27278
 First of all, thank you very much for your time and your recognition of our novelty. Your 5 steps summarization is exactly what we have done. Secondly, we answer the questions you have given us:
 
 1. How the selected significant motif helps on improving the node representation learning? The accuracy improves because nodes in motif can be better classified?
-- Our motif method can be viewed as n-order (n=2,3,4,...) proximity. Take Figure 3 as an example. Although there might be no connection between two yellow node in the network, in the motif network (represented by motif matrix) these two nodes are connected. We hope it makes sense to say that, in the case of citation network, two papers which cite the same papers are similar even-though they do not directly cite each other. Such underlying mechanism in other networks is encoded in the motif structures. Therefore, by using motif matrix as the "same motif" indicator, we help the algorithm to know that these nodes must be similar.
+- Our motif method can be viewed as n-order (n=2,3,4,...) proximity. Take Figure 3 as an example. Although there might be no connection between two yellow nodes in the network, in the motif network (represented by motif matrix), these two nodes are connected. We hope it makes sense to say that, in the case of citation network, two papers which cite the same papers are similar even-though they do not directly cite each other. Such underlying mechanism in other networks is encoded in the motif structures. Therefore, by using motif matrix as the "same motif" indicator, we help the algorithm to know that these nodes must be similar.
 
 2. Why selecting only one motif? Not several motifs? Figure 4 shows that in a network, there can exist several motifs that have high z-score.
 - We have not yet come up with a way to use several motifs in our algorithms. Experimental results consistently showed no or negative improvement with naive approaches to use more than one motif. One of our future work direction is to understand z-score, null models, and using multiple motifs.
 
 3. Comparing to GCN, m-GCN has better accuracy, but not always and not very significant improvement (Table 5, m-GCN (rand.splits)). In Evaluation, why using F1 for the comparison of Motifwalk with other baselines, but Accuracy for the comparison of m-GCN with other baselines? Both performance measure scores should be reported for the comparison of m-GCN.
-- We admit that we should make it more clear and uniform in our experiments. F1-score is employed mainly because of the BlogCatalog dataset. In this dataset, a node can have multiple labels and some labels only have 9 instances while others have hundred. Such skew in the dataset was the main reason for us to use F1-score for the unsupervised learning task. Furthermore, for the unsupervised learning task, F1-score is used in previous researches, hence we think it might be easier for comparison. For semi-supervised learning task, the comparison is done using accuracy because there were no skew in the dataset (and also for easier comparison).
+- We admit that we should make it more clear and uniform in our experiments. F1-score is employed mainly because of the BlogCatalog dataset. In this dataset, a node can have multiple labels and some labels only have 9 instances while others have hundred. Such skew in the dataset was the main reason for us to use F1-score for the unsupervised learning task. Furthermore, for the unsupervised learning task, F1-score is used in previous researches; hence we think it might be easier for comparison. For semi-supervised learning task, the comparison is done using accuracy because there were no skew in the dataset (and also for easier comparison).
 
 Other detailed comments:
 
 1. “U_m from equation (7)”, there is no U_m in equation (7)
-- We are very sorry for this typo, we meant equation (6).
+- We are very sorry for this typo; we meant equation (6).
 
 2. need formal definition of motif graph G_m
 - We understood, we will make Algorithms 1 and Definition 2.1 clear by adding that they refer to G_m.
@@ -92,8 +92,8 @@ Other detailed comments:
 3. “there is two network contexts” – there are
 - Thank you very much for pointing out the typo.
 
-4. Check table 1 and 2, the data sets statistics of BlogCatelog, Citeseer and Cora.  Citeseer in Table 2 are the same as BlogCatelog in Table 1? But different from Citeseer in Table 1? But Cora in Table 2 is similar to Citeseer in Table 1?
-- We are terribly sorry for this typo, there was a mistake in data entry for the first two rows. It should be Citeseer: nodes:3,327 edges:4,732 classes:6 features:3,703; and Cora: nodes:2,708 edges:5,429 classes:7 features:1,433. We have fixed the typo.
+4. Check table 1 and 2, the data sets statistics of BlogCatelog, Citeseer, and Cora.  Citeseer in Table 2 are the same as BlogCatelog in Table 1? But different from Citeseer in Table 1? But Cora in Table 2 is similar to Citeseer in Table 1?
+- We are terribly sorry for this typo; there was a mistake in data entry for the first two rows. It should be Citeseer: nodes:3,327 edges:4,732 classes:6 features:3,703; and Cora: nodes:2,708 edges:5,429 classes:7 features:1,433. We have fixed the typo.
 
 We would like to say thank you very much for your time spent on reviewing our papers. Thank you again for pointing out the typo in Table-2.
 
@@ -101,7 +101,7 @@ We would like to say thank you very much for your time spent on reviewing our pa
 
 Reply to Review #32319
 
-Thank you very much for your comments. We agree that our current analysis lacks insight. We will revise the discussion about why our algorithm works. In general, our motif method can be viewed as n-order (n=2,3,4,...) proximity. Take Figure-3 as an example. Although there might be no connection between two yellow node in the network, in the motif network (represented by motif matrix) these two nodes are connected. We hope it makes sense to say that, in the case of citation network, two papers which cite the same papers are similar even-though they do not directly cite each other. Such underlying mechanism in other networks is encoded in the motif structures. Therefore, by using motif matrix as the "same motif" indicator, we help the algorithm to know that these nodes must be similar. Following your suggestions, we will make the following improvements to our paper:
+Thank you very much for your comments. We agree that our current analysis lacks insight. We will revise the discussion about why our algorithm works. In general, our motif method can be viewed as n-order (n=2,3,4,...) proximity. Take Figure-3 as an example. Although there might be no connection between two yellow nodes in the network, in the motif network (represented by motif matrix) these two nodes are connected. We hope it makes sense to say that, in the case of citation network, two papers which cite the same papers are similar even-though they do not directly cite each other. Such underlying mechanism in other networks is encoded in the motif structures. Therefore, by using motif matrix as the "same motif" indicator, we help the algorithm to know that these nodes must be similar. Following your suggestions, we will make the following improvements to our paper:
 - Add experimental analysis of parameter sensitivity for motifwalk and discuss about the parameter tuning for motifwalk.
 - Add experimental results for a few more larger dataset such as YouTube or Wikipedia.
 - Add F1-score for Table-5 and explain the choice for the metric.
@@ -117,8 +117,4 @@ Thank you very much for your recognition of our method. We understand that the c
 - Paper structure: We will add clearer explanations and revise our paper's structure.
 - Phrasing in definitions: We will modify our definitions for clearer explanations.
 - Graph classification: There is a work-around using GCN for graph classification by having a "global node" that connects to all other nodes. The classification of this "global node" can be considered as graph classification. This method was suggested by Thomas Kipf on his github channel (Kipf, 2017). However, this global node can have some unexpected effect regarding the motif analysis procedure. We will study about this problem in our future work. In our paper, we will add some discussion and experiments on this problem. Thank you very much for the suggestion.
-- Performance of motifwalk: We will add to the paper the point that given a motif, motifwalk only have 1 hyperparamter to tune while node2vec have p and q.
-- Multi-class Linear Regression: With this term, we want to refer to the classification of node with many possible classes. We will add this explanation at the caption of the tables.
-- The classification method for Table 5 (semi-supervised learning) is to use a two-layers neural network with softmax logits and cross-entropy loss. The model was trained by the Adam optimizer.
-
-Thank you again for all of your thoughtful comments.
+- The performance of motifwalk: We will add to the paper the point that given a motif, motifwalk only have 1 hyperparamter to tune while node2vec have p and q.
