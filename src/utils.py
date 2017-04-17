@@ -7,6 +7,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import f1_score, accuracy_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import MultiLabelBinarizer
+from sklearn.manifold import TSNE
+from matplotlib import pyplot as plt
+from time import time
 try:
     from graph_tool.clustering import motifs, motif_significance
     from graph_tool.spectral import adjacency
@@ -188,4 +191,17 @@ def significant_graph(motifslog, z_thres=100, m_size=3):
             zscore = float(line.split()[-1])
             if zscore > z_thres:
                 pass
+
+
+def tsne_visualization(emb_file, graph_labels, pdf_name, color_map=None, n_components=2):
+    """Visualize the graph embedding with t-SNE"""
+    emb = load_embeddings(emb_file)
+    t0 = time()
+    model = TSNE(n_components=n_components, init='pca', random_state=0)
+    trans_data = model.fit_transform(embeddings_vectors).T
+    t1 = time()
+    print("t-SNE: %.2g sec" % (t1-t0))
+    fig = plt.figure(figsize=(6.75,3))
+    ax = fig.add_subplot(1, 1, 1)
+    plt.scatter(trans_data[0], trans_data[1], c=color_map)
 
