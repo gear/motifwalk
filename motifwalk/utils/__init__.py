@@ -1,6 +1,7 @@
 import pickle
 import numpy as np
 import re
+import sys
 from sklearn.multiclass import OneVsRestClassifier
 from scipy.sparse import lil_matrix, csr_matrix
 from sklearn.model_selection import train_test_split
@@ -12,12 +13,61 @@ from matplotlib import pyplot as plt
 from time import time
 
 dataloc = './../../data'
+metasplit = r'%'
+metadata = None
+
+def find_meta(graph_name):
+    """Find and return the metadata description of the given graph name.
+
+    Parameters:
+    graph_name - str - name of the dataset.
+
+    Return:
+    metum - str - metadata for the given graph name if found.
+
+    Examples:
+    meta_bc = find_meta('blogcatalog')
+    "blogcatalog: blogcatalog.data
+        graph: NXGraph
+        labels: LILLabels
+        convert_labels: False
+        info: blogcatalog.md
+        url:"
+    """
+    if metadata is None:
+        print("Error: Metadata is not defined.")
+        sys.exit()
+    if not graph_name in all_graphs():
+        print("Error: Graph '{}' is not found.".format(graph_name))
+        sys.exit()
+    for metum in metadata[1:]:
+        if graph_name in metum:
+            return metum
+    print("Error: Graph '{}' is in header but not defined.".format(graph_name))
+    sys.exit()
+
+def all_graphs():
+    return metadata[0].strip().split(':')[1].split()
 
 def set_dataloc(path_to_data=None):
     global dataloc
     if path_to_data is not None:
         dataloc = path_to_data
 
-# Metadata stores data reading instructions
-with open(dataloc+"/metadata") as f:
-    metadata = f.read()
+def get_metadata():
+    global metadata
+    if metadata is None:
+        with open(dataloc+'metadata') as f:
+            metadata = f.read().split(metasplit)
+    return metadata
+
+def load_embeddings(emb_file):
+    """Load graph embedding output from deepwalk, n2v to a numpy matrix."""
+    with open(emb_file, 'rb') as efile:
+        num_node, dim = map(int, efile.readline().split())
+        emb_matrix = np.ndarray(shape=(num_node, dim), dtype=np.float32)
+        for data in efile.readlines():
+            node_id, *vector = data.split()
+            node_id = int(node_id)
+            emb_matrix[node_id, :] = np.array([i for i in map(np.float, vector)])
+    return emb_matrix
