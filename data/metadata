@@ -1,0 +1,67 @@
+all: blogcatalog citeseer cora amazon nell pubmed webkb karate lesmiserable
+
+blogcatalog: blogcatalog.data
+    graph: NXGraph
+    labels: LILLabels
+    convert_labels: False
+    info: blogcatalog.md
+    url:
+
+citeseer: citeseer.data
+    graph: NXGraph
+    labels: Labels
+    convert_labels: True
+    features: CSRFeatures
+    info: citeseer.md
+    url:
+
+cora: cora.data
+    graph: NXGraph
+    labels: Labels
+    convert_labels: True
+    features: CSRFeatures
+    info: cora.md
+    url:
+
+amazon: amazon.data
+    graph: NXGraph
+    info: amazon.md
+    url:
+
+nell: nell.data
+    graph: NXGraph
+    labels: Labels
+    convert_labels: True
+    features: CSRFeatures
+    info: nell.md
+    url:
+
+pubmed: pubmed.data
+    graph: NXGraph
+    labels: Labels
+    convert_labels: True
+    features: CSRFeatures
+    info: pubmed.md
+    url:
+
+webkb: webkb.data
+    graph: NXGraph_Cornell NXGraph_Texas NXGraph_Washington NXGraph_Wisconsin
+    labels: Labels
+    convert_labels: True
+    features: CSRFeatures
+    info: webkb.md
+    url:
+
+karate: karate.data
+    graph: NXGraph
+    labels: Labels
+    convert_labels: True
+    info: karate.md
+    url:
+
+lesmiserable: lesmiserable.data
+    graph: NXGraph
+    labels: Labels
+    convert_labels: True
+    info: lesmiserable.md
+    url:

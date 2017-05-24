@@ -1,6 +1,9 @@
-This directory contains a selection of the WebKB dataset (http://www-2.cs.cmu.edu/~webkb/).
+This directory contains a selection of the WebKB dataset
+(http://www-2.cs.cmu.edu/~webkb/).
 
-In this corpus, we extracted all the webpages except for the webpages belonging to the "other" class. These webpages are classified into one of the following five classes:
+In this corpus, we extracted all the webpages except for the webpages
+belonging to the "other" class. These webpages are classified into one
+of the following five classes:
 			course
 			faculty
 			student
@@ -23,4 +26,4 @@ The .cites file contains the citation graph of the corpus. Each line describes a
 
 		<ID of cited webpage> <ID of citing webpage>
 
-Each line contains two webpage IDs. The first entry is the ID of the webpage being cited (head of the link) and the second ID stands for the webpage which contains the citation (tail of the link). The direction of the link is from right to left. If a line is represented by "webpage1 webpage2" then the link is "webpage2->webpage1". 
+Each line contains two webpage IDs. The first entry is the ID of the webpage being cited (head of the link) and the second ID stands for the webpage which contains the citation (tail of the link). The direction of the link is from right to left. If a line is represented by "webpage1 webpage2" then the link is "webpage2->webpage1".
