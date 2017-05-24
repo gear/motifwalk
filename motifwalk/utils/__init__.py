@@ -36,10 +36,10 @@ def find_meta(graph_name):
     """
     if metadata is None:
         print("Error: Metadata is not defined.")
-        sys.exit()
+        return None
     if not graph_name in all_graphs():
         print("Error: Graph '{}' is not found.".format(graph_name))
-        sys.exit()
+        return None
     for metum in metadata[1:]:
         if graph_name in metum:
             return metum
