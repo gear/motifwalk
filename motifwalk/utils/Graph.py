@@ -3,6 +3,7 @@ import numpy as np
 import re
 import sys
 import networkx as nx
+import graph_tool as gt
 from sklearn.preprocessing import MultiLabelBinarizer
 
 def strip(s):
@@ -27,6 +28,13 @@ class GraphContainer:
         with open(self.dataloc+self.graph_file, 'rb') as f:
             data = pickle.load(f)
             return data[self.graph]
+
+    def get_gt_graph(self):
+        nx_graph = self.get_graph()
+        gt_graph = gt.Graph()
+        gt_graph.set_directed(nx_graph.is_directed())
+        gt_graph.add_edges_from(nx_graph.edges())
+        return gt_graph
 
     def get_features(self):
         with open(self.dataloc+self.graph_file, 'rb') as f:
