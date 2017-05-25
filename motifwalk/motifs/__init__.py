@@ -1,8 +1,6 @@
 import networkx as nx
 try:
-    from graph_tool.clustering import motifs, motif_significance
-    from graph_tool.spectral import adjacency
-    from graph_tool import load_graph_from_csv
+    import graph_tool as gt
 except ImportError:
     print("Warning: graph_tool module is missing, motif analysis \
           is not available")
@@ -10,14 +8,15 @@ except ImportError:
 class Motif:
 
     def __init__(self, edge_list, is_directed=False, anchors=None, name=None):
-        self.nx_motif = nx.from_edgelist(edge_list)
-        gt_graph = gt.Graph()
-        gt_graph.set_directed(False)
-        self.gt_motif = gt_graph.add_edge_list(edge_list)
+        nx_graph = nx.Graph()
         if is_directed:
-            self.nx_motif = self.nx_motif.to_directed()
-            self.gt_motif.set_directed(True)
-        self.diameter = nx.diameter(self.nx_motif)
+            nx_graph = nx_graph.to_directed()
+        nx_graph.add_edges_from(edge_list)
+        gt_graph = gt.Graph()
+        gt_graph.set_directed(is_directed)
+        gt_graph.add_edge_list(edge_list)
+        self.gt_motif = gt_graph
+        self.nx_motif = nx_graph
         self.anchors = anchors
         self.name = name
 
@@ -80,10 +79,13 @@ m4u_0 = Motif([(0,1), (0,2), (0,3)], name="m4u_0")
 
 m4u_1 = Motif([(0,1), (0,3), (1,2)], name="m4u_1")
 
-m4u_2 = Motif([(0,1), (0,3), (3,2)], name="m4u_2")
+m4u_2 = Motif([(0,1), (0,3), (3,2), (1,3)], name="m4u_2")
 
 m4u_3 = Motif([(0,1), (0,3), (1,2), (3,2)], name="m4u_3")
 
 m4u_4 = Motif([(0,1), (0,3), (1,3), (3,2), (1,2)], name="m4u_4")
 
 m4u_5 = Motif([(0,1), (0,3), (1,3), (3,2), (1,2), (0,2)], name="m4u_5")
+
+m4_0 = Motif([(1,0), (0,1), (2,0), (0,2), (3,0), (0,3), (1,2), (2,1),
+              (1,3), (3,1), (2,3), (3,2)], is_directed=True, name="m4_0")
