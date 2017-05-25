@@ -2,6 +2,7 @@ import pickle
 import numpy as np
 import re
 import sys
+import networkx as nx
 from sklearn.preprocessing import MultiLabelBinarizer
 
 def strip(s):
@@ -20,23 +21,28 @@ class GraphContainer:
         for info in metadata[1:]:
             key, string = info.split(':')
             self.__dict__[key.strip()] = string.strip()
-        self.dataloc = dataloc + self.graph_file
+        self.dataloc = dataloc
 
-    def get_graph():
-        with open(self.dataloc, 'rb') as f:
+    def get_graph(self):
+        with open(self.dataloc+self.graph_file, 'rb') as f:
             data = pickle.load(f)
             return data[self.graph]
 
-    def get_features():
-        with open(self.dataloc, 'rb') as f:
+    def get_features(self):
+        with open(self.dataloc+self.graph_file, 'rb') as f:
             data = pickle.load(f)
             return data[self.features]
 
-    def get_labels():
-        with open(self.dataloc, 'rb') as f:
+    def get_labels(self):
+        with open(self.dataloc+self.graph_file, 'rb') as f:
             data = pickle.load(f)
             labels = data[self.labels]
             if (self.convert_labels == 'True'):
                 labels = MultiLabelBinarizer().fit_transform(
                             labels.reshape(labels.shape[0], 1))
             return labels
+
+    def write_gml(self):
+        nx_graph = self.get_graph()
+        nx_graph.name = self.graph_name
+        nx.write_gml(nx_graph, self.dataloc+self.graph_name+'.gml')
