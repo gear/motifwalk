@@ -84,5 +84,61 @@ m4u_4 = Motif([(0,1), (0,3), (1,3), (3,2), (1,2)], name="m4u_4")
 
 m4u_5 = Motif([(0,1), (0,3), (1,3), (3,2), (1,2), (0,2)], name="m4u_5")
 
-m4_0 = Motif([(1,0), (0,1), (2,0), (0,2), (3,0), (0,3), (1,2), (2,1),
-              (1,3), (3,1), (2,3), (3,2)], is_directed=True, name="m4_0")
+m4_0 = Motif([(1, 3), (1, 2), (1, 0)], is_directed=True, name='m4_0')
+m4_1 = Motif([(0, 1), (0, 2), (3, 1)], is_directed=True, name='m4_1')
+m4_2 = Motif([(0, 3), (2, 1), (2, 0)], is_directed=True, name='m4_2')
+m4_3 = Motif([(2, 3), (3, 1), (3, 0)], is_directed=True, name='m4_3')
+m4_4 = Motif([(0, 3), (1, 3), (2, 3)], is_directed=True, name='m4_4')
+m4_5 = Motif([(0, 3), (1, 0), (2, 0)], is_directed=True, name='m4_5')
+m4_6 = Motif([(1, 0), (2, 3), (3, 0)], is_directed=True, name='m4_6')
+m4_7 = Motif([(0, 3), (1, 2), (2, 0)], is_directed=True, name='m4_7')
+m4_8 = Motif([(1, 0), (1, 2), (1, 3), (2, 3)], is_directed=True, name='m4_8')
+m4_9 = Motif([(2, 3), (3, 0), (3, 2), (3, 1)], is_directed=True, name='m4_9')
+m4_10 = Motif([(0, 3), (0, 2), (1, 3), (1, 2)], is_directed=True, name='m4_10')
+m4_11 = Motif([(0, 1), (0, 3), (3, 2), (3, 1)], is_directed=True, name='m4_11')
+m4_12 = Motif([(1, 2), (1, 3), (3, 0), (3, 1)], is_directed=True, name='m4_12')
+m4_13 = Motif([(0, 1), (0, 3), (2, 1), (3, 1)], is_directed=True, name='m4_13')
+m4_14 = Motif([(0, 2), (1, 3), (1, 2), (2, 3)], is_directed=True, name='m4_14')
+m4_15 = Motif([(0, 1), (1, 3), (2, 3), (2, 0)], is_directed=True, name='m4_15')
+m4_16 = Motif([(0, 2), (2, 1), (2, 3), (3, 1)], is_directed=True, name='m4_16')
+m4_17 = Motif([(0, 3), (1, 3), (2, 0), (2, 1)], is_directed=True, name='m4_17')
+m4_18 = Motif([(0, 3), (1, 2), (1, 3), (2, 1)], is_directed=True, name='m4_18')
+m4_19 = Motif([(1, 2), (2, 1), (3, 2), (3, 0)], is_directed=True, name='m4_19')
+m4_20 = Motif([(1, 3), (1, 2), (2, 0), (3, 2)], is_directed=True, name='m4_20')
+m4_21 = Motif([(0, 1), (1, 2), (1, 3), (3, 1)], is_directed=True, name='m4_21')
+m4_22 = Motif([(0, 1), (0, 2), (2, 0), (3, 2)], is_directed=True, name='m4_22')
+m4_23 = Motif([(0, 3), (0, 1), (1, 2), (2, 0)], is_directed=True, name='m4_23')
+m4_24 = Motif([(1, 3), (2, 0), (3, 2), (3, 1)], is_directed=True, name='m4_24')
+m4_25 = Motif([(0, 1), (1, 2), (2, 1), (3, 1)], is_directed=True, name='m4_25')
+m4_26 = Motif([(0, 1), (1, 2), (2, 1), (3, 2)], is_directed=True, name='m4_26')
+m4_27 = Motif([(0, 1), (1, 2), (2, 0), (3, 0)], is_directed=True, name='m4_27')
+m4_28 = Motif([(0, 3), (1, 2), (2, 1), (3, 1)], is_directed=True, name='m4_28')
+m4_29 = Motif([(0, 3), (1, 2), (2, 0), (3, 1)], is_directed=True, name='m4_29')
+m4_30 = Motif([(2, 1), (2, 0), (3, 2), (3, 0), (3, 1)],
+              is_directed=True, name='m4_30')
+m4_31 = Motif([(1, 3), (1, 0), (1, 2), (2, 3), (3, 0)],
+              is_directed=True, name='m4_31')
+m4_32 = Motif([(0, 1), (0, 2), (2, 3), (2, 1), (3, 1)],
+              is_directed=True, name='m4_32')
+m4_33 = Motif([(0, 3), (2, 1), (2, 3), (3, 0), (3, 1)],
+              is_directed=True, name='m4_33')
+m4_34 = Motif([(1, 0), (2, 3), (2, 1), (3, 1), (3, 0)],
+              is_directed=True, name='m4_34')
+m4_35 = Motif([(0, 3), (1, 0), (1, 2), (3, 2), (3, 1)],
+              is_directed=True, name='m4_35')
+m4_36 = Motif([(0, 1), (2, 3), (2, 1), (3, 2), (3, 0)],
+              is_directed=True, name='m4_36')
+m4_37 = Motif([(0, 2), (1, 2), (1, 0), (2, 3), (3, 2)],
+              is_directed=True, name='m4_37')
+m4_38 = Motif([(0, 2), (1, 0), (2, 1), (3, 1), (3, 2)],
+              is_directed=True, name='m4_38')
+m4_39 = Motif([(0, 3), (1, 2), (2, 0), (2, 1), (3, 1)],
+              is_directed=True, name='m4_39')
+m4_40 = Motif([(0, 2), (1, 3), (2, 1), (2, 0), (3, 1)], 
+              is_directed=True, name='m4_40')
+m4_41 = Motif([(0, 2), (0, 1), (1, 3), (2, 3), (3, 0)],
+              is_directed=True, name='m4_41')
+m4_42 = Motif([(0, 3), (1, 0), (1, 2), (2, 0), (3, 1)],
+              is_directed=True, name='m4_42')
+m4_43 = Motif([(0, 2), (1, 2), (2, 3), (2, 0), (3, 1)],
+              is_directed=True, name='m4_43')
