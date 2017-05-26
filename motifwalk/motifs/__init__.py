@@ -36,42 +36,39 @@ m3_0 = Motif([(0,1), (1,0), (1,2), (2,1), (0,2), (2,0)],
 m3_1 = Motif([(0,1), (1,0), (2,1), (0,2), (2,0)],
              is_directed=True, name="m3_1")
 
-m3_2 = Motif([(0,1), (1,0), (2,0), (0,2), (1,2)],
+m3_2 = Motif([(0,1), (1,0), (2,0), (0,2)],
              is_directed=True, name="m3_2")
 
-m3_3 = Motif([(0,1), (1,0), (2,0), (0,2)],
+m3_3 = Motif([(0,1), (1,0), (0,2), (1,2)],
              is_directed=True, name="m3_3")
 
-m3_4 = Motif([(0,1), (1,0), (0,2), (1,2)],
+m3_4 = Motif([(0,1), (1,0), (2,0), (1,2)],
              is_directed=True, name="m3_4")
 
-m3_5 = Motif([(0,1), (1,0), (2,0), (1,2)],
+m3_5 = Motif([(0,1), (1,0), (2,0), (2,1)],
              is_directed=True, name="m3_5")
 
-m3_6 = Motif([(0,1), (1,0), (2,0), (2,1)],
+m3_6 = Motif([(0,1), (1,0), (2,0)],
              is_directed=True, name="m3_6")
 
-m3_7 = Motif([(0,1), (1,0), (2,0)],
+m3_7 = Motif([(0,1), (1,0), (0,2)],
              is_directed=True, name="m3_7")
 
-m3_8 = Motif([(0,1), (1,0), (0,2)],
+m3_8 = Motif([(0,1), (1,2), (2,0)],
              is_directed=True, name="m3_8")
 
-m3_9 = Motif([(0,1), (1,2), (2,0)],
-             is_directed=True, name="m3_9")
+m3_9 = Motif([(0,1), (2,1), (2,0)],
+              is_directed=True, name="m3_9")
+feed_forward = m3_9
 
-m3_10 = Motif([(0,1), (2,1), (2,0)],
+m3_10 = Motif([(0,1), (2,0)],
               is_directed=True, name="m3_10")
-feed_forward = m3_10
 
-m3_11 = Motif([(0,1), (2,0)],
+m3_11 = Motif([(0,1), (0,2)],
               is_directed=True, name="m3_11")
 
-m3_12 = Motif([(0,1), (0,2)],
+m3_12 = Motif([(1,0), (2,0)],
               is_directed=True, name="m3_12")
-
-m3_13 = Motif([(1,0), (2,0)],
-              is_directed=True, name="m3_13")
 
 # Size 4 motifs
 
