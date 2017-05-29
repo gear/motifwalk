@@ -1,9 +1,7 @@
 import networkx as nx
-try:
-    import graph_tool as gt
-except ImportError:
-    print("Warning: graph_tool module is missing, motif analysis \
-          is not available")
+import graph_tool as gt
+from graph_tool.all import *
+from itertools import combinations
 
 class Motif:
 
@@ -20,6 +18,34 @@ class Motif:
         self.size = nx_graph.size()
         self.anchors = anchors
         self.name = name
+
+    def anchored_edges(self, gt_graph, node_list):
+        """Return a list of edges for motif graph construction
+
+        Parameters:
+        gt_graph - gt.Graph - the original graph
+        node_list - list - isomorphism nodes to create induced subgraphs
+
+        Returns:
+        edge_list - list - edges for creating the motif graph
+        """
+        if self.anchors is None:
+            return combinations(node_list, 2)
+        if len(self.anchors) > self.size:
+            raise ValueError("Anchors set is of invalid size")
+        # Create a node filter
+        vfilt = g.new_vertex_property('bool');
+        for i in node_list:
+            vfilt[i] = True
+        # Subgraph as gt.GraphView
+        induced_subgraph = GraphView(gt_graph, vfilt)
+        # Get the motif mapping
+        _, mapping = isomorphism(sub, self.gt_motif, isomap=True)
+        # List of anchored nodes
+        anchored = [i for i in node_list if mapping[i] in self.anchors]
+        assert len(anchored) > 1, "There is not enough anchor nodes to\
+                                   make an edge."
+        return combinations(anchored, 2)
 
 # List of connected motifs: m[size][directed] and their aliases
 
