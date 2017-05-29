@@ -35,11 +35,10 @@ def find_meta(graph_name):
         url:"
     """
     if metadata is None:
-        print("Error: Metadata is not defined.")
-        return None
+        raise ValueError("Metadata is not defined.")
     if not graph_name in all_graphs():
-        print("Error: Graph '{}' is not found.".format(graph_name))
-        return None
+        raise ValueError("Error: Graph '{}' is \
+                          not found.".format(graph_name))
     for metum in metadata[1:]:
         if graph_name in metum:
             return metum
