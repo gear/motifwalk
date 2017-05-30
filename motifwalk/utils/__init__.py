@@ -16,6 +16,17 @@ dataloc = './../../data'
 metasplit = r'%'
 metadata = None
 
+global start = None
+
+def time(start=True):
+    global start
+    now = time()
+    if start:
+        start = time()
+    else:
+        delta = now - start
+        print("Time elapsed: {} sec".format(delta))
+
 def find_meta(graph_name):
     """Find and return the metadata description of the given graph name.
 
