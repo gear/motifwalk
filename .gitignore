@@ -96,3 +96,6 @@ research/src/word2vec_tensorflow/saved_model/*
 
 # Big data file
 text8
+
+# Data
+data
