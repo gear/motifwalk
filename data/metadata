@@ -25,6 +25,8 @@ cora: cora.data
 %
 amazon: amazon.data
     graph: NXGraph
+    labels: Labels
+    convert_labels: False
     info: amazon.md
     url:
 %
