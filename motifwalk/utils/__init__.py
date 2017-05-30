@@ -56,7 +56,7 @@ def set_dataloc(path_to_data=None):
 def get_metadata():
     global metadata
     if metadata is None:
-        with open(dataloc+'metadata') as f:
+        with open(dataloc+'/metadata') as f:
             metadata = f.read().split(metasplit)
     return metadata
 
