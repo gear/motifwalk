@@ -18,7 +18,8 @@ class GraphContainer:
         dataloc - str - root folder path
         """
         metadata = [d for d in map(strip, metadata) if len(d) > 0]
-        self.graph_name, self.graph_file = map(strip, metadata[0].split(':'))
+        self.graph_name, self.graph_file = map(strip,
+                                               metadata[0].split(':'))
         for info in metadata[1:]:
             key, string = info.split(':')
             self.__dict__[key.strip()] = string.strip()
