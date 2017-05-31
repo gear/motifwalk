@@ -34,7 +34,7 @@ class Motif:
         if len(self.anchors) > self.size:
             raise ValueError("Anchors set is of invalid size")
         # Create a node filter
-        vfilt = g.new_vertex_property('bool');
+        vfilt = gt_graph.new_vertex_property('bool');
         for i in node_list:
             vfilt[i] = True
         # Subgraph as gt.GraphView
