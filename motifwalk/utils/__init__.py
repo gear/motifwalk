@@ -18,7 +18,7 @@ metadata = None
 
 global start = None
 
-def time(start=True):
+def timer(start=True):
     global start
     now = time()
     if start:
