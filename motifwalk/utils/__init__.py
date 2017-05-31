@@ -16,7 +16,7 @@ dataloc = './../../data'
 metasplit = r'%'
 metadata = None
 
-global start = None
+global start
 
 def timer(start=True):
     global start
