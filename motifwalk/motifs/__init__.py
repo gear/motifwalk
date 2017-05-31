@@ -1,6 +1,6 @@
 import networkx as nx
 import graph_tool as gt
-from graph_tool.all import *
+from graph_tool.all import GraphView, isomorphism
 from itertools import combinations
 
 class Motif:
@@ -97,7 +97,7 @@ m4u_3 = Motif([(0,1), (0,3), (1,2), (3,2)], name="m4u_3")
 m4u_4 = Motif([(0,1), (0,3), (1,3), (3,2), (1,2)], name="m4u_4")
 m4u_5 = Motif([(0,1), (0,3), (1,3), (3,2), (1,2), (0,2)], name="m4u_5")
 
-all_4u = [m4u_0, m4u_1, m4u_2, m4u_3, m4u_4, m4u_5]
+all_u4 = [m4u_0, m4u_1, m4u_2, m4u_3, m4u_4, m4u_5]
 
 m4_0 = Motif([(1, 3), (1, 2), (1, 0)], is_directed=True, name='m4_0')
 m4_1 = Motif([(0, 1), (0, 2), (3, 1)], is_directed=True, name='m4_1')
