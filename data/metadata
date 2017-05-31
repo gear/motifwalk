@@ -41,7 +41,7 @@ nell: nell.data
 pubmed: pubmed.data
     graph: NXGraph
     labels: Labels
-    convert_labels: True
+    convert_labels: False
     features: CSRFeatures
     info: pubmed.md
     url:
