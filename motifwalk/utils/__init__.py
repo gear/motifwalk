@@ -18,10 +18,10 @@ metadata = None
 
 global start
 
-def timer(start=True):
+def timer(begin=True):
     global start
     now = time()
-    if start:
+    if begin:
         start = time()
     else:
         delta = now - start
