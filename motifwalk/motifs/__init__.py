@@ -40,7 +40,7 @@ class Motif:
         # Subgraph as gt.GraphView
         induced_subgraph = GraphView(gt_graph, vfilt)
         # Get the motif mapping
-        _, mapping = isomorphism(sub, self.gt_motif, isomap=True)
+        mt, mapping = isomorphism(induced_subgraph, self.gt_motif, isomap=True)
         # List of anchored nodes
         anchored = [i for i in node_list if mapping[i] in self.anchors]
         assert len(anchored) > 1, "There is not enough anchor nodes to\
