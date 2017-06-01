@@ -1,9 +1,6 @@
-from abc import ABC, abstractmethod
+from abc import ABCMeta, abstractmethod
 
-class EmbeddingModel(ABC):
-
-    def __init__(self):
-        super(AbstractOperation, self).__init__()
+class EmbeddingModel(metaclass=ABCMeta):
 
     @abstractmethod
     def build(self):
@@ -14,13 +11,5 @@ class EmbeddingModel(ABC):
         pass
 
     @abstractmethod
-    def setup(self):
-        pass
-
-    @abstractmethod
     def train(self):
-        pass
-
-    @abstractmethod
-    def test(self):
         pass
