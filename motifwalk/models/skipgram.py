@@ -1,8 +1,14 @@
-num_verticesimport tensorflow as tf
+import tensorflow as tf
 import math
 import collections
-from motifwalk.models.base_model import EmbeddingModel
-from tf.train import GradientDescentOptimizer as GDO
+from motifwalk.models import EmbeddingModel
+from tensorflow import train
+import numpy as np
+from numpy.random import randint, seed
+
+seed(42)
+
+GDO = train.GradientDescentOptimizer
 
 class Skipgram(EmbeddingModel):
 
@@ -67,8 +73,8 @@ class Skipgram(EmbeddingModel):
                                              keep_dims=True))
                 normalized_embeddings = embeddings / norm
                 init_op = tf.global_variables_initializer()
-                nce_loss = self._loss(embed, nce_weights,
-                                     nce_biases, train_labels)
+                nce_loss = self._loss(embed, nce_weights, nce_biases,
+                                      train_labels, num_vertices)
                 optimizer = GDO(learning_rate).minimize(nce_loss)
         self.tf_graph = graph
         self.init_op = init_op
@@ -79,70 +85,72 @@ class Skipgram(EmbeddingModel):
         self.loss = nce_loss
         self.batch_size = batch_size
 
-        def _loss(self, embed, nce_weights, nce_biases, train_labels):
-            l = tf.reduce_mean(
-                    tf.nn.nce_loss(weights=nce_weights, biases=nce_biases,
-                                   labels=train_labels, inputs=embed,
-                                   num_sampled=self.num_nsamp,
-                                   num_classes=num_vertices) )
+    def _loss(self, embed, nce_weights, nce_biases, train_labels, num_vertices):
+        l = tf.reduce_mean(
+                tf.nn.nce_loss(weights=nce_weights, biases=nce_biases,
+                               labels=train_labels, inputs=embed,
+                               num_sampled=self.num_nsamp,
+                               num_classes=num_vertices) )
+        return l
 
-        def train(self, data, num_step, log_step, save_step,
-                  learning_rate=None, retrain=False):
-            """Train the model. TODO: Implement session recovering.
-            """
-            if self.tf_graph is None:
-                print("Build graph first!")
-                return None
-            with tf.Session(graph=self.tf_graph) as session:
-                # Update learning_rate if needed
-                if learning_rate is not None:
-                    self.optimizer = GDO(learning_rate).minimize(self.loss)
-                # Skip variables initialization if fine tuning models
-                if not retrain:
-                    sess.run(self.init_op)
-                    print("All variables of Skipgram model is initialized.")
-                average_loss = 0
-                for step in range(num_step):
-                    batch_inputs, batch_labels = self.generate_batch(data)
-                    feed_dict = {self.train_inputs: batch_inputs,
-                                 self.train_labels: batch_labels}
-                    _, loss_val = session.run([self.optimizer, self.loss],
-                                              feed_dict=feed_dict)
-                    average_loss += loss_val
-                    if step % log_step == 0:
-                        if step > 0:
-                            average_loss /= log_step
-                        print("Average loss at step {}: {}".format(log_step,
-                                                                   average_loss)
-                        average_loss = 0
-                    if step % save_step == 0:
-                        if step > 0:
-                            pass
-                            # TODO: Save embedding every step
+
+    def train(self, data, num_step, log_step, save_step,
+              learning_rate=None, retrain=False):
+        """Train the model. TODO: Implement session recovering.
+        """
+        if self.tf_graph is None:
+            print("Build graph first!")
+            return None
+        with tf.Session(graph=self.tf_graph) as session:
+            # Update learning_rate if needed
+            if learning_rate is not None:
+                self.optimizer = GDO(learning_rate).minimize(self.loss)
+            # Skip variables initialization if fine tuning models
+            if not retrain:
+                session.run(self.init_op)
+                print("All variables of Skipgram model is initialized.")
+            average_loss = 0
+            for step in range(num_step):
+                batch_inputs, batch_labels = self.generate_batch(data)
+                feed_dict = {self.train_inputs: batch_inputs,
+                             self.train_labels: batch_labels}
+                _, loss_val = session.run([self.optimizer, self.loss],
+                                          feed_dict=feed_dict)
+                average_loss += loss_val
+                if step % log_step == 0:
+                    if step > 0:
+                        average_loss /= log_step
+                    print("Average loss at step {}: {}".format(
+                                                log_step, average_loss))
+                    average_loss = 0
+                if step % save_step == 0:
+                    if step > 0:
+                        pass
+                    # TODO: Save embedding every step
             return self.embedding.eval()
 
-        def generate_batch(self, data):
-            """Generate data for training."""
-            batch_size = self.batch_size
-            num_skip = self.num_skip
-            window_size = self.window_size
-            assert batch_size % num_skip == 0
-            assert num_skip <= 2 * window_size
-            batch = np.ndarray(shape=(batch_size), dtype=np.int32)
-            labels = np.ndarray(shape=(batch_size, 1), dtype=np.int32)
-            span = 2 * window_size + 1
-            buf = collections.deque(maxlen=span)
-            for _ in range(span):
-                buf.append(data[self.data_index])
+    def generate_batch(self, data):
+        """Generate data for training."""
+        batch_size = self.batch_size
+        num_skip = self.num_skip
+        window_size = self.window_size
+        assert batch_size % num_skip == 0
+        assert num_skip <= 2 * window_size
+        batch = np.ndarray(shape=(batch_size), dtype=np.int32)
+        labels = np.ndarray(shape=(batch_size, 1), dtype=np.int32)
+        span = 2 * window_size + 1
+        buf = collections.deque(maxlen=span)
+        for _ in range(span):
+            buf.append(data[self.data_index])
+            self.data_index = (self.data_index + 1) % data.size
+        for i in range(batch_size // num_skip):
+            target = window_size
+            targets_to_avoid = [window_size]
+            for j in range(num_skip):
+                while target in targets_to_avoid:
+                    target = randint(0, span-1)
+                targets_to_avoid.append(target)
+                batch[i * num_skip + j] = buf[window_size]
+                labels[i * num_skip + j, 0] = buf[target]
                 self.data_index = (self.data_index + 1) % data.size
-            for i in range(batch_size // num_skip):
-                target = window_size
-                targets_to_avoid = [window_size]
-                for j in range(num_skip):
-                    while target in targets_to_avoid:
-                        target = random.randint(0, span-1)
-                    targets_to_avoid.append(target)
-                    batch[i * num_skip + j] = buf[window_size]
-                    labels[i * num_skip + j, 0] = buf[target]
-                    self.data_index = (self.data_index + 1) % data.size
-            return batch,labels
+        return batch,labels
