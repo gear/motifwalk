@@ -7,7 +7,7 @@ class EmbeddingModel(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def loss(self):
+    def _loss(self):
         pass
 
     @abstractmethod
