@@ -2,6 +2,7 @@ import tensorflow as tf
 import math
 import collections
 from motifwalk.models import EmbeddingModel
+from motifwalk.utils import timer
 from tensorflow import train
 import numpy as np
 from numpy.random import randint, seed
@@ -47,12 +48,6 @@ class Skipgram(EmbeddingModel):
         emb_dim - int - The dimensionality of the embedding vectors
         batch_size - int - Mini batch training size
         force_rebuild - bool - Force rebuild an existing model
-
-        Returns:
-        init_op - tf.Ops - Operation to intialize all variables
-        embed - tf.Variable - Set of embedding vectors in a batch
-        nce_weights - tf.Variable - Set of context embedding vectors
-        nce_biases - tf.Variable - Set of biases (normilization factors)
         """
         if self.tf_graph is not None and not force_rebuild:
             print("The computation graph is already built.")
@@ -102,7 +97,8 @@ class Skipgram(EmbeddingModel):
         if self.tf_graph is None:
             print("Build graph first!")
             return None
-        with tf.Session(graph=self.tf_graph) as session:
+        cf = tf.ConfigProto(allow_soft_placement=True)
+        with tf.Session(graph=self.tf_graph, config=cf) as session:
             # Update learning_rate if needed
             if learning_rate is not None:
                 self.optimizer = opt(learning_rate).minimize(self.loss)
@@ -132,6 +128,7 @@ class Skipgram(EmbeddingModel):
 
     def generate_batch(self, data):
         """Generate data for training."""
+        timer()
         batch_size = self.batch_size
         num_skip = self.num_skip
         window_size = self.window_size
@@ -154,4 +151,5 @@ class Skipgram(EmbeddingModel):
                 batch[i * num_skip + j] = buf[window_size]
                 labels[i * num_skip + j, 0] = buf[target]
                 self.data_index = (self.data_index + 1) % data.size
+        timer(False)
         return batch,labels
