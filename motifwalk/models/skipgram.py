@@ -9,6 +9,7 @@ from numpy.random import randint, seed
 seed(42)
 
 GDO = train.GradientDescentOptimizer
+ADAM = train.AdamOptimizer
 
 class Skipgram(EmbeddingModel):
 
@@ -38,7 +39,7 @@ class Skipgram(EmbeddingModel):
         self.data_index = 0 # Pointer to data
 
     def build(self, num_vertices, emb_dim=16, batch_size=1024,
-              learning_rate=0.01, force_rebuild=False):
+              opt=GDO, learning_rate=0.01, force_rebuild=False):
         """Build the computing graph.
 
         Parameters:
@@ -72,18 +73,18 @@ class Skipgram(EmbeddingModel):
                 norm = tf.sqrt(tf.reduce_sum(tf.square(embeddings), 1,
                                              keep_dims=True))
                 normalized_embeddings = embeddings / norm
-                init_op = tf.global_variables_initializer()
                 nce_loss = self._loss(embed, nce_weights, nce_biases,
                                       train_labels, num_vertices)
-                optimizer = GDO(learning_rate).minimize(nce_loss)
-        self.tf_graph = graph
-        self.init_op = init_op
-        self.train_inputs = train_inputs
-        self.train_labels = train_labels
-        self.optimizer = optimizer
-        self.embedding = normalized_embeddings
-        self.loss = nce_loss
-        self.batch_size = batch_size
+                optimizer = opt(learning_rate).minimize(nce_loss)
+                init_op = tf.global_variables_initializer()
+                self.tf_graph = graph
+                self.init_op = init_op
+                self.train_inputs = train_inputs
+                self.train_labels = train_labels
+                self.optimizer = optimizer
+                self.embedding = normalized_embeddings
+                self.loss = nce_loss
+                self.batch_size = batch_size
 
     def _loss(self, embed, nce_weights, nce_biases, train_labels, num_vertices):
         l = tf.reduce_mean(
@@ -95,7 +96,7 @@ class Skipgram(EmbeddingModel):
 
 
     def train(self, data, num_step, log_step, save_step,
-              learning_rate=None, retrain=False):
+              opt=GDO, learning_rate=None, retrain=False):
         """Train the model. TODO: Implement session recovering.
         """
         if self.tf_graph is None:
@@ -104,7 +105,7 @@ class Skipgram(EmbeddingModel):
         with tf.Session(graph=self.tf_graph) as session:
             # Update learning_rate if needed
             if learning_rate is not None:
-                self.optimizer = GDO(learning_rate).minimize(self.loss)
+                self.optimizer = opt(learning_rate).minimize(self.loss)
             # Skip variables initialization if fine tuning models
             if not retrain:
                 session.run(self.init_op)
@@ -121,7 +122,7 @@ class Skipgram(EmbeddingModel):
                     if step > 0:
                         average_loss /= log_step
                     print("Average loss at step {}: {}".format(
-                                                log_step, average_loss))
+                                                step, average_loss))
                     average_loss = 0
                 if step % save_step == 0:
                     if step > 0:
