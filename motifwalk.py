@@ -97,7 +97,7 @@ def main():
 
     from time import time
     uid = str(time())
-    np.save(args.save_loc+"{}_{}.emb.py".format(args.dataset, uid), emb)
+    np.save(args.save_loc+"{}_{}.emb".format(args.dataset, uid), emb)
     with open(args.save_loc+"{}_{}.info".format(args.dataset, uid),
               "w") as infofile:
         infofile.write(uid + '\n')
