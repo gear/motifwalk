@@ -128,7 +128,6 @@ class Skipgram(EmbeddingModel):
 
     def generate_batch(self, data):
         """Generate data for training."""
-        timer()
         batch_size = self.batch_size
         num_skip = self.num_skip
         window_size = self.window_size
@@ -151,5 +150,4 @@ class Skipgram(EmbeddingModel):
                 batch[i * num_skip + j] = buf[window_size]
                 labels[i * num_skip + j, 0] = buf[target]
                 self.data_index = (self.data_index + 1) % data.size
-        timer(False)
         return batch,labels
