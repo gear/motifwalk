@@ -7,8 +7,6 @@ from motifwalk.utils.Graph import GraphContainer
 from motifwalk.walks import undirected_randomwalk
 from motifwalk.models.skipgram import Skipgram, ADAM
 
-
-
 # Arguments
 parser = argparse.ArgumentParser()
 parser.add_argument("-d", "--dataset", type=str,
@@ -24,6 +22,9 @@ parser.add_argument("-k", "--emb_dim", type=int,
 parser.add_argument("-t", "--num_step", type=int,
                     help="Number of step to train the embedding.",
                     default=10000)
+parser.add_argument("-nw", "--num_walk", type=int,
+                    help="Number of random walk per graph node.",
+                    default=10)
 parser.add_argument("-b", "--batch_size", type=int,
                     help="Batch size.")
 parser.add_argument("-m", "--model", type=str,
@@ -43,6 +44,8 @@ parser.add_argument("--save_step", type=int,
 parser.add_argument("--device", type=str,
                     help="Select device to run the model on using TF format",
                     default="/cpu:0")
+parser.add_argument("--save_loc", type=str, help="Embedding save location.",
+                    default="./")
 
 def main():
     args = parser.parse_args()
@@ -78,7 +81,8 @@ def main():
     walks = None
     index = None
     if "undirected" == args.walk_type:
-        walks, index = undirected_randomwalk(gt)
+        walks, index = undirected_randomwalk(gt, walk_length=args.walk_length,
+                                             num_walk=args.num_walk)
     else:
         print("TODO")
     assert walks is not None
@@ -93,8 +97,9 @@ def main():
 
     from time import time
     uid = str(time())
-    np.save("{}_{}.emb.py".format(args.dataset, uid), emb)
-    with open("{}_{}.info".format(args.dataset, uid), "w") as infofile:
+    np.save(args.save_loc+"{}_{}.emb.py".format(args.dataset, uid), emb)
+    with open(args.save_loc+"{}_{}.info".format(args.dataset, uid),
+              "w") as infofile:
         infofile.write(uid + '\n')
         args_dict = vars(args)
         for key, val in args_dict.items():
