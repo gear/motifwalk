@@ -2,10 +2,12 @@ import os
 import argparse
 import numpy as np
 
-from motifwalk.utils import find_meta, set_dataloc, get_metadata
+from motifwalk.utils import find_meta, set_dataloc, get_metadata, timer
 from motifwalk.utils.Graph import GraphContainer
 from motifwalk.walks import undirected_randomwalk
 from motifwalk.models.skipgram import Skipgram, ADAM
+
+
 
 # Arguments
 parser = argparse.ArgumentParser()
@@ -27,7 +29,7 @@ parser.add_argument("-b", "--batch_size", type=int,
 parser.add_argument("-m", "--model", type=str,
                     help="Embedding model.", default="skipgram")
 parser.add_argument("-ws", "--window_size", type=int,
-                    help="Skipgram window size.")
+                    help="Skipgram window size.", default=5)
 parser.add_argument("-nn", "--num_neg", type=int,
                     help="Number of negative samples each contex.", default=15)
 parser.add_argument("-ns", "--num_skip", type=int,
@@ -48,7 +50,7 @@ def main():
     set_dataloc(dloc)
     metadata = get_metadata()
 
-    graph = GraphContainer(find_meta(args.dataset))
+    graph = GraphContainer(find_meta(args.dataset), dloc)
     print("Generating gt graph...")
     timer()
     gt = graph.get_gt_graph()
@@ -59,7 +61,7 @@ def main():
     model = None
     if "skipgram" == args.model.lower():
         model = Skipgram(window_size=args.window_size, num_skip=args.num_skip,
-                         num_nsamp=args.num_neg, opt=ADAM)
+                         num_nsamp=args.num_neg)
     elif "gcn" == args.model.lower():
         print ("TODO")
     elif "sc" == args.model.lower():
@@ -88,7 +90,15 @@ def main():
                       log_step=args.log_step, save_step=args.save_step,
                       learning_rate=args.learning_rate)
     timer(False)
+
     from time import time
     uid = str(time())
-    np.save("{}_{}.emb.py".format(args.dataset, uid))
-    with open("{}.info")
+    np.save("{}_{}.emb.py".format(args.dataset, uid), emb)
+    with open("{}_{}.info".format(args.dataset, uid), "w") as infofile:
+        infofile.write(uid + '\n')
+        args_dict = vars(args)
+        for key, val in args_dict.items():
+            infofile.write("{}: {}\n".format(key,val))
+
+if __name__ == "__main__":
+    main()
