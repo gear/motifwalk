@@ -91,7 +91,7 @@ class Skipgram(EmbeddingModel):
 
 
     def train(self, data, num_step, log_step, save_step,
-              opt=GDO, learning_rate=None, retrain=False):
+              opt=ADAM, learning_rate=None, retrain=False):
         """Train the model. TODO: Implement session recovering.
         """
         if self.tf_graph is None:
