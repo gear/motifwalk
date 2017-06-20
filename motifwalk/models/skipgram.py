@@ -10,7 +10,7 @@ from numpy.random import randint, seed
 seed(42)
 
 GDO = train.GradientDescentOptimizer
-ADAM = train.AdamOptimizer
+ADAM = train.AdamOptimizer # TODO: Fix Adam init op bug
 
 class Skipgram(EmbeddingModel):
 
@@ -80,6 +80,7 @@ class Skipgram(EmbeddingModel):
                 self.embedding = normalized_embeddings
                 self.loss = nce_loss
                 self.batch_size = batch_size
+                self.emb_dim = emb_dim
 
     def _loss(self, embed, nce_weights, nce_biases, train_labels, num_vertices):
         l = tf.reduce_mean(
@@ -91,7 +92,7 @@ class Skipgram(EmbeddingModel):
 
 
     def train(self, data, num_step, log_step, save_step,
-              opt=ADAM, learning_rate=None, retrain=False):
+              opt=GDO, learning_rate=None, retrain=False):
         """Train the model. TODO: Implement session recovering.
         """
         if self.tf_graph is None:
@@ -107,6 +108,7 @@ class Skipgram(EmbeddingModel):
                 session.run(self.init_op)
                 print("All variables of Skipgram model is initialized.")
             average_loss = 0
+            save_loss = 0
             for step in range(num_step):
                 batch_inputs, batch_labels = self.generate_batch(data)
                 feed_dict = {self.train_inputs: batch_inputs,
@@ -122,8 +124,11 @@ class Skipgram(EmbeddingModel):
                     average_loss = 0
                 if step % save_step == 0:
                     if step > 0:
-                        pass
-                    # TODO: Save embedding every step
+                        save_loss = average_loss /= save_step
+                        fname = "./step_save/{}_{}_{}".format(step,
+                                                              self.emb_dim,
+                                                              save_loss)
+                        np.save(fname, self.embedding.eval())
             return self.embedding.eval()
 
     def generate_batch(self, data):
