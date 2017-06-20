@@ -40,7 +40,7 @@ class Skipgram(EmbeddingModel):
         self.data_index = 0 # Pointer to data
 
     def build(self, num_vertices, emb_dim=16, batch_size=1024,
-              opt=GDO, learning_rate=0.01, force_rebuild=False):
+              opt=GDO, learning_rate=0.01, force_rebuild=False, regw=0.8):
         """Build the computing graph.
 
         Parameters:
@@ -57,21 +57,33 @@ class Skipgram(EmbeddingModel):
             train_inputs = tf.placeholder(tf.int32, shape=[batch_size])
             train_labels = tf.placeholder(tf.int32, shape=[batch_size,1])
             with tf.device(self.device):
-                embeddings = tf.Variable(
-                                tf.random_uniform([num_vertices, emb_dim],
-                                                  -1.0, 1.0))
+                emb_init = tf.random_uniform([num_vertices, emb_dim], -1.0, 1.0)
+
+                embeddings = tf.get_variable(name="raw_embeddings",
+                            shape=[num_vertices, emb_dim],
+                            initializer=emb_init,
+                            regularizer=tf.contrib.layers.l2_regularizer(regw))
                 embed = tf.nn.embedding_lookup(embeddings, train_inputs)
-                nce_weights = tf.Variable(
-                                 tf.truncated_normal([num_vertices, emb_dim],
-                                                 stddev=1.0/math.sqrt(emb_dim)))
+
+                nce_init = tf.truncated_normal([num_vertices, emb_dim],
+                                               stddev=1.0/math.sqrt(emb_dim))
+                nce_weights =  tf.get_variable(name="nce_weights",
+                            shape=[num_vertices, emb_dim],
+                            initializer=nce_init,
+                            regularizer=tf.contrib.layers.l2_regularizer(regw))
                 nce_biases = tf.Variable(tf.zeros([num_vertices]))
+
                 norm = tf.sqrt(tf.reduce_sum(tf.square(embeddings), 1,
                                              keep_dims=True))
                 normalized_embeddings = embeddings / norm
+
                 nce_loss = self._loss(embed, nce_weights, nce_biases,
                                       train_labels, num_vertices)
+
                 optimizer = opt(learning_rate).minimize(nce_loss)
+
                 init_op = tf.global_variables_initializer()
+                
                 self.tf_graph = graph
                 self.init_op = init_op
                 self.train_inputs = train_inputs
