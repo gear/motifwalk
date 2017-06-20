@@ -1,4 +1,4 @@
-all: blogcatalog citeseer cora amazon nell pubmed webkb karate lesmiserable
+all: blogcatalog citeseer cora amazon nell pubmed webkb karate lesmiserable polblogs
 %
 blogcatalog: blogcatalog.data
     graph: NXGraph
@@ -66,4 +66,11 @@ lesmiserable: lesmiserable.data
     labels: Labels
     convert_labels: True
     info: lesmiserable.md
+    url:
+%
+polblogs: polblogs.data
+    graph: NXGraph
+    labels: Labels
+    convert_labels: True
+    info: polblogs.md
     url:
