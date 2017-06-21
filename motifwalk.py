@@ -44,6 +44,9 @@ parser.add_argument("--save_step", type=int,
 parser.add_argument("--device", type=str,
                     help="Select device to run the model on using TF format",
                     default="/cpu:0")
+parser.add_argument("--reg_strength", type=float,
+                    help="Regularization strength for embedding matrix",
+                    default=0.8)
 parser.add_argument("--save_loc", type=str, help="Embedding save location.",
                     default="./")
 
@@ -64,7 +67,7 @@ def main():
     model = None
     if "skipgram" == args.model.lower():
         model = Skipgram(window_size=args.window_size, num_skip=args.num_skip,
-                         num_nsamp=args.num_neg)
+                         num_nsamp=args.num_neg, name=args.dataset)
     elif "gcn" == args.model.lower():
         print ("TODO")
     elif "sc" == args.model.lower():
@@ -73,7 +76,8 @@ def main():
         print("Unknown embedding model.")
     assert model is not None
     model.build(num_vertices=gt.num_vertices(), emb_dim=args.emb_dim,
-                batch_size=args.batch_size, learning_rate=args.learning_rate)
+                batch_size=args.batch_size, learning_rate=args.learning_rate,
+                regw=args.reg_strength, device=args.device)
     timer(False)
 
     print("Generating walks...")
