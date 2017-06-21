@@ -14,7 +14,7 @@ ADAM = train.AdamOptimizer # TODO: Fix Adam init op bug
 
 class Skipgram(EmbeddingModel):
 
-    def __init__(self, window_size, num_skip, num_nsamp):
+    def __init__(self, window_size, num_skip, num_nsamp, name=None):
         """Initialize a Skipgram embedding model. Examples of this
         class is DeepWalk and node2vec.
 
@@ -28,7 +28,7 @@ class Skipgram(EmbeddingModel):
         self.window_size = window_size
         self.num_skip = num_skip
         self.num_nsamp = num_nsamp
-        self.device = '/cpu:0'
+        self.name = name
         self.tf_graph = None
         self.embedding = None
         self.init_op = None
@@ -39,8 +39,9 @@ class Skipgram(EmbeddingModel):
         self.batch_size = None
         self.data_index = 0 # Pointer to data
 
-    def build(self, num_vertices, emb_dim=16, batch_size=1024,
-              opt=GDO, learning_rate=0.01, force_rebuild=False, regw=0.8):
+    def build(self, num_vertices, emb_dim=16, batch_size=1024, opt=GDO,
+              learning_rate=0.01, force_rebuild=False, regw=0.8,
+              device='/cpu:0'):
         """Build the computing graph.
 
         Parameters:
@@ -56,11 +57,10 @@ class Skipgram(EmbeddingModel):
         with graph.as_default():
             train_inputs = tf.placeholder(tf.int32, shape=[batch_size])
             train_labels = tf.placeholder(tf.int32, shape=[batch_size,1])
-            with tf.device(self.device):
+            with tf.device(device):
                 emb_init = tf.random_uniform([num_vertices, emb_dim], -1.0, 1.0)
 
                 embeddings = tf.get_variable(name="raw_embeddings",
-                            shape=[num_vertices, emb_dim],
                             initializer=emb_init,
                             regularizer=tf.contrib.layers.l2_regularizer(regw))
                 embed = tf.nn.embedding_lookup(embeddings, train_inputs)
@@ -68,7 +68,6 @@ class Skipgram(EmbeddingModel):
                 nce_init = tf.truncated_normal([num_vertices, emb_dim],
                                                stddev=1.0/math.sqrt(emb_dim))
                 nce_weights =  tf.get_variable(name="nce_weights",
-                            shape=[num_vertices, emb_dim],
                             initializer=nce_init,
                             regularizer=tf.contrib.layers.l2_regularizer(regw))
                 nce_biases = tf.Variable(tf.zeros([num_vertices]))
@@ -83,7 +82,7 @@ class Skipgram(EmbeddingModel):
                 optimizer = opt(learning_rate).minimize(nce_loss)
 
                 init_op = tf.global_variables_initializer()
-                
+
                 self.tf_graph = graph
                 self.init_op = init_op
                 self.train_inputs = train_inputs
@@ -121,6 +120,7 @@ class Skipgram(EmbeddingModel):
                 print("All variables of Skipgram model is initialized.")
             average_loss = 0
             save_loss = 0
+            past_loss = []
             for step in range(num_step):
                 batch_inputs, batch_labels = self.generate_batch(data)
                 feed_dict = {self.train_inputs: batch_inputs,
@@ -128,19 +128,31 @@ class Skipgram(EmbeddingModel):
                 _, loss_val = session.run([self.optimizer, self.loss],
                                           feed_dict=feed_dict)
                 average_loss += loss_val
+                save_loss += loss_val
                 if step % log_step == 0:
                     if step > 0:
                         average_loss /= log_step
                     print("Average loss at step {}: {}".format(
                                                 step, average_loss))
+                    # Early stoping
+                    if len(past_loss) == 10:
+                        lmean = np.mean(past_loss)
+                        lstd = np.std(past_loss)
+                        if abs(average_loss-lmean) < lstd:
+                            break
+                        else:
+                            past_loss = [] # TODO: Think about filling half
+                    else:
+                        past_loss.append(average_loss)
                     average_loss = 0
                 if step % save_step == 0:
                     if step > 0:
-                        save_loss = average_loss /= save_step
-                        fname = "./step_save/{}_{}_{}".format(step,
-                                                              self.emb_dim,
-                                                              save_loss)
+                        save_loss = save_loss / save_step
+                        fname = "{0}_step:{1}_{2}_{3:.2f}".format(self.name,
+                                                    step, self.emb_dim,
+                                                    save_loss)
                         np.save(fname, self.embedding.eval())
+                    save_loss = 0
             return self.embedding.eval()
 
     def generate_batch(self, data):
