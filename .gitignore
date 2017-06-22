@@ -102,3 +102,7 @@ data/raw
 
 # Data packages
 *.data
+
+# Results
+emb
+*.npy
