@@ -136,7 +136,7 @@ class Skipgram(EmbeddingModel):
                         average_loss /= log_step
                     print("Average loss at step {}: {}".format(
                                                 step, average_loss))
-                    # Early stoping
+                    # Early stoping - should perform on prediction loss
                     # if len(past_loss) == 10:
                     #    lmean = np.mean(past_loss)
                     #    lstd = np.std(past_loss)
@@ -184,8 +184,9 @@ class Skipgram(EmbeddingModel):
                 self.data_index = (self.data_index + 1) % data.size
         return batch,labels
 
-class SkipgramNS(Skipgram):
-    """Custom negative sampling skipgram model."""
+class SkipgramFC(Skipgram):
+    """Custom negative sampling skipgram model with one fully connected
+    layer as a predictor (ref. planetoid)."""
 
     def __init__(self, window_size, num_skip, num_nsamp, name=None):
         """Initialize a Skipgram embedding model. Examples of this
