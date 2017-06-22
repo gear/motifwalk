@@ -4,7 +4,7 @@ import numpy as np
 import networkx as nx
 from motifwalk.utils.Graph import GraphContainer
 from motifwalk.motifs import all_u3, all_3, all_u4, all_4
-from graph_tool.all import Graph, motifs
+from graph_tool.all import Graph, motifs, GraphView
 
 def count_motif(g, motif_object, rm=True):
     """Count the number of given motif and return the mapping list
@@ -29,7 +29,11 @@ def count_motif(g, motif_object, rm=True):
 
 def construct_motif_graph(graph_container, motif, vertex_maps=None):
     """Construct and return a undirected gt graph containing
-    motif relationship.
+    motif relationship. Note that graph_tool generates empty nodes
+    to fill in the missing indices. For example, if we add edge (1,2)
+    to an empty graph, the graph will have 3 nodes: 0, 1, 2 and 1 edge (1,2).
+    For this reason, the returned `m_graph` usually has a large number of
+    disconnected nodes.
 
     Parameters:
     graph_container - GraphContainer - Store the original network
@@ -50,3 +54,22 @@ def construct_motif_graph(graph_container, motif, vertex_maps=None):
             edges = [i for i in motif.anchored_edges(graph, prop.get_array())]
             m_graph.add_edge_list(edges)
     return m_graph
+
+def filter_isolated(gt):
+    """Filter isolated nodes (zero degrees) and return a GraphView. This
+    function is for the purpose of shit
+
+    Parameters:
+    gt - graph_tool.Graph - network
+
+    Returns:
+    gt_filtered - graph_tool.GraphView - network containing only connected nodes
+    """
+    zero_degree_filter = gt.new_vertex_property("bool")
+    for i in gt.vertices():
+        v = gt.vertex(i)
+        if v.out_degree() > 0 or v.in_degree() > 0:
+            zero_degree_filter[i] = True
+        else:
+            zero_degree_filter[i] = False
+    return GraphView(gt, zero_degree_filter)
