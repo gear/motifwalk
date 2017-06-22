@@ -13,6 +13,7 @@ GDO = train.GradientDescentOptimizer
 ADAM = train.AdamOptimizer # TODO: Fix Adam init op bug
 
 class Skipgram(EmbeddingModel):
+    """Simple skipgram with built-in negative sampling loss"""
 
     def __init__(self, window_size, num_skip, num_nsamp, name=None):
         """Initialize a Skipgram embedding model. Examples of this
@@ -58,7 +59,9 @@ class Skipgram(EmbeddingModel):
             train_inputs = tf.placeholder(tf.int32, shape=[batch_size])
             train_labels = tf.placeholder(tf.int32, shape=[batch_size,1])
             with tf.device(device):
-                emb_init = tf.random_uniform([num_vertices, emb_dim], -1.0, 1.0)
+                init_width = 0.5 / emb_dim # word2vec impl
+                emb_init = tf.random_uniform([num_vertices, emb_dim],
+                                             -init_width, init_width)
 
                 embeddings = tf.get_variable(name="raw_embeddings",
                             initializer=emb_init,
@@ -120,7 +123,6 @@ class Skipgram(EmbeddingModel):
                 print("All variables of Skipgram model is initialized.")
             average_loss = 0
             save_loss = 0
-            past_loss = []
             for step in range(num_step):
                 batch_inputs, batch_labels = self.generate_batch(data)
                 feed_dict = {self.train_inputs: batch_inputs,
@@ -135,15 +137,16 @@ class Skipgram(EmbeddingModel):
                     print("Average loss at step {}: {}".format(
                                                 step, average_loss))
                     # Early stoping
-                    if len(past_loss) == 10:
-                        lmean = np.mean(past_loss)
-                        lstd = np.std(past_loss)
-                        if abs(average_loss-lmean) < lstd:
-                            break
-                        else:
-                            past_loss = [] # TODO: Think about filling half
-                    else:
-                        past_loss.append(average_loss)
+                    # if len(past_loss) == 10:
+                    #    lmean = np.mean(past_loss)
+                    #    lstd = np.std(past_loss)
+                    #    if abs(average_loss-lmean) < 0.1 * lstd:
+                    #        print("Early stopping at step: %d" % step)
+                    #        break
+                    #    else:
+                    #        past_loss = [] # TODO: Think about filling half
+                    #else:
+                    #    past_loss.append(average_loss)
                     average_loss = 0
                 if step % save_step == 0:
                     if step > 0:
@@ -180,3 +183,31 @@ class Skipgram(EmbeddingModel):
                 labels[i * num_skip + j, 0] = buf[target]
                 self.data_index = (self.data_index + 1) % data.size
         return batch,labels
+
+class SkipgramNS(Skipgram):
+    """Custom negative sampling skipgram model."""
+
+    def __init__(self, window_size, num_skip, num_nsamp, name=None):
+        """Initialize a Skipgram embedding model. Examples of this
+        class is DeepWalk and node2vec.
+
+        Parameters:
+        window_size - int - Size of the skip window
+        num_skip - int - Number of samples generated per window
+        num_nsamp - int - Number of negative samples per window
+        batch_size - int - Size of each batch training batch
+        """
+        super().__init__()
+        self.window_size = window_size
+        self.num_skip = num_skip
+        self.num_nsamp = num_nsamp
+        self.name = name
+        self.tf_graph = None
+        self.embedding = None
+        self.init_op = None
+        self.train_inputs = None
+        self.train_labels = None
+        self.optimizer = None
+        self.loss = None
+        self.batch_size = None
+        self.data_index = 0 # Pointer to data
