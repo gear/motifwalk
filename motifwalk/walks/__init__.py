@@ -28,11 +28,10 @@ def undirected_randomwalk(gt, walk_length=80, num_walk=10):
     directedness = gt.is_directed()
     if gt.is_directed():
         gt.set_directed(False)
-    nlist = np.arange(gt.num_vertices())
+    nlist = [i for i in gt.vertices()] # Only get valid nodes
     for walk in range(num_walk):
         shuffle(nlist)
-        for node in nlist:
-            v = gt.vertex(node)
+        for v in nlist:
             context[ci] = int(v)
             ci += 1
             # walk_length-1 because we registered the first node
@@ -43,3 +42,7 @@ def undirected_randomwalk(gt, walk_length=80, num_walk=10):
                 ci += 1
     gt.set_directed(directedness)
     return context, ci
+
+def parallel_urw(gt, num_worker=8):
+    """TODO: Implement parallel undirected random walk"""
+    pass
