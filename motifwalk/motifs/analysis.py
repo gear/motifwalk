@@ -3,7 +3,6 @@ from itertools import combinations
 import numpy as np
 import networkx as nx
 from motifwalk.utils.Graph import GraphContainer
-from motifwalk.motifs import all_u3, all_3, all_u4, all_4
 from graph_tool.all import Graph, motifs, GraphView
 
 def count_motif(g, motif_object, rm=True):
