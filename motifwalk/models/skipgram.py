@@ -105,7 +105,7 @@ class Skipgram(EmbeddingModel):
         return l
 
 
-    def train(self, data, num_step, log_step, save_step,
+    def train(self, data, num_step, log_step, save_step=0.9,
               opt=GDO, learning_rate=None, retrain=False):
         """Train the model. TODO: Implement session recovering.
         """
@@ -148,7 +148,7 @@ class Skipgram(EmbeddingModel):
                     #else:
                     #    past_loss.append(average_loss)
                     average_loss = 0
-                if step % save_step == 0:
+                if step % save_step == 0:  # Default is 0.9 meaning do not save
                     if step > 0:
                         save_loss = save_loss / save_step
                         fname = "{0}_step:{1}_{2}_{3:.2f}".format(self.name,
