@@ -45,6 +45,7 @@ def construct_motif_graph(graph_container, motif, vertex_maps=None):
     if motif.anchors is None:
         print("Warning: Turning motif groups into cliques.")
     graph = graph_container.get_gt_graph()
+    graph.set_directed(motif.gt_motif.is_directed())
     # graph_tool.Graph
     m_graph = Graph(directed=False)
     if vertex_maps is None:
