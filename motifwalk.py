@@ -91,10 +91,10 @@ def main():
         print("Unknown embedding model.")
     assert model is not None
     if modelm is not None:
-        modelm.build(num_vertices=gt.num_vertices(), emb_dim=args.emb_dim/2,
+        modelm.build(num_vertices=gt.num_vertices(), emb_dim=args.emb_dim//2,
                     batch_size=args.batch_size, learning_rate=args.learning_rate,
-                    regw=args.reg_strength, device=args.device))
-        model.build(num_vertices=gt.num_vertices(), emb_dim=args.emb_dim/2,
+                    regw=args.reg_strength, device=args.device)
+        model.build(num_vertices=gt.num_vertices(), emb_dim=args.emb_dim//2,
                     batch_size=args.batch_size, learning_rate=args.learning_rate,
                     regw=args.reg_strength, device=args.device)
     else:
