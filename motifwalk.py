@@ -61,7 +61,7 @@ parser.add_argument("--save_loc", type=str, help="Embedding save location.",
 
 def main():
     args = parser.parse_args()
-    dloc = '/home/gear/Dropbox/CompletedProjects/motifwalk/data'
+    dloc = '/home/hoangnt/motifwalk/data'
     set_dataloc(dloc)
     metadata = get_metadata()
 
