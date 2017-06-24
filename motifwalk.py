@@ -7,6 +7,12 @@ from motifwalk.utils.Graph import GraphContainer
 from motifwalk.walks import undirected_randomwalk
 from motifwalk.models.skipgram import Skipgram, ADAM
 
+from motifwalk.motifs import all_u3, all_3, all_u4, all_4
+from motifwalk.motifs.analysis import construct_motif_graph, filter_isolated
+
+triangle = all_u3[0]
+
+
 # Arguments
 parser = argparse.ArgumentParser()
 parser.add_argument("-d", "--dataset", type=str,
@@ -14,6 +20,9 @@ parser.add_argument("-d", "--dataset", type=str,
 parser.add_argument("-w", "--walk_type", type=str,
                     help="Type of the walk on graph (e.g. random).",
                     default="undirected")
+parser.add_argument("-mt", "--motif", type=str,
+                    help="Type of motif to run.",
+                    default="triangle")
 parser.add_argument("-l", "--walk_length", type=int,
                     help="Length of random walk starting from each node.",
                     default=80)
@@ -65,9 +74,15 @@ def main():
     print("Creating {} model...".format(args.model))
     timer()
     model = None
+    modelm = None
     if "skipgram" == args.model.lower():
         model = Skipgram(window_size=args.window_size, num_skip=args.num_skip,
                          num_nsamp=args.num_neg, name=args.dataset)
+    elif "skipgram_motif" == args.model.lower():
+        model = Skipgram(window_size=args.window_size, num_skip=args.num_skip,
+                         num_nsamp=args.num_neg, name=args.dataset)
+        modelm = Skipgram(window_size=args.window_size, num_skip=args.num_skip,
+                         num_nsamp=args.num_neg, name=args.dataset+"m")
     elif "gcn" == args.model.lower():
         print ("TODO")
     elif "sc" == args.model.lower():
@@ -75,18 +90,36 @@ def main():
     else:
         print("Unknown embedding model.")
     assert model is not None
-    model.build(num_vertices=gt.num_vertices(), emb_dim=args.emb_dim,
-                batch_size=args.batch_size, learning_rate=args.learning_rate,
-                regw=args.reg_strength, device=args.device)
+    if modelm is not None:
+        modelm.build(num_vertices=gt.num_vertices(), emb_dim=args.emb_dim/2,
+                    batch_size=args.batch_size, learning_rate=args.learning_rate,
+                    regw=args.reg_strength, device=args.device))
+        model.build(num_vertices=gt.num_vertices(), emb_dim=args.emb_dim/2,
+                    batch_size=args.batch_size, learning_rate=args.learning_rate,
+                    regw=args.reg_strength, device=args.device)
+    else:
+        model.build(num_vertices=gt.num_vertices(), emb_dim=args.emb_dim,
+                    batch_size=args.batch_size, learning_rate=args.learning_rate,
+                    regw=args.reg_strength, device=args.device)
     timer(False)
 
     print("Generating walks...")
     timer()
     walks = None
     index = None
+    mwalks = None
+    mindex = None
     if "undirected" == args.walk_type:
         walks, index = undirected_randomwalk(gt, walk_length=args.walk_length,
                                              num_walk=args.num_walk)
+        if modelm is not None:
+            assert len(args.motif)
+            motif = eval(args.motif)
+            motif_graph = construct_motif_graph(graph, motif)
+            motif_view = filter_isolated(motif_graph)
+            mwalks, mindex = undirected_randomwalk(motif_view,
+                                            walk_length=args.walk_length,
+                                            num_walk=args.num_walk)
     else:
         print("TODO")
     assert walks is not None
@@ -97,6 +130,11 @@ def main():
     emb = model.train(data=walks, num_step=args.num_step,
                       log_step=args.log_step, save_step=args.save_step,
                       learning_rate=args.learning_rate)
+    if modelm is not None:
+        print("Start training for motif model...")
+        memb = modelm.train(data=mwalks, num_step=args.num_step,
+                            log_step=args.log_step, save_step=args.save_step,
+                            learning_rate=args.learning_rate)
     timer(False)
 
     from time import time
