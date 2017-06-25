@@ -130,6 +130,7 @@ def main():
     emb = model.train(data=walks, num_step=args.num_step,
                       log_step=args.log_step, save_step=args.save_step,
                       learning_rate=args.learning_rate)
+    memb = None
     if modelm is not None:
         print("Start training for motif model...")
         memb = modelm.train(data=mwalks, num_step=args.num_step,
@@ -140,6 +141,9 @@ def main():
     from time import time
     uid = str(time())
     np.save(args.save_loc+"{}_{}.emb".format(args.dataset, uid), emb)
+    if memb is not None:
+        np.save(args.save_loc+"{}_{}.memb".format(args.dataset, uid), memb)
+
     with open(args.save_loc+"{}_{}.info".format(args.dataset, uid),
               "w") as infofile:
         infofile.write(uid + '\n')
