@@ -9,7 +9,6 @@ from sklearn.metrics import f1_score, accuracy_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.manifold import TSNE
-from matplotlib import pyplot as plt
 from time import time
 
 dataloc = './../../data'
