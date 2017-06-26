@@ -42,7 +42,7 @@ class Skipgram(EmbeddingModel):
 
     def build(self, num_vertices, emb_dim=16, batch_size=1024, opt=GDO,
               learning_rate=0.01, force_rebuild=False, regw=0.8,
-              device='/cpu:0'):
+              device='/cpu:0', init_emb=None):
         """Build the computing graph.
 
         Parameters:
@@ -60,7 +60,11 @@ class Skipgram(EmbeddingModel):
             train_labels = tf.placeholder(tf.int32, shape=[batch_size,1])
             with tf.device(device):
                 init_width = 0.5 / emb_dim # word2vec impl
-                emb_init = tf.random_uniform([num_vertices, emb_dim],
+                if init_emb is not None:
+                    emb_init = tf.constant_initializer(init_emb)
+                    assert init_emb.shape == (num_vertices, emb_dim)
+                else:
+                    emb_init = tf.random_uniform([num_vertices, emb_dim],
                                              -init_width, init_width)
 
                 embeddings = tf.get_variable(name="raw_embeddings",

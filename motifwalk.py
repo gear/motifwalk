@@ -91,9 +91,6 @@ def main():
         print("Unknown embedding model.")
     assert model is not None
     if modelm is not None:
-        modelm.build(num_vertices=gt.num_vertices(), emb_dim=args.emb_dim//2,
-                    batch_size=args.batch_size, learning_rate=args.learning_rate,
-                    regw=args.reg_strength, device=args.device)
         model.build(num_vertices=gt.num_vertices(), emb_dim=args.emb_dim//2,
                     batch_size=args.batch_size, learning_rate=args.learning_rate,
                     regw=args.reg_strength, device=args.device)
@@ -132,7 +129,10 @@ def main():
                       learning_rate=args.learning_rate)
     memb = None
     if modelm is not None:
-        print("Start training for motif model...")
+        print("Start building and training for motif model...")
+        modelm.build(num_vertices=gt.num_vertices(), emb_dim=args.emb_dim//2,
+                    batch_size=args.batch_size, learning_rate=args.learning_rate,
+                    regw=args.reg_strength, device=args.device, init_emb=emb)
         memb = modelm.train(data=mwalks, num_step=args.num_step,
                             log_step=args.log_step, save_step=args.save_step,
                             learning_rate=args.learning_rate)
