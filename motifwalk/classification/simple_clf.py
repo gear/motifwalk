@@ -113,33 +113,6 @@ class TopKRanker(OneVsRestClassifier):
                 all_labels[i][l] = 1.0
         return all_labels
 
-
-def run_embedding_classify_f1(graph_all, emb_np_file, clf=LogisticRegression(),
-                              test_ratio=[0.5], rand_state=2):
-    """Run node classification for the learned embedding."""
-    labels = graph_all.get_labels()
-    if type(emb_np_file) is str:
-        emb = np.load(emb_np_file)
-    else:
-        emb = emb_np_file
-    averages = ["micro", "macro", "samples", "weighted"]
-    for sr in splits_ratio:
-        X_train, X_test, y_train, y_test = train_test_split(
-            emb, labels, test_size=sr, random_state=run)
-        top_k_list = get_top_k(y_test)
-        mclf = TopKRanker(clf)
-        mclf.fit(X_train, y_train)
-        test_results = mclf.predict(X_test, top_k_list,
-                                    num_classes=labels.shape[1])
-        str_output = "Train ratio: {}\n".format(1.0 - sr)
-        for avg in averages:
-            str_output += avg + ': ' + str(f1_score(test_results, y_test,
-                                                        average=avg)) + '\n'
-            str_output += "Accuracy: " + \
-                        str(accuracy_score(test_results, y_test)) + '\n'
-            print(str_output)
-
-
 # Helper function
 def get_top_k(labels):
     """Return the number of classes for each row in the `labels`
@@ -172,7 +145,13 @@ def main(_):
         eemb = np.load(args.extra_embedding)
         merger = merge_funcs[merge_types.index(args.merge_type)]
         emb = merger(emb, eemb)
+
     labels = graph.get_labels()
+    valid_locs = np.where(np.sum(labels, axis=1) > 0)[0]  # Only labeled data
+    if len(valid_locs) < len(labels):  # There are missing labeled data
+        print("Selecting only labeled data.")
+        emb = emb[valid_locs]
+        labels = labels[valid_locs]
 
     print("Fitting embedding to {} classifier ...".format(args.classifier))
     try:
