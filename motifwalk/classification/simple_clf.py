@@ -148,7 +148,7 @@ def main(_):
 
     labels = graph.get_labels()
     valid_locs = np.where(np.sum(labels, axis=1) > 0)[0]  # Only labeled data
-    if len(valid_locs) < len(labels):  # There are missing labeled data
+    if len(valid_locs) < labels.shape[0]:  # There are missing labeled data
         print("Selecting only labeled data.")
         emb = emb[valid_locs]
         labels = labels[valid_locs]
