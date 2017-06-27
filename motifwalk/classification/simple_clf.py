@@ -30,8 +30,8 @@ clf_names = ["Nearest Neighbors", "Linear SVM", "RBF SVM", "Gaussian Process",
 
 classifiers = [
     KNeighborsClassifier(3),
-    SVC(kernel="linear", C=0.025),
-    SVC(gamma=2, C=1),
+    SVC(kernel="linear", C=0.025, probability=True),
+    SVC(gamma=2, C=1, probability=True),
     GaussianProcessClassifier(1.0 * RBF(1.0), warm_start=True),
     DecisionTreeClassifier(max_depth=5),
     RandomForestClassifier(max_depth=5, n_estimators=10, max_features=1),
@@ -45,7 +45,7 @@ classifiers = [
 def merge_row(nparr1, nparr2):
     return np.append(nparr1, nparr2, axis=1)
 
-def average(nparr1, nparr2, r=(0.5,0.5)):
+def average(nparr1, nparr2, r=(1.0,1.0)):
     return (r[0] * nparr1) + (r[1] * nparr2)
 
 merge_types = ["merge", "average"]
@@ -62,7 +62,7 @@ def accuracy(predicted_labels, true_labels):
     return [accuracy_score(predicted_labels, true_labels)], ["accuracy"]
 
 def nmi(predicted_labels, true_labels):
-    return [normalized_mutual_info_score(predicted_labels, true_labels)], ["NMI"]
+    return [normalized_mutual_info_score(np.sum(predicted_labels, axis=1), np.sum(true_labels, axis=1))], ["NMI"]
 
 metrics = ["f1", "accuracy", "nmi"]
 metric_funcs = [f1, accuracy, nmi]
