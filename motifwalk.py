@@ -45,7 +45,7 @@ parser.add_argument("-nn", "--num_neg", type=int,
 parser.add_argument("-ns", "--num_skip", type=int,
                     help="Number of skips per window.", default=2)
 parser.add_argument("-lr", "--learning_rate", type=float,
-                    help="The initial learning rate.", default=0.001)
+                    help="The learning rate.", default=0.05)
 parser.add_argument("--log_step", type=int,
                     help="Number of step to report average loss.", default=2000)
 parser.add_argument("--save_step", type=int,
@@ -90,31 +90,27 @@ def main():
     else:
         print("Unknown embedding model.")
     assert model is not None
-    if modelm is not None:
-        model.build(num_vertices=gt.num_vertices(), emb_dim=args.emb_dim//2,
-                    batch_size=args.batch_size, learning_rate=args.learning_rate,
-                    regw=args.reg_strength, device=args.device)
-    else:
-        model.build(num_vertices=gt.num_vertices(), emb_dim=args.emb_dim,
-                    batch_size=args.batch_size, learning_rate=args.learning_rate,
-                    regw=args.reg_strength, device=args.device)
+    model.build(num_vertices=gt.num_vertices(), emb_dim=args.emb_dim//2,
+                batch_size=args.batch_size, learning_rate=args.learning_rate,
+                regw=args.reg_strength, device=args.device)
     timer(False)
 
     print("Generating walks...")
     timer()
     walks = None
-    index = None
     mwalks = None
-    mindex = None
     if "undirected" == args.walk_type:
-        walks, index = undirected_randomwalk(gt, walk_length=args.walk_length,
+        walks, _ = undirected_randomwalk(gt, walk_length=args.walk_length,
                                              num_walk=args.num_walk)
+        timer(False)
         if modelm is not None:
+            print("Generation motifwalk...")
+            timer()
             assert len(args.motif)
             motif = eval(args.motif)
             motif_graph = construct_motif_graph(graph, motif)
             motif_view = filter_isolated(motif_graph)
-            mwalks, mindex = undirected_randomwalk(motif_view,
+            mwalks, _ = undirected_randomwalk(motif_view,
                                             walk_length=args.walk_length,
                                             num_walk=args.num_walk)
     else:
@@ -122,7 +118,7 @@ def main():
     assert walks is not None
     timer(False)
 
-    print("Start training...")
+    print("Start training ...")
     timer()
     emb = model.train(data=walks, num_step=args.num_step,
                       log_step=args.log_step, save_step=args.save_step,
