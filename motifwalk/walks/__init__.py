@@ -1,4 +1,5 @@
 import numpy as np
+import threading
 from numpy.random import randint, shuffle, seed
 from itertools import islice
 
@@ -22,7 +23,7 @@ def undirected_randomwalk(gt, walk_length=80, num_walk=10):
     ci - int - Pointer to the next data location in context
     """
     context = np.ndarray(shape=(gt.num_vertices() * num_walk * walk_length),
-                        dtype=np.uint32)
+                         dtype=np.uint32)
     print("Generating context of size {}".format(context.size))
     ci = 0
     directedness = gt.is_directed()
@@ -43,6 +44,26 @@ def undirected_randomwalk(gt, walk_length=80, num_walk=10):
     gt.set_directed(directedness)
     return context, ci
 
-def parallel_urw(gt, num_worker=8):
+
+class WalkThread(threading.Thread):
+    """Thread class for parallel random walk context generation."""
+    def __init__(self, threadID, start_index, end_index,
+                 input_arr, output_arr, target_func):
+        super().__init__()
+        self.threadID = threadID
+        self.si = start_index
+        self.ei = end_index
+        self.i = input_arr
+        self.o = output_arr
+        self.f = target_func
+    def run(self):
+        for i in range(self.start_index, self.end_index):
+            self.o[i] = self.f(self.i[i])
+
+def parallel_urw(gt, num_thread=8):
     """TODO: Implement parallel undirected random walk"""
-    pass
+    all_threads = []
+    for i in range(num_thread):
+        new_thread = WalkThread(i, i * elem_per_thread, (i+1) * elem_per_thread,
+                                input_graph, data, undirected_randomwalk_kernel)
+        all_threads.append(new_thread)
