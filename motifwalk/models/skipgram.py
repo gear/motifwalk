@@ -63,13 +63,16 @@ class Skipgram(EmbeddingModel):
                 if init_emb is not None:
                     emb_init = tf.constant_initializer(init_emb)
                     assert init_emb.shape == (num_vertices, emb_dim)
+                    embeddings = tf.get_variable(name="raw_embeddings",
+                                initializer=emb_init, shape=init_emb.shape,
+                                regularizer=tf.contrib.layers.l2_regularizer(regw))
                 else:
                     emb_init = tf.random_uniform([num_vertices, emb_dim],
                                              -init_width, init_width)
+                    embeddings = tf.get_variable(name="raw_embeddings",
+                                initializer=emb_init,
+                                regularizer=tf.contrib.layers.l2_regularizer(regw))
 
-                embeddings = tf.get_variable(name="raw_embeddings",
-                            initializer=emb_init,
-                            regularizer=tf.contrib.layers.l2_regularizer(regw))
                 embed = tf.nn.embedding_lookup(embeddings, train_inputs)
 
                 nce_init = tf.truncated_normal([num_vertices, emb_dim],
