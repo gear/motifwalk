@@ -4,7 +4,8 @@ import numpy as np
 
 from motifwalk.utils import find_meta, set_dataloc, get_metadata, timer
 from motifwalk.utils.Graph import GraphContainer
-from motifwalk.walks import undirected_randomwalk
+from motifwalk.walks import undirected_randomwalk, undirected_rw_kernel, \
+                            ParallelWalkPimp
 from motifwalk.models.skipgram import Skipgram, ADAM
 
 from motifwalk.motifs import all_u3, all_3, all_u4, all_4
@@ -32,8 +33,11 @@ parser.add_argument("-t", "--num_step", type=int,
                     help="Number of step to train the embedding.",
                     default=10000)
 parser.add_argument("-nw", "--num_walk", type=int,
-                    help="Number of random walk per graph node.",
+                    help="Number of random walk per graph node. Also number of \
+                    parallel processes if parallel run is used.",
                     default=10)
+parser.add_argument("-ep", "--enable_parallel", type=bool,
+                    help="Enable parallel random walk.", default=True)
 parser.add_argument("-b", "--batch_size", type=int,
                     help="Batch size.")
 parser.add_argument("-m", "--model", type=str,
@@ -90,7 +94,12 @@ def main():
     else:
         print("Unknown embedding model.")
     assert model is not None
-    model.build(num_vertices=gt.num_vertices(), emb_dim=args.emb_dim//2,
+    if modelm is not None:
+        model.build(num_vertices=gt.num_vertices(), emb_dim=args.emb_dim//2,
+                batch_size=args.batch_size, learning_rate=args.learning_rate,
+                regw=args.reg_strength, device=args.device)
+    else:
+        model.build(num_vertices=gt.num_vertices(), emb_dim=args.emb_dim,
                 batch_size=args.batch_size, learning_rate=args.learning_rate,
                 regw=args.reg_strength, device=args.device)
     timer(False)
@@ -99,12 +108,12 @@ def main():
     timer()
     walks = None
     mwalks = None
-    if "undirected" == args.walk_type:
+    if "undirected" == args.walk_type and not args.enable_parallel:
         walks, _ = undirected_randomwalk(gt, walk_length=args.walk_length,
                                              num_walk=args.num_walk)
         timer(False)
         if modelm is not None:
-            print("Generation motifwalk...")
+            print("Generating motifwalk...")
             timer()
             assert len(args.motif)
             motif = eval(args.motif)
@@ -113,6 +122,23 @@ def main():
             mwalks, _ = undirected_randomwalk(motif_view,
                                             walk_length=args.walk_length,
                                             num_walk=args.num_walk)
+    elif args.enable_parallel:
+        pwalker = ParallelWalkPimp(gt, undirected_rw_kernel,
+                                   args=(args.walk_length,),
+                                   num_proc=args.num_walk)
+        walks = pwalker.run()
+        timer(False)
+        if modelm is not None:
+            print("Generating motifwalk...")
+            timer()
+            assert len(args.motif)
+            motif = eval(args.motif)
+            motif_graph = construct_motif_graph(graph, motif)
+            motif_view = filter_isolated(motif_graph)
+            pmwalker = ParallelWalkPimp(motif_view, undirected_rw_kernel,
+                                       args=(args.walk_length,),
+                                       num_proc=args.num_walk)
+            mwalks = pmwalker.run()
     else:
         print("TODO")
     assert walks is not None

@@ -89,10 +89,10 @@ def undirected_rw_kernel(gt, return_dict, pnum, walk_length=80, num_walk=1):
 
 class ParallelWalkPimp:
     """Manage walkers."""
-    def __init__(self, graph_container, target_func, args, num_proc=10):
+    def __init__(self, graph, target_func, args, num_proc=10):
         """perform target_func on the gt graph provided by graph_container."""
         super().__init__()
-        self.graph_container = graph_container
+        self.graph = graph
         self.num_proc = num_proc
         self.f = target_func  # Must implement a result saving mechanism
         self.f_args = args
@@ -103,7 +103,7 @@ class ParallelWalkPimp:
         # TODO: Figure out how to do shared graph data
         procs = []
         for i in range(self.num_proc):
-            gtg = self.graph_container.get_gt_graph()
+            gtg = self.graph.copy()
             p = Process(target=self.f, args=(gtg, self.rd, i, *self.f_args))
             p.start()
             procs.append(p)

@@ -46,7 +46,8 @@ def test3():
     """Parallel random walk"""
     timer()
     pack = GraphContainer(find_meta(dataset_name), dloc)
-    pwalker = ParallelWalkPimp(pack, undirected_rw_kernel, args=(), num_proc=10)
+    pwalker = ParallelWalkPimp(pack.get_gt_graph(), undirected_rw_kernel, 
+                               args=(), num_proc=10)
     walks = pwalker.run()
     print(walks.shape)
     print(walks[:10])
