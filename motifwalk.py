@@ -4,8 +4,9 @@ import numpy as np
 
 from motifwalk.utils import find_meta, set_dataloc, get_metadata, timer
 from motifwalk.utils.Graph import GraphContainer
-from motifwalk.walks import undirected_randomwalk
-from motifwalk.models.skipgram import Skipgram, ADAM
+from motifwalk.walks import undirected_randomwalk, undirected_rw_kernel, \
+                            ParallelWalkPimp
+from motifwalk.models.skipgram import Skipgram, ADAM, EdgeEmbedding
 
 from motifwalk.motifs import all_u3, all_3, all_u4, all_4
 from motifwalk.motifs.analysis import construct_motif_graph, filter_isolated
@@ -32,8 +33,11 @@ parser.add_argument("-t", "--num_step", type=int,
                     help="Number of step to train the embedding.",
                     default=10000)
 parser.add_argument("-nw", "--num_walk", type=int,
-                    help="Number of random walk per graph node.",
+                    help="Number of random walk per graph node. Also number of \
+                    parallel processes if parallel run is used.",
                     default=10)
+parser.add_argument("-ep", "--enable_parallel", type=bool,
+                    help="Enable parallel random walk.", default=True)
 parser.add_argument("-b", "--batch_size", type=int,
                     help="Batch size.")
 parser.add_argument("-m", "--model", type=str,
@@ -45,7 +49,7 @@ parser.add_argument("-nn", "--num_neg", type=int,
 parser.add_argument("-ns", "--num_skip", type=int,
                     help="Number of skips per window.", default=2)
 parser.add_argument("-lr", "--learning_rate", type=float,
-                    help="The initial learning rate.", default=0.001)
+                    help="The learning rate.", default=0.05)
 parser.add_argument("--log_step", type=int,
                     help="Number of step to report average loss.", default=2000)
 parser.add_argument("--save_step", type=int,
@@ -83,6 +87,8 @@ def main():
                          num_nsamp=args.num_neg, name=args.dataset)
         modelm = Skipgram(window_size=args.window_size, num_skip=args.num_skip,
                          num_nsamp=args.num_neg, name=args.dataset+"m")
+    elif "edge_embedding" == args.model.lower():
+        model = EdgeEmbedding(num_nsamp=args.num_neg, name=args.dataset)
     elif "gcn" == args.model.lower():
         print ("TODO")
     elif "sc" == args.model.lower():
@@ -91,47 +97,68 @@ def main():
         print("Unknown embedding model.")
     assert model is not None
     if modelm is not None:
-        modelm.build(num_vertices=gt.num_vertices(), emb_dim=args.emb_dim//2,
-                    batch_size=args.batch_size, learning_rate=args.learning_rate,
-                    regw=args.reg_strength, device=args.device)
         model.build(num_vertices=gt.num_vertices(), emb_dim=args.emb_dim//2,
-                    batch_size=args.batch_size, learning_rate=args.learning_rate,
-                    regw=args.reg_strength, device=args.device)
+                batch_size=args.batch_size, learning_rate=args.learning_rate,
+                regw=args.reg_strength, device=args.device)
     else:
         model.build(num_vertices=gt.num_vertices(), emb_dim=args.emb_dim,
-                    batch_size=args.batch_size, learning_rate=args.learning_rate,
-                    regw=args.reg_strength, device=args.device)
+                batch_size=args.batch_size, learning_rate=args.learning_rate,
+                regw=args.reg_strength, device=args.device)
     timer(False)
 
     print("Generating walks...")
     timer()
     walks = None
-    index = None
     mwalks = None
-    mindex = None
-    if "undirected" == args.walk_type:
-        walks, index = undirected_randomwalk(gt, walk_length=args.walk_length,
+    if "undirected" == args.walk_type and not args.enable_parallel:
+        walks, _ = undirected_randomwalk(gt, walk_length=args.walk_length,
                                              num_walk=args.num_walk)
+        timer(False)
         if modelm is not None:
+            print("Generating motifwalk...")
+            timer()
             assert len(args.motif)
             motif = eval(args.motif)
             motif_graph = construct_motif_graph(graph, motif)
             motif_view = filter_isolated(motif_graph)
-            mwalks, mindex = undirected_randomwalk(motif_view,
+            mwalks, _ = undirected_randomwalk(motif_view,
                                             walk_length=args.walk_length,
                                             num_walk=args.num_walk)
+    elif "undirected" == args.walk_type and args.enable_parallel:
+        pwalker = ParallelWalkPimp(gt, undirected_rw_kernel,
+                                   args=(args.walk_length,),
+                                   num_proc=args.num_walk)
+        walks = pwalker.run()
+        timer(False)
+        if modelm is not None:
+            print("Generating motifwalk...")
+            timer()
+            assert len(args.motif)
+            motif = eval(args.motif)
+            motif_graph = construct_motif_graph(graph, motif)
+            motif_view = filter_isolated(motif_graph)
+            pmwalker = ParallelWalkPimp(motif_view, undirected_rw_kernel,
+                                       args=(args.walk_length,),
+                                       num_proc=args.num_walk)
+            mwalks = pmwalker.run()
+    elif "edges" == args.walk_type:
+        walks = graph.get_graph()  # walks here is the networkx version
     else:
         print("TODO")
     assert walks is not None
     timer(False)
 
-    print("Start training...")
+    print("Start training ...")
     timer()
     emb = model.train(data=walks, num_step=args.num_step,
                       log_step=args.log_step, save_step=args.save_step,
                       learning_rate=args.learning_rate)
+    memb = None
     if modelm is not None:
-        print("Start training for motif model...")
+        print("Start building and training for motif model...")
+        modelm.build(num_vertices=gt.num_vertices(), emb_dim=args.emb_dim//2,
+                    batch_size=args.batch_size, learning_rate=args.learning_rate,
+                    regw=args.reg_strength, device=args.device, init_emb=emb)
         memb = modelm.train(data=mwalks, num_step=args.num_step,
                             log_step=args.log_step, save_step=args.save_step,
                             learning_rate=args.learning_rate)
@@ -140,6 +167,9 @@ def main():
     from time import time
     uid = str(time())
     np.save(args.save_loc+"{}_{}.emb".format(args.dataset, uid), emb)
+    if memb is not None:
+        np.save(args.save_loc+"{}_{}.memb".format(args.dataset, uid), memb)
+
     with open(args.save_loc+"{}_{}.info".format(args.dataset, uid),
               "w") as infofile:
         infofile.write(uid + '\n')
