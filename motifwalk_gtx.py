@@ -6,7 +6,7 @@ from motifwalk.utils import find_meta, set_dataloc, get_metadata, timer
 from motifwalk.utils.Graph import GraphContainer
 from motifwalk.walks import undirected_randomwalk, undirected_rw_kernel, \
                             ParallelWalkPimp
-from motifwalk.models.skipgram import Skipgram, ADAM
+from motifwalk.models.skipgram import Skipgram, ADAM, EdgeEmbedding
 
 from motifwalk.motifs import all_u3, all_3, all_u4, all_4
 from motifwalk.motifs.analysis import construct_motif_graph, filter_isolated
@@ -87,6 +87,8 @@ def main():
                          num_nsamp=args.num_neg, name=args.dataset)
         modelm = Skipgram(window_size=args.window_size, num_skip=args.num_skip,
                          num_nsamp=args.num_neg, name=args.dataset+"m")
+    elif "edge_embedding" == args.model.lower():
+        model = EdgeEmbedding(num_nsamp=args.num_neg, name=args.dataset)
     elif "gcn" == args.model.lower():
         print ("TODO")
     elif "sc" == args.model.lower():
@@ -122,7 +124,7 @@ def main():
             mwalks, _ = undirected_randomwalk(motif_view,
                                             walk_length=args.walk_length,
                                             num_walk=args.num_walk)
-    elif args.enable_parallel:
+    elif "undirected" == args.walk_type and args.enable_parallel:
         pwalker = ParallelWalkPimp(gt, undirected_rw_kernel,
                                    args=(args.walk_length,),
                                    num_proc=args.num_walk)
@@ -139,6 +141,8 @@ def main():
                                        args=(args.walk_length,),
                                        num_proc=args.num_walk)
             mwalks = pmwalker.run()
+    elif "edges" == args.walk_type:
+        walks = graph.get_graph()  # walks here is the networkx version
     else:
         print("TODO")
     assert walks is not None
