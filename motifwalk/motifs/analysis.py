@@ -2,6 +2,7 @@ import pickle
 from itertools import combinations
 import numpy as np
 import networkx as nx
+from random import shuffle
 from motifwalk.utils.Graph import GraphContainer
 from graph_tool.all import Graph, motifs, GraphView
 
@@ -22,8 +23,11 @@ def count_motif(g, motif_object, rm=True):
     vertex_map - list - contains lists of gt.PropertyMap
     """
     m = motif_object.gt_motif
-    # graph_tool.clustering.motifs
-    rm, c, v_map = motifs(g, m.num_vertices(), motif_list=[m], return_maps=rm)
+    # Work around for parallel motif counting
+    idx = g.vertex_index.copy("int")
+    shuffle(idx.a)
+    pg = Graph(g, vorder=idx)
+    rm, c, v_map = motifs(pg, m.num_vertices(), motif_list=[m], return_maps=rm)
     return rm, c, v_map
 
 def construct_motif_graph(graph_container, motif, vertex_maps=None):

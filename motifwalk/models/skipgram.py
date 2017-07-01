@@ -346,9 +346,12 @@ class EdgeEmbedding(EmbeddingModel):
 
         batch_size = self.batch_size
         all_edges = nx_graph.edges()
+        # Reverse edge order (siminlar to undirected)
+        all_edges += map(lambda x: (x[1],x[0]), nx_graph.edges())
         shuffle(all_edges)
         # Work around when number of edge is not a multiple of batch_size
         extra_data = len(all_edges) % batch_size
+        epoch = 1
         print("Appending {} more edges to training data...".format(extra_data))
         for i in range(batch_size-extra_data):
             all_edges.append(all_edges[randint(len(all_edges))])
@@ -364,6 +367,9 @@ class EdgeEmbedding(EmbeddingModel):
             yield(batch, labels)
             # Update start and end indices
             if ei == len(all_edges):
+                print("Epoch count: {}".format(epoch))
+                epoch += 1
+                shuffle(all_edges)
                 ei = batch_size
                 si = 0
             else:
