@@ -24,6 +24,8 @@ parser.add_argument("-w", "--walk_type", type=str,
 parser.add_argument("-mt", "--motif", type=str,
                     help="Type of motif to run.",
                     default="triangle")
+parser.add_argument("-ac", "anchors", type=str,
+                    help="Set of anchor node id. (e.g. {1,2})")
 parser.add_argument("-l", "--walk_length", type=int,
                     help="Length of random walk starting from each node.",
                     default=80)
@@ -134,7 +136,8 @@ def main():
             print("Generating motifwalk...")
             timer()
             assert len(args.motif)
-            motif = eval(args.motif)
+            motif = eval(args.motif)  # TODO: dont use eval
+            motif.anchors = eval(args.anchors)   # TODO: avoid eval
             motif_graph = construct_motif_graph(graph, motif)
             motif_view = filter_isolated(motif_graph)
             pmwalker = ParallelWalkPimp(motif_view, undirected_rw_kernel,
