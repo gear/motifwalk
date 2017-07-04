@@ -72,6 +72,7 @@ def main():
                                            n_shuffles=args.num_shuffles,
                                            motif_list=[mc.gt_motif])[1][0]
             r = "Motif index {}: {}\n".format(i, score)
+            print(r)
             ofile.write(r)
 
     print("Motif analysis for {} is completed.".format(args.dataset))
