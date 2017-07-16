@@ -160,7 +160,8 @@ def main(_):
         print("Error: {} is undefined.".format(args.classifier))
         sys.exit(0)
     X_train, X_test, y_train, y_test = train_test_split(
-        emb, labels, train_size=args.training_ratio, random_state=args.random_seed)
+        emb, labels, train_size=args.training_ratio,
+        random_state=args.random_seed)
     top_k_list = get_top_k(y_test)
     mclf = TopKRanker(clf)
     mclf.fit(X_train, y_train)
