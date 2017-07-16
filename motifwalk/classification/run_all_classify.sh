@@ -1,8 +1,8 @@
 #!/bin/bash
-FILES=/home/gear/BigFiles/step_save_2017_06_26/cora_1498325969.910316/
+FILES=/home/gear/Dropbox/CompletedProjects/motifwalk/emb/step_save/polblogs_1498394461.0723994
 for f in $FILES/*
 do
   echo $f
-  python simple_clf.py -e $f -d cora -tr 0.05 --metric accuracy -c 'Logistic Regression CV' -rs 2
+  python simple_clf.py -e $f -d polblogs -tr 0.05 --metric accuracy -c 'Logistic Regression CV' -rs 2
 done
 
