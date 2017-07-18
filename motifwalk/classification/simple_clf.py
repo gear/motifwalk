@@ -124,6 +124,17 @@ def get_top_k(labels):
     else:
         return [np.count_nonzero(i) for i in labels]
 
+def read_emb_from_txt(filename):
+    with open(filename, "r") as f:
+        num_vertices, emb_dim = map(int, f.readline().strip().split())
+        emb = np.zeros(shape=(num_vertices-1, emb_dim))
+        f.readline() # Skip embedding for space
+        for l in f.readlines():
+            array_str = l.split()
+            idx = int(array_str[0])
+            emb[idx][:] = [*map(float, array_str[1:])]
+        return emb
+
 def main(_):
     args = parser.parse_args()
 
@@ -135,6 +146,9 @@ def main(_):
         emb = np.load(args.embedding_file+".emb.npy")
     except FileNotFoundError:
         emb = np.load(args.embedding_file)
+    except OSError:
+        print("Trying to read embedding input as text ...")
+        emb = read_emb_from_txt(args.embedding_file)
     try:
         with open(args.embedding_file+".info", 'r') as f:
             print(f.read())
